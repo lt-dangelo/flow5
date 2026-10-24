@@ -1,7 +1,8 @@
 // Framework-unabhängige Zeitlogik. Misst reale Zeit statt Timer-Ticks zu zählen.
 export function buildPlan(exerciseIds, config) {
   const {workSec, restSec, rounds, includeFinalRest} = config;
-  if (!Array.isArray(exerciseIds) || exerciseIds.length !== 5 ||
+  if (!Array.isArray(exerciseIds) || exerciseIds.length < 1 || exerciseIds.length > 5 ||
+      new Set(exerciseIds).size !== exerciseIds.length ||
       !Number.isInteger(workSec) || workSec < 5 || workSec > 600 ||
       !Number.isInteger(restSec) || restSec < 0 || restSec > 300 ||
       !Number.isInteger(rounds) || rounds < 1 || rounds > 20) {

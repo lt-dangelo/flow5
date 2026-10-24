@@ -1,6 +1,6 @@
-const CACHE='flow5-v1.1.0';
+const CACHE='flow5-v1.2.0';
 const ASSETS=['./','./index.html','./styles.css','./manifest.webmanifest',
- './src/app.js','./src/config.js','./src/audio.js','./audio/work.wav','./audio/rest.wav','./audio/done.wav','./src/data.js','./src/art.js','./src/engine.js',
+ './src/app.js','./src/config.js','./src/audio.js','./src/i18n.js','./src/selection.js','./audio/work.wav','./audio/rest.wav','./audio/done.wav','./src/data.js','./src/art.js','./src/engine.js',
  './icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));

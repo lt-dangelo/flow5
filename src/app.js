@@ -3,9 +3,11 @@ import {buildPlan, planStats, IntervalEngine} from './engine.js';
 import {illustration} from './art.js';
 import {optionsFor,stepSetting} from './config.js';
 import {CueAudio} from './audio.js';
+import {t,exerciseText,presetText} from './i18n.js';
+import {validSelection,removeExercise,chooseExercise} from './selection.js';
 
 const STORAGE_KEY='flow5-prefs-v1';
-const DEFAULTS={presetId:'full', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true};
+const DEFAULTS={presetId:'full', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en'};
 const app=document.getElementById('app');
 
 function loadPreferences(){
@@ -18,14 +20,17 @@ function loadPreferences(){
   }
   next.includeFinalRest=!!next.includeFinalRest;
   next.sound=!!next.sound;
+  next.lang=next.lang==='de'?'de':'en';
   if(!next.custom||typeof next.custom!=='object')next.custom={};
+  const knownIds=new Set(EXERCISES.map(e=>e.id));
   for(const [key,value] of Object.entries(next.custom)){
-   if(!PRESET_BY_ID[key]||!Array.isArray(value)||value.length!==5||value.some(id=>!EXERCISE_BY_ID[id])||new Set(value).size!==5) delete next.custom[key];
+   if(!PRESET_BY_ID[key]||!validSelection(value,knownIds)) delete next.custom[key];
   }
   return next;
  } catch {return {...DEFAULTS};}
 }
 let prefs=loadPreferences();
+document.documentElement.lang=prefs.lang;
 let view='setup';
 let swapIndex=null;
 let swapQuery='';
@@ -37,13 +42,21 @@ let audioWarning=false;
 let installPrompt=null;
 let lastPhaseKey='';
 let pendingExit=false;
+let workoutCount=5;
+const knownIds=new Set(EXERCISES.map(e=>e.id));
+const T=(key,params)=>t(prefs.lang,key,params);
+const E=id=>exerciseText(EXERCISE_BY_ID[id],prefs.lang);
+const P=p=>presetText(p,prefs.lang);
+const countLabel=n=>`${n} ${T(n===1?'exerciseOne':'exerciseMany')}`;
+const summaryLabel=()=>`${prefs.rounds} ${T(prefs.rounds===1?'roundOne':'roundMany')} × ${countLabel(currentIds().length)} · ${prefs.workSec}s / ${prefs.restSec}s`;
+const restHelp=()=>T('finalRestOn',{time:humanDuration((prefs.workSec+prefs.restSec)*currentIds().length*prefs.rounds*1000)});
 
 function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(prefs));}catch{/* Privater Modus möglich */}}
 function currentIds(){return prefs.custom[prefs.presetId]||PRESET_BY_ID[prefs.presetId].ids;}
 function currentConfig(){return {workSec:prefs.workSec,restSec:prefs.restSec,rounds:prefs.rounds,includeFinalRest:prefs.includeFinalRest};}
 function currentPlan(){return buildPlan(currentIds(),currentConfig());}
 function secsLabel(ms){const sec=Math.ceil(Math.max(0,ms)/1000);return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;}
-function humanDuration(ms){const minutes=Math.floor(ms/60000),seconds=Math.round(ms%60000/1000);return seconds?`${minutes} Min. ${seconds} Sek.`:`${minutes} Min.`;}
+function humanDuration(ms){const minutes=Math.floor(ms/60000),seconds=Math.round(ms%60000/1000);return seconds?(prefs.lang==='de'?`${minutes} Min. ${seconds} Sek.`:`${minutes} min ${seconds} sec`):(prefs.lang==='de'?`${minutes} Min.`:`${minutes} min`);}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function icon(name){
  const paths={
@@ -69,7 +82,7 @@ function brand(){return `<div class="brand"><div class="brand-mark"><span>5</spa
 function stepper(field,label,unit){
  const values=optionsFor(field,prefs[field]), index=values.indexOf(prefs[field]);
  const options=values.map(value=>`<option value="${value}" ${value===prefs[field]?'selected':''}>${value}</option>`).join('');
- return `<div class="input-card"><span id="label-${field}">${label}</span><div class="stepper-row"><button type="button" class="step-btn" data-action="adjust" data-field="${field}" data-direction="-1" aria-label="${label} verringern" ${index===0?'disabled':''}>−</button><div class="picker-field"><select data-config="${field}" aria-labelledby="label-${field}">${options}</select><span class="picker-unit">${unit}</span><span class="picker-chevron" aria-hidden="true">⌄</span></div><button type="button" class="step-btn" data-action="adjust" data-field="${field}" data-direction="1" aria-label="${label} erhöhen" ${index===values.length-1?'disabled':''}>+</button></div></div>`;
+ return `<div class="input-card"><span id="label-${field}">${label}</span><div class="stepper-row"><button type="button" class="step-btn" data-action="adjust" data-field="${field}" data-direction="-1" aria-label="${label} −" ${index===0?'disabled':''}>−</button><div class="picker-field"><select data-config="${field}" aria-labelledby="label-${field}">${options}</select><span class="picker-unit">${unit}</span><span class="picker-chevron" aria-hidden="true">⌄</span></div><button type="button" class="step-btn" data-action="adjust" data-field="${field}" data-direction="1" aria-label="${label} +" ${index===values.length-1?'disabled':''}>+</button></div></div>`;
 }
 function updatePicker(field){
  const select=app.querySelector(`[data-config="${field}"]`);if(!select)return;
@@ -83,72 +96,60 @@ function updatePicker(field){
 }
 function render(){if(view==='setup')renderSetup();else if(view==='workout')renderWorkout();else renderDone();}
 function renderSetup(){
- const preset=PRESET_BY_ID[prefs.presetId];
- const ids=currentIds();const stats=planStats(currentPlan());
- const presetCards=PRESETS.map(p=>`<button class="preset-card ${p.id===prefs.presetId?'selected':''}" type="button" data-action="preset" data-value="${p.id}" aria-pressed="${p.id===prefs.presetId}"><div class="preset-icon">${p.icon}</div><span class="preset-tag">${p.tag}</span><strong>${p.name}</strong><small>${p.subtitle}</small></button>`).join('');
- const rows=ids.map((id,i)=>{
-  const e=EXERCISE_BY_ID[id];return `<div class="exercise-row"><div class="thumb">${illustration(e.pose,e.name)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${e.name}</strong><small>${e.group} <span aria-hidden="true">·</span> ${['','Leicht','Mittel','Fortgeschritten'][e.level]}</small></div><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${e.name} austauschen">${icon('swap')}<span>Tauschen</span></button></div>`;
- }).join('');
+ const preset=P(PRESET_BY_ID[prefs.presetId]),ids=currentIds(),count=ids.length,stats=planStats(currentPlan());
+ const cards=PRESETS.map(raw=>{const p=P(raw);return `<button class="preset-card ${p.id===prefs.presetId?'selected':''}" type="button" data-action="preset" data-value="${p.id}" aria-pressed="${p.id===prefs.presetId}"><div class="preset-icon">${p.icon}</div><span class="preset-tag">${escapeHtml(p.tag)}</span><strong>${escapeHtml(p.name)}</strong><small>${escapeHtml(p.subtitle)}</small></button>`;}).join('');
+ const rows=ids.map((id,i)=>{const e=E(id);return `<div class="exercise-row"><div class="thumb">${illustration(e.pose,e.name,prefs.lang)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} <span aria-hidden="true">·</span> ${T(['','easy','medium','advanced'][e.level])}</small></div><div class="exercise-actions"><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${T('swap')}: ${escapeHtml(e.name)}">${icon('swap')}<span>${T('swap')}</span></button><button type="button" class="remove-btn" data-action="remove" data-index="${i}" aria-label="${T('remove')}: ${escapeHtml(e.name)}" ${count===1?'disabled':''}>${icon('close')}<span>${T('remove')}</span></button></div></div>`;}).join('');
  app.innerHTML=`<div class="site-shell">
- <header class="topbar">${brand()}<button class="icon-button help-button" type="button" data-action="help" aria-label="Installationshilfe">${icon('info')}</button></header>
- <main class="layout"><section class="intro"><div class="eyebrow"><span class="live-dot"></span> DEIN WORKOUT. DEIN RHYTHMUS.</div><h1>Fünf Übungen.<br/><em>Ein Flow.</em></h1><p>Stell dir dein Calisthenics-Training zusammen. Starten, mitmachen, automatisch durchwechseln.</p><div class="intro-stats"><span>${icon('clock')} Flexibler Intervalltimer</span><span>${icon('sun')} Display bleibt aktiv*</span></div></section>
- <section class="panel preset-panel"><div class="section-heading"><div><span class="step-label">01 / AUSWAHL</span><h2>Wähle deinen Fokus</h2></div><span class="subtle">${PRESETS.length} Programme</span></div><div class="preset-list">${presetCards}</div></section>
- <section class="panel lineup-panel"><div class="section-heading"><div><span class="step-label">02 / ÜBUNGEN</span><h2>Deine 5 Übungen</h2></div>${prefs.custom[prefs.presetId]?`<button class="reset-btn" type="button" data-action="reset">Zurücksetzen</button>`:`<span class="subtle">${escapeHtml(preset.name)}</span>`}</div><div class="exercise-list">${rows}</div><p class="hint">${icon('swap')} Tippe auf „Tauschen“, um eine Übung zu ersetzen.</p></section>
- <section class="panel config-panel"><div class="section-heading"><div><span class="step-label">03 / INTERVALLE</span><h2>Dein Timing</h2></div></div>
- <div class="config-grid">
-  ${stepper('workSec','Belastung','Sek.')}
-  ${stepper('restSec','Erholung','Sek.')}
-  ${stepper('rounds','Runden','× 5')}
- </div>
- <label class="toggle-line"><div><strong>Erholung nach der letzten Übung</strong><small>Ein: genau ${humanDuration((prefs.workSec+prefs.restSec)*5*prefs.rounds*1000)} bei durchgängigen Intervallen. Aus: Training endet unmittelbar nach der letzten Belastung.</small></div><input type="checkbox" data-config="includeFinalRest" ${prefs.includeFinalRest?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
- <label class="toggle-line"><div><strong>Akustische Signale</strong><small>Töne beim Wechsel zwischen Belastung und Erholung.</small></div><input type="checkbox" data-config="sound" ${prefs.sound?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
- <div class="audio-test-row"><button type="button" data-action="test-audio" class="test-audio-btn">${icon('sound')} Testton abspielen</button><small id="audio-feedback" role="status" aria-live="polite">Bei Stille: Medienlautstärke und Audioausgabe am iPhone prüfen.</small></div>
+ <header class="topbar">${brand()}<div class="topbar-actions"><button type="button" class="language-btn" data-action="language" aria-label="${T('switchLanguage')}" title="${T('switchLanguage')}"><span aria-hidden="true">${prefs.lang==='de'?'🇩🇪':'🇬🇧'}</span><span>${prefs.lang.toUpperCase()}</span></button><button class="icon-button help-button" type="button" data-action="help" aria-label="${T('help')}">${icon('info')}</button></div></header>
+ <main class="layout"><section class="intro"><div class="eyebrow"><span class="live-dot"></span> ${T('heroEyebrow')}</div><h1>${T('heroFirst')}<br/><em>${T('heroSecond')}</em></h1><p>${T('heroDesc')}</p><div class="intro-stats"><span>${icon('clock')} ${T('flexible')}</span><span>${icon('sun')} ${T('awake')}</span></div></section>
+ <section class="panel preset-panel"><div class="section-heading"><div><span class="step-label">01 / ${T('focus').toUpperCase()}</span><h2>${T('focus')}</h2></div><span class="subtle">${PRESETS.length} ${T('programs')}</span></div><div class="preset-list">${cards}</div></section>
+ <section class="panel lineup-panel"><div class="section-heading"><div><span class="step-label">02 / ${T('exercisesTitle').toUpperCase()}</span><h2>${T('exercisesTitle')} <span class="exercise-count">${count}/5</span></h2></div>${prefs.custom[prefs.presetId]?`<button class="reset-btn" type="button" data-action="reset">${T('reset')}</button>`:`<span class="subtle">${escapeHtml(preset.name)}</span>`}</div><div class="exercise-list">${rows}</div>${count<5?`<button type="button" class="add-exercise-btn" data-action="add"><strong>＋</strong> ${T('add')} <span>${count}/5</span></button>`:''}<p class="hint">${icon('swap')} ${T('removeHint')}</p></section>
+ <section class="panel config-panel"><div class="section-heading"><div><span class="step-label">03 / ${T('timing').toUpperCase()}</span><h2>${T('timing')}</h2></div></div>
+ <div class="config-grid">${stepper('workSec',T('work'),T('sec'))}${stepper('restSec',T('rest'),T('sec'))}${stepper('rounds',T('rounds'),'× '+count)}</div>
+ <label class="toggle-line"><div><strong>${T('finalRest')}</strong><small>${restHelp()}</small></div><input type="checkbox" data-config="includeFinalRest" ${prefs.includeFinalRest?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
+ <label class="toggle-line"><div><strong>${T('sounds')}</strong><small>${T('soundsDesc')}</small></div><input type="checkbox" data-config="sound" ${prefs.sound?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
  </section>
- <aside class="summary-panel"><div class="summary-head"><span>DEIN TRAININGSPLAN</span>${icon('spark')}</div><div class="total-time">${secsLabel(stats.totalMs)}</div><span class="summary-note">Gesamtdauer</span><div class="meter"><div class="meter-work" style="width:${stats.workMs/stats.totalMs*100}%"></div></div><div class="summary-breakdown"><span><i class="dot work-dot"></i> Belastung <b>${secsLabel(stats.workMs)}</b></span><span><i class="dot rest-dot"></i> Erholung <b>${secsLabel(stats.restMs)}</b></span></div><div class="summary-desc">${prefs.rounds} ${prefs.rounds===1?'Runde':'Runden'} × 5 Übungen · ${prefs.workSec}s / ${prefs.restSec}s</div><button type="button" data-action="start" class="primary-btn">Training starten ${icon('arrow')}</button><small class="footnote">* Auf unterstützten Geräten, solange die App sichtbar ist und iOS die Funktion zulässt.</small></aside>
- </main><footer class="footer">FLOW5 v1.1 · Dein Training läuft lokal im Browser. Keine Anmeldung, kein Tracking.</footer>
+ <aside class="summary-panel"><div class="summary-head"><span>${T('plan')}</span>${icon('spark')}</div><div class="total-time">${secsLabel(stats.totalMs)}</div><span class="summary-note">${T('duration')}</span><div class="meter"><div class="meter-work" style="width:${stats.workMs/stats.totalMs*100}%"></div></div><div class="summary-breakdown"><span><i class="dot work-dot"></i> ${T('workBreakdown')} <b>${secsLabel(stats.workMs)}</b></span><span><i class="dot rest-dot"></i> ${T('restBreakdown')} <b>${secsLabel(stats.restMs)}</b></span></div><div class="summary-desc">${summaryLabel()}</div><button type="button" data-action="start" class="primary-btn">${T('start')} ${icon('arrow')}</button><small class="footnote">${T('footnote')}</small></aside>
+ </main><footer class="footer">${T('footer')}</footer>
  </div>${swapIndex!==null?renderSwapDialog():''}`;
 }
 function updateSettingsSummary(){
- // Keine Neurenderung während Number-Input-Change/Blur: vermeidet reentrante DOM-Änderungen.
  if(view!=='setup')return;
- const stats=planStats(currentPlan());
- const put=(selector,value)=>{const el=app.querySelector(selector);if(el)el.textContent=value;};
+ const stats=planStats(currentPlan()),put=(sel,val)=>{const n=app.querySelector(sel);if(n)n.textContent=val;};
  put('.total-time',secsLabel(stats.totalMs));
  const bar=app.querySelector('.meter-work');if(bar)bar.style.width=`${stats.workMs/stats.totalMs*100}%`;
- const breakdown=app.querySelectorAll('.summary-breakdown b');
- if(breakdown[0])breakdown[0].textContent=secsLabel(stats.workMs);
- if(breakdown[1])breakdown[1].textContent=secsLabel(stats.restMs);
- put('.summary-desc',`${prefs.rounds} ${prefs.rounds===1?'Runde':'Runden'} × 5 Übungen · ${prefs.workSec}s / ${prefs.restSec}s`);
- const lastLabel=app.querySelector('.toggle-line small');
- if(lastLabel)lastLabel.textContent=`Ein: genau ${humanDuration((prefs.workSec+prefs.restSec)*5*prefs.rounds*1000)} bei durchgängigen Intervallen. Aus: Training endet unmittelbar nach der letzten Belastung.`;
+ const labels=app.querySelectorAll('.summary-breakdown b');
+ if(labels[0])labels[0].textContent=secsLabel(stats.workMs);
+ if(labels[1])labels[1].textContent=secsLabel(stats.restMs);
+ put('.summary-desc',summaryLabel());
+ const note=app.querySelector('.toggle-line small');if(note)note.textContent=restHelp();
 }
 function renderSwapDialog(){
- const selected=new Set(currentIds());
- const filtered=EXERCISES.filter(e=>!selected.has(e.id) && `${e.name} ${e.group}`.toLocaleLowerCase('de').includes(swapQuery.toLocaleLowerCase('de')));
- return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">ÜBUNG AUSTAUSCHEN</span><h2 id="swap-title">Neue Übung wählen</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="Schließen">${icon('close')}</button></div><input class="search-input" data-search placeholder="Übung oder Muskelgruppe suchen …" aria-label="Übungen durchsuchen" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(e=>`<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${illustration(e.pose,e.name)}</span><span><strong>${e.name}</strong><small>${e.group} · ${['','Leicht','Mittel','Fortgeschritten'][e.level]}</small><span class="choice-cue">${e.cue}</span></span>${icon('arrow')}</button>`).join('')||'<p class="empty">Keine weiteren passenden Übungen gefunden.</p>'}</div></div></div>`;
+ const isAdd=swapIndex===-1,selected=new Set(currentIds());
+ const filtered=EXERCISES.filter(raw=>{const e=exerciseText(raw,prefs.lang);return !selected.has(e.id)&&`${e.name} ${e.group}`.toLocaleLowerCase(prefs.lang).includes(swapQuery.toLocaleLowerCase(prefs.lang));});
+ return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(raw=>{const e=exerciseText(raw,prefs.lang);return `<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${illustration(e.pose,e.name,prefs.lang)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`;}).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
 }
 function nextWork(index){if(!engine)return null;return engine.phases.slice(index+1).find(p=>p.kind==='work')||null;}
 function renderWorkout(){
  if(!engine)return;
  const snap=engine.snapshot();if(snap.status==='completed'){view='done';renderDone();return;}
- const p=snap.phase;const isRest=p.kind==='rest';
- const next=nextWork(snap.index);
- const present=isRest&&next?EXERCISE_BY_ID[next.exerciseId]:EXERCISE_BY_ID[p.exerciseId];
- const title=isRest?(next?'Als Nächstes: '+present.name:'Letzte Erholung'):present.name;
- const descr=isRest?(next?present.cue:'Du hast alle Übungen geschafft. Atme ruhig durch.'):present.cue;
- const group=isRest?'ERHOLUNG':'BELASTUNG';
- lastPhaseKey=`${snap.index}`;
- app.innerHTML=`<div class="training-screen ${isRest?'rest-mode':''}"><header class="training-header"><div>${brand()}<div class="status-row"><span class="status-pill ${isRest?'is-rest':''}"><i></i>${group}</span><span class="training-meta">Runde ${p.round}/${prefs.rounds} · Übung ${p.position}/5</span></div></div><button type="button" class="quiet-btn" data-action="exit">${icon('close')} Beenden</button></header>
- <main class="training-main"><div class="clock-side"><div class="timer-ring" id="timer-ring" style="--progress:${snap.phaseProgress*100}%"><div class="timer-inner"><span class="ring-label">${isRest?'PAUSE':'NOCH'}</span><strong id="phase-time" aria-label="Verbleibende Intervallzeit">${secsLabel(snap.remainingMs)}</strong><span class="ring-hint">Minuten : Sekunden</span></div></div><div class="whole-timer"><span>Training verbleibend</span><strong id="remaining-time">${secsLabel(snap.totalRemainingMs)}</strong></div><div class="whole-track"><div id="whole-progress" style="width:${snap.overallProgress*100}%"></div></div></div>
- <div class="exercise-side"><div class="training-illustration">${illustration(present.pose,present.name)}<span class="art-tag">${isRest?'GLEICH GEHT’S WEITER':present.group.toUpperCase()}</span></div><div class="workout-exercise"><span class="step-label">${isRest?'VORSCHAU AUF DIE NÄCHSTE ÜBUNG':'AKTUELLE ÜBUNG'}</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(descr)}</p><small>${escapeHtml(present.tip)}</small></div><div class="up-next">${icon('arrow')} <span>${isRest?(next?'Anschließend beginnt die Belastung':'Danach ist das Training beendet'):(next?'Danach: '+EXERCISE_BY_ID[next.exerciseId].name:'Danach: Trainingsabschluss')}</span></div></div></main>
- <footer class="training-controls"><div id="wake-indicator" class="wake-indicator">${icon('sun')} Display-Aktivhaltung wird geprüft …</div><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${snap.status==='paused'?'Fortsetzen':'Pausieren'}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>Weiter</span></button></div>${audioWarning?'<p class="warning">Tonsignale sind auf diesem Gerät eventuell nicht verfügbar.</p>':''}</footer>
+ const p=snap.phase,isRest=p.kind==='rest',next=nextWork(snap.index);
+ const present=E(isRest&&next?next.exerciseId:p.exerciseId);
+ const title=isRest?(next?T('nextPrefix')+present.name:T('lastRest')):present.name;
+ const descr=isRest?(next?present.cue:T('restFinished')):present.cue;
+ const group=T(isRest?'restCaps':'workCaps');
+ lastPhaseKey=String(snap.index);
+ app.innerHTML=`<div class="training-screen ${isRest?'rest-mode':''}"><header class="training-header"><div>${brand()}<div class="status-row"><span class="status-pill ${isRest?'is-rest':''}"><i></i>${group}</span><span class="training-meta">${T('roundLabel')} ${p.round}/${prefs.rounds} · ${T('exerciseLabel')} ${p.position}/${workoutCount}</span></div></div><button type="button" class="quiet-btn" data-action="exit">${icon('close')} ${T('exit')}</button></header>
+ <main class="training-main"><div class="clock-side"><div class="timer-ring" id="timer-ring" style="--progress:${snap.phaseProgress*100}%"><div class="timer-inner"><span class="ring-label">${T(isRest?'pauseLabel':'leftLabel')}</span><strong id="phase-time" aria-label="${T('remaining')}">${secsLabel(snap.remainingMs)}</strong><span class="ring-hint">${T('clockHint')}</span></div></div><div class="whole-timer"><span>${T('remaining')}</span><strong id="remaining-time">${secsLabel(snap.totalRemainingMs)}</strong></div><div class="whole-track"><div id="whole-progress" style="width:${snap.overallProgress*100}%"></div></div></div>
+ <div class="exercise-side"><div class="training-illustration">${illustration(present.pose,present.name,prefs.lang)}<span class="art-tag">${isRest?T('readySoon'):present.group.toUpperCase()}</span></div><div class="workout-exercise"><span class="step-label">${T(isRest?'nextPreview':'activeExercise')}</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(descr)}</p><small>${escapeHtml(present.tip)}</small></div><div class="up-next">${icon('arrow')} <span>${isRest?(next?T('afterWork'):T('afterFinish')):(next?T('afterPrefix')+E(next.exerciseId).name:T('afterDone'))}</span></div></div></main>
+ <footer class="training-controls"><div id="wake-indicator" class="wake-indicator">${icon('sun')} ${T('checkingWake')}</div><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
  <div class="visually-hidden" id="phase-announcement" aria-live="polite">${group}: ${title}</div></div>`;
  updateClock();updateWakeIndicator();
 }
 function renderDone(){
  const stats=engine?planStats(engine.phases):planStats(currentPlan());
  view='done';
- app.innerHTML=`<div class="done-page"><header>${brand()}</header><main><div class="done-check">${icon('check')}</div><span class="eyebrow">WORKOUT COMPLETE</span><h1>Stark gemacht.</h1><p>Du hast dein Training abgeschlossen. Gönn dir etwas Wasser und eine kurze Erholung.</p><div class="done-stats"><div><strong>${secsLabel(stats.totalMs)}</strong><small>Geplante Dauer</small></div><div><strong>${prefs.rounds} × 5</strong><small>Übungen</small></div></div><button class="primary-btn" data-action="restart">Nochmal trainieren ${icon('rotate')}</button><button class="text-btn" data-action="setup">Zum Trainingsplan</button></main></div>`;
+ app.innerHTML=`<div class="done-page"><header>${brand()}</header><main><div class="done-check">${icon('check')}</div><span class="eyebrow">${T('complete')}</span><h1>${T('wellDone')}</h1><p>${T('doneMessage')}</p><div class="done-stats"><div><strong>${secsLabel(stats.totalMs)}</strong><small>${T('planned')}</small></div><div><strong>${prefs.rounds} × ${workoutCount}</strong><small>${T('exercisesDone')}</small></div></div><button class="primary-btn" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></main></div>`;
 }
 function updateClock(){
  if(!engine||view!=='workout')return;
@@ -166,11 +167,6 @@ function updateClock(){
 function startTicking(){stopTicking();tickHandle=setInterval(updateClock,100);}
 function stopTicking(){if(tickHandle){clearInterval(tickHandle);tickHandle=null;}}
 function phaseSound(phase){if(prefs.sound)audioWarning=!cueAudio.play(phase.kind==='work'?'work':'rest');}
-function testAudio(){
- const started=cueAudio.play('work');
- const feedback=document.getElementById('audio-feedback');
- if(feedback)feedback.textContent=started?'Testton ausgelöst. Bei Stille Medienlautstärke prüfen und ggf. Lautlosmodus ausschalten.':'Ton konnte nicht gestartet werden.';
-}
 async function acquireWake(){
  try{
   if(!('wakeLock' in navigator)||document.visibilityState!=='visible')return;
@@ -184,11 +180,12 @@ async function releaseWake(){if(wakeLock){try{await wakeLock.release();}catch{}w
 function updateWakeIndicator(){
  const node=document.getElementById('wake-indicator');if(!node)return;
  node.classList.toggle('is-awake',!!wakeLock);
- node.innerHTML=`${icon('sun')} ${wakeLock?'Display bleibt möglichst aktiv':'Display-Aktivhaltung nicht verfügbar – Auto-Sperre ggf. deaktivieren'}`;
+ node.innerHTML=`${icon('sun')} ${T(wakeLock?'awakeOn':'awakeOff')}`;
 }
 function beginWorkout(){
  try{
   // Der erste Ton wird synchron beim Start-Tipp abgespielt.
+  workoutCount=currentIds().length;
   engine=new IntervalEngine(currentPlan(),{
    onPhase:(phase,previous)=>{
     if(previous)phaseSound(phase);
@@ -200,28 +197,34 @@ function beginWorkout(){
   view='workout';engine.start();phaseSound(engine.phases[0]);
   startTicking();acquireWake();
   window.scrollTo({top:0,behavior:'instant'});
- }catch(err){window.alert('Training konnte nicht gestartet werden: '+err.message);}
+ }catch(err){window.alert(T('startError')+err.message);}
 }
 function exitWorkout(){stopTicking();cueAudio.stop();releaseWake();engine=null;pendingExit=false;view='setup';render();}
-function showHelp(){
- const message='INSTALLATION AUF DEM IPHONE\n\n1. Diese Website per HTTPS in Safari öffnen.\n2. Auf Teilen tippen.\n3. „Zum Home-Bildschirm“ wählen und hinzufügen.\n\nDer Trainingsmodus funktioniert auch ohne Installation. Für Offline-Nutzung die installierte App nach dem ersten Online-Aufruf erneut öffnen.\n\nWichtig: Für die Display-Aktivhaltung muss die App sichtbar bleiben; iOS kann Wake Lock z. B. im Stromsparmodus verweigern.';
- window.alert(message);
-}
+function showHelp(){window.alert(T('helpMessage'));}
 app.addEventListener('click',event=>{
  const button=event.target.closest('[data-action]');if(!button)return;
  const action=button.dataset.action;
  if(action==='preset'){prefs.presetId=button.dataset.value;save();render();}
  else if(action==='reset'){delete prefs.custom[prefs.presetId];save();render();}
+ else if(action==='language'){prefs.lang=prefs.lang==='en'?'de':'en';document.documentElement.lang=prefs.lang;save();render();}
+ else if(action==='remove'){
+  const old=currentIds(),ids=removeExercise(old,Number(button.dataset.index));
+  if(ids.length!==old.length){prefs.custom[prefs.presetId]=ids;save();render();}
+ }
+ else if(action==='add'){
+  if(currentIds().length<5){swapIndex=-1;swapQuery='';render();document.querySelector('[data-search]')?.focus();}
+ }
  else if(action==='swap'){swapIndex=Number(button.dataset.index);swapQuery='';render();document.querySelector('[data-search]')?.focus();}
  else if(action==='choose'){
   const id=button.dataset.value,ids=[...currentIds()];
-  if(!EXERCISE_BY_ID[id]||ids.includes(id)||swapIndex===null)return;
-  ids[swapIndex]=id;prefs.custom[prefs.presetId]=ids;swapIndex=null;swapQuery='';save();render();
+  if(swapIndex===null)return;
+  const chosen=chooseExercise(ids,swapIndex,id,knownIds);
+  if(!chosen)return;
+  prefs.custom[prefs.presetId]=chosen;swapIndex=null;swapQuery='';save();render();
  }
  else if(action==='close-swap'){swapIndex=null;swapQuery='';render();}
  else if(action==='dismiss-swap' && event.target===button){swapIndex=null;swapQuery='';render();}
  else if(action==='start'){beginWorkout();}
- else if(action==='test-audio'){testAudio();}
  else if(action==='adjust'){const field=button.dataset.field;if(!['workSec','restSec','rounds'].includes(field))return;prefs[field]=stepSetting(field,prefs[field],Number(button.dataset.direction));save();updatePicker(field);updateSettingsSummary();}
  else if(action==='pause'&&engine){
   if(engine.status==='running'){engine.pause();releaseWake();}
@@ -230,7 +233,7 @@ app.addEventListener('click',event=>{
  }
  else if(action==='skip'&&engine){engine.skip();if(view==='workout')renderWorkout();}
  else if(action==='exit'){
-  if(window.confirm('Training wirklich beenden? Dein Fortschritt geht verloren.'))exitWorkout();
+  if(window.confirm(T('exitConfirm')))exitWorkout();
  }
  else if(action==='restart'){beginWorkout();}
  else if(action==='setup'){engine=null;view='setup';render();}

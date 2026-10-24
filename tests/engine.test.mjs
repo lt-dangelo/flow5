@@ -10,7 +10,13 @@ assert.equal(phases[0].kind,'work');
 assert.equal(phases[29].kind,'rest');
 assert.equal(planStats(buildPlan(ids,{...config,includeFinalRest:false})).totalMs,880000);
 assert.equal(planStats(buildPlan(ids,{...config,restSec:0})).totalMs,600000);
-assert.throws(()=>buildPlan(['squat'],config));
+assert.throws(()=>buildPlan([],config));
+assert.throws(()=>buildPlan([...ids,'sixth'],config));
+assert.throws(()=>buildPlan(['squat','squat'],config));
+assert.equal(buildPlan(['squat'],config).length,6);
+assert.equal(planStats(buildPlan(['squat'],config)).totalMs,180000);
+assert.equal(planStats(buildPlan(['squat'],{...config,includeFinalRest:false})).totalMs,160000);
+assert.equal(buildPlan(['squat','pushup'],config).length,12);
 
 let now=1000;
 let changed=[];let completions=0;
