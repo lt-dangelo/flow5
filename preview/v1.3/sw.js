@@ -1,12 +1,12 @@
 // Scoped preview service worker: network-first for app updates, offline fallback.
-const CACHE='flow5-v1.3-preview-4';
+const CACHE='flow5-v1.3-preview-5';
 const CORE=[
  './',
  './index.html',
  './styles.css?build=1.3.4',
  './src/app.js?build=1.3.4',
  './manifest.webmanifest',
- './src/art13.js','./src/config.js','./src/audio.js',
+ './src/art13.js','./src/recovery13.js','./src/config.js','./src/audio.js',
  './src/i18n.js','./src/selection.js','./src/data.js',
  './src/art.js','./src/engine.js',
  './audio/work.wav','./audio/rest.wav','./audio/done.wav',

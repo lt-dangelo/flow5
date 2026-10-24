@@ -2,6 +2,7 @@ import {EXERCISES, EXERCISE_BY_ID, PRESETS, PRESET_BY_ID} from './data.js';
 import {buildPlan, planStats, IntervalEngine} from './engine.js';
 import {illustration} from './art.js';
 import {illustration13,isStudy} from './art13.js';
+import {recoveryIllustration} from './recovery13.js';
 import {optionsFor,stepSetting} from './config.js';
 import {CueAudio} from './audio.js';
 import {t,exerciseText,presetText} from './i18n.js';
@@ -137,13 +138,15 @@ function renderWorkout(){
  const snap=engine.snapshot();
  if(snap.status==='completed'){view='done';renderDone();return;}
  const p=snap.phase,isRest=p.kind==='rest',next=nextWork(snap.index);
+ const finalRest=isRest&&!next;
  const present=E(isRest&&next?next.exerciseId:p.exerciseId);
  const shownPosition=(isRest&&next)?next.position:p.position;
  const shownRound=(isRest&&next)?next.round:p.round;
  const group=T(isRest?'restCaps':'workCaps');
- const cue=isRest?(next?present.cue:T('restFinished')):present.cue;
+ const displayName=finalRest?T('lastRest'):present.name;
+ const cue=finalRest?T('recoveryCue'):present.cue;
  const after=isRest?(next?T('afterWork'):T('afterFinish')):(next?T('nextPrefix')+E(next.exerciseId).name:T('afterDone'));
- const actionLabel=isRest?(next?T('readySoon'):T('restCaps')):(isStudy(present.pose)?(present.pose==='plank'?(prefs.lang==='de'?'HALTEN':'HOLD'):(prefs.lang==='de'?'START → ENDE':'START → END')):'');
+ const actionLabel=finalRest?'':isRest?T('readySoon'):(isStudy(present.pose)?(present.pose==='plank'?(prefs.lang==='de'?'HALTEN':'HOLD'):(prefs.lang==='de'?'START → ENDE':'START → END')):'');
  lastPhaseKey=String(snap.index);
  app.innerHTML=`<div class="training-screen v13 v13-clean ${isRest?'rest-mode':''}">
  <header class="training-header v13-header"><div class="v13-wordmark" aria-label="Flow5">Flow<span>5</span></div><button type="button" class="quiet-btn" data-action="exit" aria-label="${T('exit')}">${icon('close')} <span>${T('exit')}</span></button></header>
@@ -153,15 +156,15 @@ function renderWorkout(){
     <div class="v13-session"><span>${T('roundLabel')} ${p.round}/${prefs.rounds} · ${T('exerciseLabel')} ${p.position}/${workoutCount}</span><div class="v13-total"><span>${T('remaining')}</span> <strong id="remaining-time">${secsLabel(snap.totalRemainingMs)}</strong></div></div>
   </div>
   <div class="whole-track v13-progress" role="progressbar" aria-label="${T('remaining')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(snap.overallProgress*100)}"><div id="whole-progress" style="width:${snap.overallProgress*100}%"></div></div>
-  <section class="v13-art" aria-label="${present.name}">
-    <div class="v13-art-heading"><span class="v13-art-index">${String(shownPosition).padStart(2,'0')} / ${String(workoutCount).padStart(2,'0')}</span><h1>${escapeHtml(present.name)}</h1>${actionLabel?`<span class="v13-motion-label">${actionLabel}</span>`:''}</div>
-    <div class="v13-drawing">${illustration13(present.pose,present.name,prefs.lang)}</div>
+  <section class="v13-art ${finalRest?'v13-final-rest':''}" aria-label="${escapeHtml(displayName)}">
+    <div class="v13-art-heading"><span class="v13-art-index">${finalRest?'':String(shownPosition).padStart(2,'0')+' / '+String(workoutCount).padStart(2,'0')}</span><h1>${escapeHtml(displayName)}</h1>${actionLabel?`<span class="v13-motion-label">${actionLabel}</span>`:''}</div>
+    <div class="v13-drawing">${finalRest?recoveryIllustration(prefs.lang):illustration13(present.pose,present.name,prefs.lang)}</div>
     <p class="v13-art-cue">${escapeHtml(cue)}</p>
   </section>
   <div class="v13-next"><span>${after}</span>${prefs.sound? `<span class="v13-audio-mark" aria-label="${T('sounds')}">${icon('sound')}</span>`:''}</div>
  </main>
  <footer class="training-controls v13-controls"><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div><div id="wake-indicator" class="wake-indicator visually-hidden" aria-live="polite">${T('checkingWake')}</div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
- <div class="visually-hidden" id="phase-announcement" aria-live="polite">${group}: ${present.name}</div></div>`;
+ <div class="visually-hidden" id="phase-announcement" aria-live="polite">${group}: ${displayName}</div></div>`;
  updateClock();updateWakeIndicator();
 }
 function renderDone(){

@@ -37,3 +37,6 @@ To preview locally, use a static HTTP server within this directory, for example 
 ### iOS cache fix (v1.3.4)
 The preview stylesheet and entry JavaScript now carry versioned URLs. The preview service worker fetches HTML, JS and CSS using a network-first strategy with an offline fallback; all other static assets remain cached. This resolves an iOS WebKit case where reloading the preview could retain outdated JS/CSS.
 For a fresh iPhone launch, open `https://lt-dangelo.github.io/flow5/preview/v1.3/?refresh=1.3.4` in Safari, then fully close and reopen the installed preview if used.
+
+### v1.3 refinement – anatomy and end-of-workout recovery
+The Squats, Push-ups and Plank vector studies now have additional contour, muscle and cross-hatching detail, while retaining their start/end positions, movement arrows and alignment guides. The final rest phase (when no more work intervals follow) displays a dedicated calm breathing study and localized final-recovery instruction rather than repeating the preceding exercise. Ordinary recovery intervals continue to preview the next exercise. Both views remain available offline.
