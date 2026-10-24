@@ -133,11 +133,11 @@ function renderSwapDialog(){
  return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(raw=>{const e=exerciseText(raw,prefs.lang);return `<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${illustration(e.pose,e.name,prefs.lang)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`;}).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
 }
 function nextWork(index){if(!engine)return null;return engine.phases.slice(index+1).find(p=>p.kind==='work')||null;}
-const STUDY_IMAGE={squat:'squat.webp',pushup:'pushup.webp',plank:'plank.webp',recovery:'recovery.webp'};
+const STUDY_IMAGE={squat:'squat-master.webp',pushup:'pushup-master.webp',plank:'plank-master.webp',recovery:'recovery-master.webp'};
 function studyPicture(pose,name,lang){
  const file=STUDY_IMAGE[pose];
  if(!file)return illustration13(pose,name,lang);
- return `<img class="v13-study-image" src="./artwork/${file}" width="520" height="350" alt="${escapeHtml(name)}" decoding="async" fetchpriority="high"/>`;
+ return `<img class="v13-study-image" src="./artwork/${file}" width="1440" height="960" alt="${escapeHtml(name)}" decoding="async" fetchpriority="high"/>`;
 }
 function renderWorkout(){
  if(!engine)return;
