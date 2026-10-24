@@ -101,3 +101,72 @@
  .v13-art{min-height:130px}.v13-next{padding-top:5px}.v13-controls .control-primary,.v13-controls .secondary-btn{min-height:49px}.v13-controls .wake-indicator{margin-top:5px}
 }
 @media(max-height:610px){.training-screen.v13{min-height:610px;overflow-y:auto}}
+
+/* v1.3 visual review 2: artwork + coaching in one quiet parchment card */
+.training-screen.v13-clean{background:#101c27;color:#f5f6f6}
+.v13-clean .v13-header{border-bottom:1px solid #273a47;padding:0 0 10px;min-height:0}
+.v13-wordmark{font-size:clamp(25px,3vw,32px);font-weight:850;line-height:1;letter-spacing:-1.6px;color:#f4f7f7}
+.v13-wordmark span{color:#ADE08F}
+.v13-clean .v13-header .quiet-btn{min-height:40px;padding:8px 10px;border-radius:12px;font-weight:600}
+.v13-clean .v13-workout{max-width:650px;gap:clamp(8px,1.35vh,14px);padding-top:clamp(13px,2vh,19px)}
+.v13-clean .v13-timing{align-items:end;gap:10px}
+.v13-clean .v13-current strong{font-size:clamp(53px,9vh,81px);line-height:.98;letter-spacing:-2.5px}
+.v13-clean .v13-state{font-size:12px;letter-spacing:.5px;color:#ADE08F;padding-bottom:8px}
+.v13-clean .v13-state i{display:none}
+.v13-clean .v13-session{display:flex;flex-direction:column;align-items:flex-end;text-align:right;gap:9px;min-width:0;padding-bottom:3px}
+.v13-clean .v13-session>span{font-size:12px;color:#ced7dd;white-space:nowrap}
+.v13-clean .v13-total{display:flex;flex-direction:row;align-items:baseline;gap:7px;padding:0}
+.v13-clean .v13-total span{font-size:11px;color:#93a8b5}
+.v13-clean .v13-total strong{font-size:17px;color:#f2f5f5;white-space:nowrap}
+.v13-clean .v13-progress{height:7px;background:#31424f;border-radius:999px;margin:0 0 1px}
+.v13-clean .v13-art{background:#f2eadb;border:1px solid #cdbca5;border-radius:24px;flex:1;min-height:0;overflow:hidden;display:flex;flex-direction:column;padding:clamp(13px,2vh,19px) clamp(15px,3vw,24px) clamp(14px,2vh,20px);box-shadow:0 6px 24px #03080c14}
+.v13-clean .v13-art-heading{display:flex;align-items:baseline;justify-content:flex-start;gap:11px;color:#70553c;font-family:Georgia,'Times New Roman',serif;letter-spacing:normal;font-weight:400;border-bottom:1px solid #d8c8b5;padding-bottom:9px;flex:none}
+.v13-clean .v13-art-index{font-size:14px;line-height:1.25;white-space:nowrap;font-weight:500}
+.v13-clean .v13-art-heading h1{font-size:clamp(21px,4.5vw,28px);line-height:1.14;letter-spacing:-.5px;margin:0;font-family:Georgia,'Times New Roman',serif;color:#543e2f;font-weight:700;min-width:0}
+.v13-clean .v13-motion-label{font-family:system-ui,-apple-system,sans-serif;margin-left:auto;flex-shrink:0;color:#936e52;letter-spacing:.5px;font-size:9px;font-weight:700;white-space:nowrap}
+.v13-clean .v13-drawing{display:flex;flex:1;min-height:0;align-items:center;justify-content:center;padding:5px 0 0;overflow:hidden}
+.v13-clean .v13-drawing svg{width:100%;height:100%;max-width:100%;max-height:100%;display:block}
+.v13-clean .v13-art-cue{margin:0;color:#5c493b;font-size:clamp(13px,1.45vw,16px);line-height:1.42;text-align:center;padding:8px 4px 0;flex:none;font-family:Georgia,'Times New Roman',serif}
+.v13-clean .v13-next{border-top:0;padding:1px 5px 0;min-height:20px;font-size:12px;align-items:center;color:#b9c5cf}
+.v13-clean .v13-next>span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.v13-clean .v13-audio-mark{display:flex;align-items:center;justify-content:center;color:#c4cfd8;flex:none}
+.v13-clean .v13-audio-mark svg{width:17px;height:17px}
+.v13-clean .v13-controls{padding-top:6px}
+.v13-clean .v13-controls .controls-row{gap:12px}
+.v13-clean .v13-controls .control-primary,.v13-clean .v13-controls .secondary-btn{min-height:58px;border-radius:18px}
+.v13-clean .v13-controls .control-primary{background:#ADE08F;color:#132316}
+.v13-clean .v13-controls .wake-indicator{position:absolute!important;margin:-1px!important}
+@media(max-width:760px){
+ .training-screen.v13-clean{padding-top:max(10px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
+ .v13-clean .v13-workout{gap:clamp(7px,1.1vh,12px);padding-top:12px}
+ .v13-clean .v13-current strong{font-size:clamp(49px,8vh,71px)}
+ .v13-clean .v13-art{border-radius:21px;padding:13px 13px 15px;min-height:0}
+ .v13-clean .v13-art-heading{gap:9px;padding-bottom:8px}
+ .v13-clean .v13-art-heading h1{font-size:clamp(20px,5.4vw,25px)}
+ .v13-clean .v13-art-index{font-size:12px}
+ .v13-clean .v13-art-cue{font-size:clamp(13px,3.4vw,15px);line-height:1.35;padding-top:7px}
+ .v13-clean .v13-drawing{padding-top:2px}
+ .v13-clean .v13-controls .control-primary,.v13-clean .v13-controls .secondary-btn{min-height:56px}
+}
+@media(max-width:375px){
+ .v13-clean .v13-art-heading h1{font-size:21px}
+ .v13-clean .v13-motion-label{font-size:8px}
+ .v13-clean .v13-session>span{font-size:10px}
+ .v13-clean .v13-current strong{font-size:51px}
+ .v13-clean .v13-art{padding:11px}
+ .v13-clean .v13-art-cue{font-size:13px}
+}
+@media(max-height:730px){
+ .v13-clean .v13-header{padding-bottom:6px}
+ .v13-clean .v13-workout{gap:6px;padding-top:8px}
+ .v13-clean .v13-current strong{font-size:50px}
+ .v13-clean .v13-state{padding-bottom:5px}
+ .v13-clean .v13-art{min-height:0;padding-top:11px;padding-bottom:10px}
+ .v13-clean .v13-drawing{padding-top:0}
+ .v13-clean .v13-art-cue{padding-top:5px;line-height:1.25}
+ .v13-clean .v13-controls .control-primary,.v13-clean .v13-controls .secondary-btn{min-height:50px}
+}
+@media(max-height:610px){
+ .training-screen.v13-clean{min-height:0;height:100dvh;overflow-y:auto}
+ .v13-clean .v13-art{min-height:240px}
+}

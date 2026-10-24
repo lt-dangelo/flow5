@@ -134,22 +134,33 @@ function renderSwapDialog(){
 function nextWork(index){if(!engine)return null;return engine.phases.slice(index+1).find(p=>p.kind==='work')||null;}
 function renderWorkout(){
  if(!engine)return;
- const snap=engine.snapshot();if(snap.status==='completed'){view='done';renderDone();return;}
+ const snap=engine.snapshot();
+ if(snap.status==='completed'){view='done';renderDone();return;}
  const p=snap.phase,isRest=p.kind==='rest',next=nextWork(snap.index);
  const present=E(isRest&&next?next.exerciseId:p.exerciseId);
+ const shownPosition=(isRest&&next)?next.position:p.position;
+ const shownRound=(isRest&&next)?next.round:p.round;
  const group=T(isRest?'restCaps':'workCaps');
+ const cue=isRest?(next?present.cue:T('restFinished')):present.cue;
+ const after=isRest?(next?T('afterWork'):T('afterFinish')):(next?T('nextPrefix')+E(next.exerciseId).name:T('afterDone'));
+ const actionLabel=isRest?(next?T('readySoon'):T('restCaps')):(isStudy(present.pose)?(present.pose==='plank'?(prefs.lang==='de'?'HALTEN':'HOLD'):(prefs.lang==='de'?'START → ENDE':'START → END')):'');
  lastPhaseKey=String(snap.index);
- app.innerHTML=`<div class="training-screen v13 ${isRest?'rest-mode':''}">
- <header class="training-header v13-header"><div class="v13-brand">${brand()}<span>PREVIEW · 1.3</span></div><button type="button" class="quiet-btn" data-action="exit">${icon('close')} ${T('exit')}</button></header>
+ app.innerHTML=`<div class="training-screen v13 v13-clean ${isRest?'rest-mode':''}">
+ <header class="training-header v13-header"><div class="v13-wordmark" aria-label="Flow5">Flow<span>5</span></div><button type="button" class="quiet-btn" data-action="exit" aria-label="${T('exit')}">${icon('close')} <span>${T('exit')}</span></button></header>
  <main class="v13-workout">
-  <div class="v13-meta"><span>${T('roundLabel').toUpperCase()} <strong>${p.round}/${prefs.rounds}</strong></span><span>${T('exerciseLabel').toUpperCase()} <strong>${p.position}/${workoutCount}</strong></span></div>
-  <div class="v13-timing"><div class="v13-current"><span class="v13-state ${isRest?'v13-rest':''}"><i></i>${group}</span><strong id="phase-time" aria-label="${T('remaining')}">${secsLabel(snap.remainingMs)}</strong></div><div class="v13-total"><span>${T('remaining')}</span><strong id="remaining-time">${secsLabel(snap.totalRemainingMs)}</strong></div></div>
-  <div class="whole-track v13-progress"><div id="whole-progress" style="width:${snap.overallProgress*100}%"></div></div>
-  <div class="v13-art"><div class="v13-art-heading"><span>${isStudy(present.pose)?'ANATOMICAL STUDY':'CLASSIC STUDY'}</span><span>${isRest?T('readySoon'):present.group.toUpperCase()}</span></div><div class="v13-drawing">${illustration13(present.pose,present.name,prefs.lang)}</div></div>
-  <div class="v13-instruction"><span class="v13-caption">${T(isRest?'nextPreview':'activeExercise')}</span><h1>${escapeHtml(present.name)}</h1><p>${escapeHtml(isRest?(next?present.cue:T('restFinished')):present.cue)}</p></div>
-  <div class="v13-next"><span>${isRest?(next?T('afterWork'):T('afterFinish')):(next?T('nextPrefix')+E(next.exerciseId).name:T('afterDone'))}</span><span class="v13-dot">●</span></div>
+  <div class="v13-timing">
+    <div class="v13-current"><span class="v13-state ${isRest?'v13-rest':''}">${group}</span><strong id="phase-time" aria-label="${T('remaining')}">${secsLabel(snap.remainingMs)}</strong></div>
+    <div class="v13-session"><span>${T('roundLabel')} ${p.round}/${prefs.rounds} · ${T('exerciseLabel')} ${p.position}/${workoutCount}</span><div class="v13-total"><span>${T('remaining')}</span> <strong id="remaining-time">${secsLabel(snap.totalRemainingMs)}</strong></div></div>
+  </div>
+  <div class="whole-track v13-progress" role="progressbar" aria-label="${T('remaining')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(snap.overallProgress*100)}"><div id="whole-progress" style="width:${snap.overallProgress*100}%"></div></div>
+  <section class="v13-art" aria-label="${present.name}">
+    <div class="v13-art-heading"><span class="v13-art-index">${String(shownPosition).padStart(2,'0')} / ${String(workoutCount).padStart(2,'0')}</span><h1>${escapeHtml(present.name)}</h1>${actionLabel?`<span class="v13-motion-label">${actionLabel}</span>`:''}</div>
+    <div class="v13-drawing">${illustration13(present.pose,present.name,prefs.lang)}</div>
+    <p class="v13-art-cue">${escapeHtml(cue)}</p>
+  </section>
+  <div class="v13-next"><span>${after}</span>${prefs.sound? `<span class="v13-audio-mark" aria-label="${T('sounds')}">${icon('sound')}</span>`:''}</div>
  </main>
- <footer class="training-controls v13-controls"><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div><div id="wake-indicator" class="wake-indicator">${icon('sun')} ${T('checkingWake')}</div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
+ <footer class="training-controls v13-controls"><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div><div id="wake-indicator" class="wake-indicator visually-hidden" aria-live="polite">${T('checkingWake')}</div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
  <div class="visually-hidden" id="phase-announcement" aria-live="polite">${group}: ${present.name}</div></div>`;
  updateClock();updateWakeIndicator();
 }

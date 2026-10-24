@@ -25,3 +25,11 @@ npm test
 ```
 
 To preview locally, use a static HTTP server within this directory, for example `python3 -m http.server 8080`.
+
+### Visual review 2 — simplified workout composition
+- The Flow5 wordmark has no subtitle or preview badge in workout mode.
+- Exercise title and coaching cue now live inside the parchment illustration card.
+- The separate caption/instructions block and study-category banner have been removed.
+- Round/exercise position is combined with the compact timer rather than using a separate row.
+- The progress strip, next exercise, sound cues, pause/skip controls and screen wake behaviour are preserved.
+- Production v1.2 remains unchanged.
