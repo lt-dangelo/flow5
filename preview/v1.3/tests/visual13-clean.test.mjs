@@ -33,7 +33,7 @@ assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
 assert.match(app,/finalRest\?T\('recoveryCue'\)/);
 
 for(const name of ['squat','pushup','plank','recovery']){
- const image=readFileSync(new URL('../artwork/'+name+'.webp',import.meta.url));
+ const image=readFileSync(new URL('../artwork/'+name+'-master.webp',import.meta.url));
  assert.ok(image.byteLength>10000);
  assert.equal(image.subarray(0,4).toString('ascii'),'RIFF');
 }
