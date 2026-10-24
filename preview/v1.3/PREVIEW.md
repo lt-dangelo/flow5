@@ -33,3 +33,7 @@ To preview locally, use a static HTTP server within this directory, for example 
 - Round/exercise position is combined with the compact timer rather than using a separate row.
 - The progress strip, next exercise, sound cues, pause/skip controls and screen wake behaviour are preserved.
 - Production v1.2 remains unchanged.
+
+### iOS cache fix (v1.3.4)
+The preview stylesheet and entry JavaScript now carry versioned URLs. The preview service worker fetches HTML, JS and CSS using a network-first strategy with an offline fallback; all other static assets remain cached. This resolves an iOS WebKit case where reloading the preview could retain outdated JS/CSS.
+For a fresh iPhone launch, open `https://lt-dangelo.github.io/flow5/preview/v1.3/?refresh=1.3.4` in Safari, then fully close and reopen the installed preview if used.
