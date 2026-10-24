@@ -1,6 +1,8 @@
 import {EXERCISES, EXERCISE_BY_ID, PRESETS, PRESET_BY_ID} from './data.js';
 import {buildPlan, planStats, IntervalEngine} from './engine.js';
 import {illustration} from './art.js';
+import {optionsFor,stepSetting} from './config.js';
+import {CueAudio} from './audio.js';
 
 const STORAGE_KEY='flow5-prefs-v1';
 const DEFAULTS={presetId:'full', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true};
@@ -30,7 +32,7 @@ let swapQuery='';
 let engine=null;
 let tickHandle=null;
 let wakeLock=null;
-let audioCtx=null;
+const cueAudio=new CueAudio();
 let audioWarning=false;
 let installPrompt=null;
 let lastPhaseKey='';
@@ -64,6 +66,21 @@ function icon(name){
  return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.info}</svg>`;
 }
 function brand(){return `<div class="brand"><div class="brand-mark"><span>5</span><i></i></div><div><strong>FLOW<span>5</span></strong><small>CALISTHENICS TIMER</small></div></div>`;}
+function stepper(field,label,unit){
+ const values=optionsFor(field,prefs[field]), index=values.indexOf(prefs[field]);
+ const options=values.map(value=>`<option value="${value}" ${value===prefs[field]?'selected':''}>${value}</option>`).join('');
+ return `<div class="input-card"><span id="label-${field}">${label}</span><div class="stepper-row"><button type="button" class="step-btn" data-action="adjust" data-field="${field}" data-direction="-1" aria-label="${label} verringern" ${index===0?'disabled':''}>−</button><div class="picker-field"><select data-config="${field}" aria-labelledby="label-${field}">${options}</select><span class="picker-unit">${unit}</span><span class="picker-chevron" aria-hidden="true">⌄</span></div><button type="button" class="step-btn" data-action="adjust" data-field="${field}" data-direction="1" aria-label="${label} erhöhen" ${index===values.length-1?'disabled':''}>+</button></div></div>`;
+}
+function updatePicker(field){
+ const select=app.querySelector(`[data-config="${field}"]`);if(!select)return;
+ const values=optionsFor(field,prefs[field]);
+ if(![...select.options].some(opt=>Number(opt.value)===prefs[field])) select.innerHTML=values.map(n=>`<option value="${n}">${n}</option>`).join('');
+ select.value=String(prefs[field]);
+ for(const direction of [-1,1]){
+  const btn=app.querySelector(`[data-action="adjust"][data-field="${field}"][data-direction="${direction}"]`);
+  if(btn)btn.disabled=prefs[field]===values[direction<0?0:values.length-1];
+ }
+}
 function render(){if(view==='setup')renderSetup();else if(view==='workout')renderWorkout();else renderDone();}
 function renderSetup(){
  const preset=PRESET_BY_ID[prefs.presetId];
@@ -79,15 +96,16 @@ function renderSetup(){
  <section class="panel lineup-panel"><div class="section-heading"><div><span class="step-label">02 / ÜBUNGEN</span><h2>Deine 5 Übungen</h2></div>${prefs.custom[prefs.presetId]?`<button class="reset-btn" type="button" data-action="reset">Zurücksetzen</button>`:`<span class="subtle">${escapeHtml(preset.name)}</span>`}</div><div class="exercise-list">${rows}</div><p class="hint">${icon('swap')} Tippe auf „Tauschen“, um eine Übung zu ersetzen.</p></section>
  <section class="panel config-panel"><div class="section-heading"><div><span class="step-label">03 / INTERVALLE</span><h2>Dein Timing</h2></div></div>
  <div class="config-grid">
-  <label class="input-card"><span>Belastung</span><div class="input-line"><input aria-label="Belastung in Sekunden" type="number" min="5" max="600" step="5" inputmode="numeric" data-config="workSec" value="${prefs.workSec}"/><b>Sek.</b></div></label>
-  <label class="input-card"><span>Erholung</span><div class="input-line"><input aria-label="Erholung in Sekunden" type="number" min="0" max="300" step="5" inputmode="numeric" data-config="restSec" value="${prefs.restSec}"/><b>Sek.</b></div></label>
-  <label class="input-card"><span>Runden</span><div class="input-line"><input aria-label="Anzahl Runden" type="number" min="1" max="20" step="1" inputmode="numeric" data-config="rounds" value="${prefs.rounds}"/><b>× 5</b></div></label>
+  ${stepper('workSec','Belastung','Sek.')}
+  ${stepper('restSec','Erholung','Sek.')}
+  ${stepper('rounds','Runden','× 5')}
  </div>
  <label class="toggle-line"><div><strong>Erholung nach der letzten Übung</strong><small>Ein: genau ${humanDuration((prefs.workSec+prefs.restSec)*5*prefs.rounds*1000)} bei durchgängigen Intervallen. Aus: Training endet unmittelbar nach der letzten Belastung.</small></div><input type="checkbox" data-config="includeFinalRest" ${prefs.includeFinalRest?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
  <label class="toggle-line"><div><strong>Akustische Signale</strong><small>Töne beim Wechsel zwischen Belastung und Erholung.</small></div><input type="checkbox" data-config="sound" ${prefs.sound?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
+ <div class="audio-test-row"><button type="button" data-action="test-audio" class="test-audio-btn">${icon('sound')} Testton abspielen</button><small id="audio-feedback" role="status" aria-live="polite">Bei Stille: Medienlautstärke und Audioausgabe am iPhone prüfen.</small></div>
  </section>
  <aside class="summary-panel"><div class="summary-head"><span>DEIN TRAININGSPLAN</span>${icon('spark')}</div><div class="total-time">${secsLabel(stats.totalMs)}</div><span class="summary-note">Gesamtdauer</span><div class="meter"><div class="meter-work" style="width:${stats.workMs/stats.totalMs*100}%"></div></div><div class="summary-breakdown"><span><i class="dot work-dot"></i> Belastung <b>${secsLabel(stats.workMs)}</b></span><span><i class="dot rest-dot"></i> Erholung <b>${secsLabel(stats.restMs)}</b></span></div><div class="summary-desc">${prefs.rounds} ${prefs.rounds===1?'Runde':'Runden'} × 5 Übungen · ${prefs.workSec}s / ${prefs.restSec}s</div><button type="button" data-action="start" class="primary-btn">Training starten ${icon('arrow')}</button><small class="footnote">* Auf unterstützten Geräten, solange die App sichtbar ist und iOS die Funktion zulässt.</small></aside>
- </main><footer class="footer">FLOW5 · Dein Training läuft lokal im Browser. Keine Anmeldung, kein Tracking.</footer>
+ </main><footer class="footer">FLOW5 v1.1 · Dein Training läuft lokal im Browser. Keine Anmeldung, kein Tracking.</footer>
  </div>${swapIndex!==null?renderSwapDialog():''}`;
 }
 function updateSettingsSummary(){
@@ -147,31 +165,11 @@ function updateClock(){
 }
 function startTicking(){stopTicking();tickHandle=setInterval(updateClock,100);}
 function stopTicking(){if(tickHandle){clearInterval(tickHandle);tickHandle=null;}}
-function prepareAudio(){
- if(!prefs.sound)return;
- try{
-  const A=window.AudioContext||window.webkitAudioContext;
-  if(!A){audioWarning=true;return;}
-  if(!audioCtx)audioCtx=new A();
-  audioCtx.resume().catch(()=>{audioWarning=true;});
- }catch{audioWarning=true;}
-}
-function beep(frequency=740,duration=0.12,delay=0){
- if(!prefs.sound||!audioCtx)return;
- try{
-  const start=audioCtx.currentTime+delay;
-  const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
-  osc.type='sine';osc.frequency.setValueAtTime(frequency,start);
-  gain.gain.setValueAtTime(0.0001,start);
-  gain.gain.exponentialRampToValueAtTime(0.14,start+0.012);
-  gain.gain.exponentialRampToValueAtTime(0.0001,start+duration);
-  osc.connect(gain).connect(audioCtx.destination);
-  osc.start(start);osc.stop(start+duration+.02);
- }catch{audioWarning=true;}
-}
-function phaseSound(phase){
- if(phase.kind==='work'){beep(880,.11);beep(1050,.14,.18);}
- else beep(570,.20);
+function phaseSound(phase){if(prefs.sound)audioWarning=!cueAudio.play(phase.kind==='work'?'work':'rest');}
+function testAudio(){
+ const started=cueAudio.play('work');
+ const feedback=document.getElementById('audio-feedback');
+ if(feedback)feedback.textContent=started?'Testton ausgelöst. Bei Stille Medienlautstärke prüfen und ggf. Lautlosmodus ausschalten.':'Ton konnte nicht gestartet werden.';
 }
 async function acquireWake(){
  try{
@@ -190,13 +188,13 @@ function updateWakeIndicator(){
 }
 function beginWorkout(){
  try{
-  prepareAudio(); // Im direkten Kontext des Tippen-Ereignisses Audio entsperren.
+  // Der erste Ton wird synchron beim Start-Tipp abgespielt.
   engine=new IntervalEngine(currentPlan(),{
    onPhase:(phase,previous)=>{
     if(previous)phaseSound(phase);
     if(view==='workout')renderWorkout();
    },
-   onComplete:()=>{beep(820,.15);beep(1100,.24,.2);stopTicking();releaseWake();view='done';renderDone();},
+   onComplete:()=>{if(prefs.sound)cueAudio.play('done');stopTicking();releaseWake();view='done';renderDone();},
    onChange:()=>{if(view==='workout')renderWorkout();}
   });
   view='workout';engine.start();phaseSound(engine.phases[0]);
@@ -204,7 +202,7 @@ function beginWorkout(){
   window.scrollTo({top:0,behavior:'instant'});
  }catch(err){window.alert('Training konnte nicht gestartet werden: '+err.message);}
 }
-function exitWorkout(){stopTicking();releaseWake();engine=null;pendingExit=false;view='setup';render();}
+function exitWorkout(){stopTicking();cueAudio.stop();releaseWake();engine=null;pendingExit=false;view='setup';render();}
 function showHelp(){
  const message='INSTALLATION AUF DEM IPHONE\n\n1. Diese Website per HTTPS in Safari öffnen.\n2. Auf Teilen tippen.\n3. „Zum Home-Bildschirm“ wählen und hinzufügen.\n\nDer Trainingsmodus funktioniert auch ohne Installation. Für Offline-Nutzung die installierte App nach dem ersten Online-Aufruf erneut öffnen.\n\nWichtig: Für die Display-Aktivhaltung muss die App sichtbar bleiben; iOS kann Wake Lock z. B. im Stromsparmodus verweigern.';
  window.alert(message);
@@ -223,9 +221,11 @@ app.addEventListener('click',event=>{
  else if(action==='close-swap'){swapIndex=null;swapQuery='';render();}
  else if(action==='dismiss-swap' && event.target===button){swapIndex=null;swapQuery='';render();}
  else if(action==='start'){beginWorkout();}
+ else if(action==='test-audio'){testAudio();}
+ else if(action==='adjust'){const field=button.dataset.field;if(!['workSec','restSec','rounds'].includes(field))return;prefs[field]=stepSetting(field,prefs[field],Number(button.dataset.direction));save();updatePicker(field);updateSettingsSummary();}
  else if(action==='pause'&&engine){
   if(engine.status==='running'){engine.pause();releaseWake();}
-  else if(engine.status==='paused'){prepareAudio();engine.resume();acquireWake();}
+  else if(engine.status==='paused'){engine.resume();acquireWake();}
   renderWorkout();
  }
  else if(action==='skip'&&engine){engine.skip();if(view==='workout')renderWorkout();}
@@ -238,13 +238,9 @@ app.addEventListener('click',event=>{
 });
 app.addEventListener('change',event=>{
  const field=event.target.dataset.config;if(!field)return;
- if(field==='sound'||field==='includeFinalRest')prefs[field]=event.target.checked;
- else {
-  const bounds={workSec:[5,600],restSec:[0,300],rounds:[1,20]};
-  const [min,max]=bounds[field]||[];if(min===undefined)return;
-  const value=Number(event.target.value);
-  if(Number.isFinite(value))prefs[field]=Math.max(min,Math.min(max,Math.round(value)));
- }
+ if(field==='sound'||field==='includeFinalRest'){prefs[field]=event.target.checked;if(field==='sound'&&!prefs.sound)cueAudio.stop();}
+ else if(['workSec','restSec','rounds'].includes(field)){const value=Number(event.target.value);if(optionsFor(field,prefs[field]).includes(value))prefs[field]=value;updatePicker(field);}
+ else return;
  save();updateSettingsSummary();
 });
 app.addEventListener('input',event=>{

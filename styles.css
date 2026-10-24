@@ -30,3 +30,17 @@
 }
 
 .reset-btn{border:1px solid #526443;background:#25372d;color:var(--lime);padding:8px 10px;border-radius:10px;font-size:11px;font-weight:750;white-space:nowrap}.reset-btn:hover{background:#344f3a}
+
+/* v1.1 iOS picker and 44-pixel touch targets */
+.input-card{display:block}
+.stepper-row{display:grid;grid-template-columns:42px minmax(0,1fr) 42px;align-items:stretch;gap:6px}
+.step-btn{display:grid;place-items:center;min-width:42px;min-height:48px;background:#2c404b;border:1px solid #4e606b;border-radius:12px;color:var(--lime);font-size:24px;font-weight:600;touch-action:manipulation}
+.step-btn:disabled{opacity:.26}
+.picker-field{display:flex;align-items:center;justify-content:center;position:relative;min-width:0;background:#111c25;border:1px solid #455761;border-radius:12px}
+.picker-field select{appearance:none;-webkit-appearance:none;width:100%;min-width:0;min-height:48px;padding:0 31px 0 9px;background:transparent;border:0;color:#fff;text-align:center;text-align-last:center;font-weight:800;font-size:21px}
+.picker-field option{color:#1a2730;background:white}.picker-unit{position:absolute;right:15px;bottom:4px;font-size:9px;color:#9dadbc;pointer-events:none}.picker-chevron{position:absolute;right:6px;top:5px;font-size:15px;color:var(--lime);pointer-events:none}
+.audio-test-row{border-top:1px solid #2e3b46;margin-top:16px;padding-top:14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.test-audio-btn{border:1px solid #536b58;border-radius:12px;background:#223729;color:#c7f2c5;font-size:13px;font-weight:750;padding:11px 13px;display:flex;align-items:center;gap:9px;min-height:44px}
+.audio-test-row small{flex:1;min-width:180px;color:#93a9b6;font-size:11px;line-height:1.5}
+@media(max-width:760px){.config-grid{grid-template-columns:1fr;gap:10px}.input-card{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px}.input-card>span{font-size:14px;font-weight:700;margin:0}.stepper-row{width:220px;max-width:70%;grid-template-columns:43px minmax(0,1fr) 43px}}
+@media(max-width:375px){.stepper-row{width:205px;max-width:73%;grid-template-columns:40px minmax(0,1fr) 40px}}
