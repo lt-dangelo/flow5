@@ -170,3 +170,10 @@
  .training-screen.v13-clean{min-height:0;height:100dvh;overflow-y:auto}
  .v13-clean .v13-art{min-height:240px}
 }
+
+/* Real anatomical engraving artwork from the approved mockup; scoped preview only. */
+.v13-clean .v13-drawing .v13-study-image{
+  width:100%;height:100%;object-fit:contain;object-position:center;
+  display:block;min-height:0;max-height:100%;border:0;flex:1 1 auto;
+}
+.v13-clean .v13-drawing:has(.v13-study-image){padding-top:1px}
