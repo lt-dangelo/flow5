@@ -8,7 +8,7 @@ assert.match(workout,/v13-clean/);
 assert.match(workout,/v13-wordmark/);
 assert.match(workout,/v13-art-heading/);
 assert.match(workout,/v13-art-cue/);
-assert.match(workout,/<h1>.*?present\.name.*?<\/h1>/);
+assert.match(workout,/<h1>.*?displayName.*?<\/h1>/);
 assert.ok(workout.indexOf('v13-art-cue') > workout.indexOf('v13-drawing'));
 assert.doesNotMatch(workout,/v13-instruction/);
 assert.doesNotMatch(workout,/CALISTHENICS TIMER/);
