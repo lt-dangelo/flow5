@@ -1,0 +1,56 @@
+import assert from 'node:assert/strict';
+import {buildPlan,planStats,IntervalEngine} from '../src/engine.js';
+
+const config={workSec:40,restSec:20,rounds:3,includeFinalRest:true};
+const ids=['squat','pushup','plank','march','gluteBridge'];
+const phases=buildPlan(ids,config);
+assert.equal(phases.length,30);
+assert.deepEqual(planStats(phases),{workMs:600000,restMs:300000,totalMs:900000});
+assert.equal(phases[0].kind,'work');
+assert.equal(phases[29].kind,'rest');
+assert.equal(planStats(buildPlan(ids,{...config,includeFinalRest:false})).totalMs,880000);
+assert.equal(planStats(buildPlan(ids,{...config,restSec:0})).totalMs,600000);
+assert.throws(()=>buildPlan([],config));
+assert.throws(()=>buildPlan([...ids,'sixth'],config));
+assert.throws(()=>buildPlan(['squat','squat'],config));
+assert.equal(buildPlan(['squat'],config).length,6);
+assert.equal(planStats(buildPlan(['squat'],config)).totalMs,180000);
+assert.equal(planStats(buildPlan(['squat'],{...config,includeFinalRest:false})).totalMs,160000);
+assert.equal(buildPlan(['squat','pushup'],config).length,12);
+
+let now=1000;
+let changed=[];let completions=0;
+const engine=new IntervalEngine(phases,{clock:()=>now,onPhase:p=>changed.push([p.kind,p.round,p.position]),onComplete:()=>completions++});
+engine.start();
+assert.equal(engine.snapshot().remainingMs,40000);
+now+=39500;engine.tick();
+assert.equal(engine.snapshot().remainingMs,500);
+now+=600;engine.tick();
+assert.equal(engine.snapshot().phase.kind,'rest');
+assert.equal(engine.snapshot().remainingMs,19900);
+assert.equal(engine.snapshot().totalRemainingMs,859900);
+engine.pause();
+const pauseRemaining=engine.snapshot().remainingMs;
+now+=100000;engine.tick();
+assert.equal(engine.snapshot().remainingMs,pauseRemaining);
+engine.resume();
+now+=pauseRemaining+300;
+engine.tick();
+assert.equal(engine.snapshot().phase.exerciseId,'pushup');
+assert.equal(engine.snapshot().remainingMs,39700);
+engine.skip();
+assert.equal(engine.snapshot().phase.kind,'rest');
+now+=900000;engine.tick();
+assert.equal(engine.status,'completed');
+assert.equal(completions,1);
+engine.tick();assert.equal(completions,1);
+assert.equal(engine.snapshot().totalRemainingMs,0);
+
+// Pausiertes Überspringen bleibt pausiert; Rundenwechsel stimmt.
+let time2=0;
+const e2=new IntervalEngine(buildPlan(ids,{workSec:5,restSec:5,rounds:2,includeFinalRest:false}),{clock:()=>time2});
+e2.start();e2.pause();e2.skip();
+assert.equal(e2.status,'paused');assert.equal(e2.snapshot().remainingMs,5000);
+e2.resume();time2+=5000;e2.tick();
+assert.equal(e2.snapshot().phase.position,2);
+console.log('OK: Plan-Dauer, Phasen, absolute Zeit, Pause/Fortsetzen, Weiter, Endzustand');

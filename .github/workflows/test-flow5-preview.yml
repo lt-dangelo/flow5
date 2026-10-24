@@ -1,0 +1,22 @@
+name: Flow5 v1.3 preview checks
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'preview/v1.3/**'
+      - '.github/workflows/test-flow5-preview.yml'
+  workflow_dispatch:
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check preview JavaScript syntax
+        run: |
+          node --check preview/v1.3/src/app.js
+          node --check preview/v1.3/src/art13.js
+      - name: Run preview tests
+        run: node --test preview/v1.3/tests/*.test.mjs
