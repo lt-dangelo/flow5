@@ -20,7 +20,12 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.match(sw,/flow5-v1\.3-preview-3/);
+assert.ok(sw.includes('flow5-v1.3-preview-4'));
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
 
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
+
+const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert.ok(html.includes('styles.css?build=1.3.4'));
+assert.ok(html.includes('src/app.js?build=1.3.4'));
+assert.match(sw,/cache:'no-store'/);
