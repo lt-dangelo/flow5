@@ -40,3 +40,6 @@ For a fresh iPhone launch, open `https://lt-dangelo.github.io/flow5/preview/v1.3
 
 ### v1.3 refinement – anatomy and end-of-workout recovery
 The Squats, Push-ups and Plank vector studies now have additional contour, muscle and cross-hatching detail, while retaining their start/end positions, movement arrows and alignment guides. The final rest phase (when no more work intervals follow) displays a dedicated calm breathing study and localized final-recovery instruction rather than repeating the preceding exercise. Ordinary recovery intervals continue to preview the next exercise. Both views remain available offline.
+
+### v1.3.6 image-based artwork validation
+Squats, Push-ups, Plank, and Final Rest now use optimized WebP anatomical illustrations cropped from the approved user-provided mockup, rather than programmatic sketch SVGs. Source artwork is retained in the project conversation. This produces markedly more detailed anatomy and natural engraving lines. The motion arrows in these temporary reference crops are part of the images; we can separate them for the final production originals. The other 19 exercises still use schematic SVG fallbacks.

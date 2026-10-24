@@ -20,14 +20,22 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.ok(sw.includes('flow5-v1.3-preview-5'));
+assert.ok(sw.includes('flow5-v1.3-preview-6'));
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
 
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(html.includes('styles.css?build=1.3.4'));
-assert.ok(html.includes('src/app.js?build=1.3.4'));
+assert.ok(html.includes('styles.css?build=1.3.6'));
+assert.ok(html.includes('src/app.js?build=1.3.6'));
 assert.match(sw,/cache:'no-store'/);
-assert.match(app,/finalRest\?recoveryIllustration\(prefs\.lang\)/);
+assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
 assert.match(app,/finalRest\?T\('recoveryCue'\)/);
+
+for(const name of ['squat','pushup','plank','recovery']){
+ const image=readFileSync(new URL('../artwork/'+name+'.webp',import.meta.url));
+ assert.ok(image.byteLength>2000);
+ assert.equal(image.subarray(0,4).toString('ascii'),'RIFF');
+}
+assert.match(css,/v13-study-image/);
+assert.match(sw,/artwork\/recovery\.webp/);
