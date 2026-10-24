@@ -1,0 +1,26 @@
+{
+  "id": "./?v13preview=1",
+  "name": "Flow5 – v1.3 Preview",
+  "short_name": "Flow5 Preview",
+  "description": "Concept preview of anatomical exercise studies and compact workout timer.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0b1016",
+  "theme_color": "#0b1016",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
