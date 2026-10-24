@@ -1,8 +1,8 @@
 {
-  "id": "./",
-  "name": "Flow5 – Calisthenics Timer",
-  "short_name": "Flow5",
-  "description": "Calisthenics interval timer. One to five exercises per round, your rhythm.",
+  "id": "./?v13preview=1",
+  "name": "Flow5 – v1.3 Preview",
+  "short_name": "Flow5 Preview",
+  "description": "Concept preview of anatomical exercise studies and compact workout timer.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -1,12 +1,12 @@
-const CACHE='flow5-v1.2.0';
+const CACHE='flow5-v1.3-preview-1';
 const ASSETS=['./','./index.html','./styles.css','./manifest.webmanifest',
- './src/app.js','./src/config.js','./src/audio.js','./src/i18n.js','./src/selection.js','./audio/work.wav','./audio/rest.wav','./audio/done.wav','./src/data.js','./src/art.js','./src/engine.js',
+ './src/app.js','./src/art13.js','./src/config.js','./src/audio.js','./src/i18n.js','./src/selection.js','./audio/work.wav','./audio/rest.wav','./audio/done.wav','./src/data.js','./src/art.js','./src/engine.js',
  './icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting()));
 });
 self.addEventListener('activate',event=>{
- event.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))),self.clients.claim()]));
+ event.waitUntil(Promise.all([caches.keys().then(keys=>Promise.all(keys.filter(key=>key.startsWith('flow5-v1.3-preview-')&&key!==CACHE).map(key=>caches.delete(key)))),self.clients.claim()]));
 });
 self.addEventListener('fetch',event=>{
  const req=event.request;

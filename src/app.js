@@ -1,12 +1,13 @@
 import {EXERCISES, EXERCISE_BY_ID, PRESETS, PRESET_BY_ID} from './data.js';
 import {buildPlan, planStats, IntervalEngine} from './engine.js';
 import {illustration} from './art.js';
+import {illustration13,isStudy} from './art13.js';
 import {optionsFor,stepSetting} from './config.js';
 import {CueAudio} from './audio.js';
 import {t,exerciseText,presetText} from './i18n.js';
 import {validSelection,removeExercise,chooseExercise} from './selection.js';
 
-const STORAGE_KEY='flow5-prefs-v1';
+const STORAGE_KEY='flow5-prefs-v13-preview';
 const DEFAULTS={presetId:'full', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en'};
 const app=document.getElementById('app');
 
@@ -102,6 +103,7 @@ function renderSetup(){
  app.innerHTML=`<div class="site-shell">
  <header class="topbar">${brand()}<div class="topbar-actions"><button type="button" class="language-btn" data-action="language" aria-label="${T('switchLanguage')}" title="${T('switchLanguage')}"><span aria-hidden="true">${prefs.lang==='de'?'🇩🇪':'🇬🇧'}</span><span>${prefs.lang.toUpperCase()}</span></button><button class="icon-button help-button" type="button" data-action="help" aria-label="${T('help')}">${icon('info')}</button></div></header>
  <main class="layout"><section class="intro"><div class="eyebrow"><span class="live-dot"></span> ${T('heroEyebrow')}</div><h1>${T('heroFirst')}<br/><em>${T('heroSecond')}</em></h1><p>${T('heroDesc')}</p><div class="intro-stats"><span>${icon('clock')} ${T('flexible')}</span><span>${icon('sun')} ${T('awake')}</span></div></section>
+ <div class="preview-intro"><span>FLOW5 · v1.3 PREVIEW</span><p>${prefs.lang==='de'?'Neues Layout und drei anatomische Illustrationen testen. Die Live-App bleibt unverändert.':'Test the new workout layout and three anatomical studies. Your live app is unchanged.'}</p><button type="button" data-action="try-studies">${prefs.lang==='de'?'Squats · Push-ups · Plank testen':'Try Squats · Push-ups · Plank'} ${icon('arrow')}</button></div>
  <section class="panel preset-panel"><div class="section-heading"><div><span class="step-label">01 / ${T('focus').toUpperCase()}</span><h2>${T('focus')}</h2></div><span class="subtle">${PRESETS.length} ${T('programs')}</span></div><div class="preset-list">${cards}</div></section>
  <section class="panel lineup-panel"><div class="section-heading"><div><span class="step-label">02 / ${T('exercisesTitle').toUpperCase()}</span><h2>${T('exercisesTitle')} <span class="exercise-count">${count}/5</span></h2></div>${prefs.custom[prefs.presetId]?`<button class="reset-btn" type="button" data-action="reset">${T('reset')}</button>`:`<span class="subtle">${escapeHtml(preset.name)}</span>`}</div><div class="exercise-list">${rows}</div>${count<5?`<button type="button" class="add-exercise-btn" data-action="add"><strong>＋</strong> ${T('add')} <span>${count}/5</span></button>`:''}<p class="hint">${icon('swap')} ${T('removeHint')}</p></section>
  <section class="panel config-panel"><div class="section-heading"><div><span class="step-label">03 / ${T('timing').toUpperCase()}</span><h2>${T('timing')}</h2></div></div>
@@ -135,15 +137,20 @@ function renderWorkout(){
  const snap=engine.snapshot();if(snap.status==='completed'){view='done';renderDone();return;}
  const p=snap.phase,isRest=p.kind==='rest',next=nextWork(snap.index);
  const present=E(isRest&&next?next.exerciseId:p.exerciseId);
- const title=isRest?(next?T('nextPrefix')+present.name:T('lastRest')):present.name;
- const descr=isRest?(next?present.cue:T('restFinished')):present.cue;
  const group=T(isRest?'restCaps':'workCaps');
  lastPhaseKey=String(snap.index);
- app.innerHTML=`<div class="training-screen ${isRest?'rest-mode':''}"><header class="training-header"><div>${brand()}<div class="status-row"><span class="status-pill ${isRest?'is-rest':''}"><i></i>${group}</span><span class="training-meta">${T('roundLabel')} ${p.round}/${prefs.rounds} · ${T('exerciseLabel')} ${p.position}/${workoutCount}</span></div></div><button type="button" class="quiet-btn" data-action="exit">${icon('close')} ${T('exit')}</button></header>
- <main class="training-main"><div class="clock-side"><div class="timer-ring" id="timer-ring" style="--progress:${snap.phaseProgress*100}%"><div class="timer-inner"><span class="ring-label">${T(isRest?'pauseLabel':'leftLabel')}</span><strong id="phase-time" aria-label="${T('remaining')}">${secsLabel(snap.remainingMs)}</strong><span class="ring-hint">${T('clockHint')}</span></div></div><div class="whole-timer"><span>${T('remaining')}</span><strong id="remaining-time">${secsLabel(snap.totalRemainingMs)}</strong></div><div class="whole-track"><div id="whole-progress" style="width:${snap.overallProgress*100}%"></div></div></div>
- <div class="exercise-side"><div class="training-illustration">${illustration(present.pose,present.name,prefs.lang)}<span class="art-tag">${isRest?T('readySoon'):present.group.toUpperCase()}</span></div><div class="workout-exercise"><span class="step-label">${T(isRest?'nextPreview':'activeExercise')}</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(descr)}</p><small>${escapeHtml(present.tip)}</small></div><div class="up-next">${icon('arrow')} <span>${isRest?(next?T('afterWork'):T('afterFinish')):(next?T('afterPrefix')+E(next.exerciseId).name:T('afterDone'))}</span></div></div></main>
- <footer class="training-controls"><div id="wake-indicator" class="wake-indicator">${icon('sun')} ${T('checkingWake')}</div><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
- <div class="visually-hidden" id="phase-announcement" aria-live="polite">${group}: ${title}</div></div>`;
+ app.innerHTML=`<div class="training-screen v13 ${isRest?'rest-mode':''}">
+ <header class="training-header v13-header"><div class="v13-brand">${brand()}<span>PREVIEW · 1.3</span></div><button type="button" class="quiet-btn" data-action="exit">${icon('close')} ${T('exit')}</button></header>
+ <main class="v13-workout">
+  <div class="v13-meta"><span>${T('roundLabel').toUpperCase()} <strong>${p.round}/${prefs.rounds}</strong></span><span>${T('exerciseLabel').toUpperCase()} <strong>${p.position}/${workoutCount}</strong></span></div>
+  <div class="v13-timing"><div class="v13-current"><span class="v13-state ${isRest?'v13-rest':''}"><i></i>${group}</span><strong id="phase-time" aria-label="${T('remaining')}">${secsLabel(snap.remainingMs)}</strong></div><div class="v13-total"><span>${T('remaining')}</span><strong id="remaining-time">${secsLabel(snap.totalRemainingMs)}</strong></div></div>
+  <div class="whole-track v13-progress"><div id="whole-progress" style="width:${snap.overallProgress*100}%"></div></div>
+  <div class="v13-art"><div class="v13-art-heading"><span>${isStudy(present.pose)?'ANATOMICAL STUDY':'CLASSIC STUDY'}</span><span>${isRest?T('readySoon'):present.group.toUpperCase()}</span></div><div class="v13-drawing">${illustration13(present.pose,present.name,prefs.lang)}</div></div>
+  <div class="v13-instruction"><span class="v13-caption">${T(isRest?'nextPreview':'activeExercise')}</span><h1>${escapeHtml(present.name)}</h1><p>${escapeHtml(isRest?(next?present.cue:T('restFinished')):present.cue)}</p></div>
+  <div class="v13-next"><span>${isRest?(next?T('afterWork'):T('afterFinish')):(next?T('nextPrefix')+E(next.exerciseId).name:T('afterDone'))}</span><span class="v13-dot">●</span></div>
+ </main>
+ <footer class="training-controls v13-controls"><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div><div id="wake-indicator" class="wake-indicator">${icon('sun')} ${T('checkingWake')}</div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
+ <div class="visually-hidden" id="phase-announcement" aria-live="polite">${group}: ${present.name}</div></div>`;
  updateClock();updateWakeIndicator();
 }
 function renderDone(){
@@ -206,6 +213,7 @@ app.addEventListener('click',event=>{
  const action=button.dataset.action;
  if(action==='preset'){prefs.presetId=button.dataset.value;save();render();}
  else if(action==='reset'){delete prefs.custom[prefs.presetId];save();render();}
+ else if(action==='try-studies'){prefs.presetId='full';prefs.custom.full=['squat','pushup','plank'];prefs.rounds=2;prefs.workSec=25;prefs.restSec=10;save();render();}
  else if(action==='language'){prefs.lang=prefs.lang==='en'?'de':'en';document.documentElement.lang=prefs.lang;save();render();}
  else if(action==='remove'){
   const old=currentIds(),ids=removeExercise(old,Number(button.dataset.index));
