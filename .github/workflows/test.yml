@@ -11,4 +11,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: npm test
+      - name: Test production workout logic
+        run: npm test
+      - name: Test v1.3 visual preview
+        run: npm test --prefix preview/v1.3
