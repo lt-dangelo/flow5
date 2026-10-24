@@ -20,5 +20,7 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.match(sw,/flow5-v1\.3-preview-2/);
+assert.match(sw,/flow5-v1\.3-preview-3/);
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
+
+assert.doesNotMatch(app,/CALISTHENICS TIMER/);
