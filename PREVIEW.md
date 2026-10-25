@@ -120,3 +120,6 @@ Four focus presets (Full Body, Core & Stability, Upper Body, Legs & Glutes) now 
 - Completion screen shows dated focus/level, captured plan duration, rounds × exercises, work/rest interval, ordered exercise list and final rest option, designed for screenshots.
 - Duration is labeled **planned** (not actual elapsed time); skips/pauses are not presented as completed active exercise measurements.
 - Timer duration options, preset choices and image files remain unchanged. Preview-only PWA cache version updated.
+
+### v1.3.26 — Simplified workout and summary
+Removed the redundant next-exercise text and audio icon between the exercise illustration and controls without changing the audible cues. Removed the focus/level line under Well Done and the final-rest-included note, retaining the exercise list and author credit. PWA cache bumped to v1.3-preview-26. Production remains unchanged.

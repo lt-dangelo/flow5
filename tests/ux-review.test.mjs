@@ -42,7 +42,10 @@ for(const selector of ['workout-record','record-top','record-stats','record-inte
  assert.ok(css.includes('.'+selector),'record styling missing '+selector);
 }
 assert.ok(css.includes('.v13-clean .v13-art-heading h1{grid-column:1 / -1'),'long titles require full line');
-assert.ok(css.includes('-webkit-line-clamp:2'),'next titles must wrap to two lines');
+assert.ok(!app.includes('class="v13-next"'),'redundant up-next row removed');
+assert.ok(!app.includes('class="v13-audio-mark"'),'no audio glyph between artwork and controls');
+assert.ok(!app.includes('class="record-focus"'),'no focus/level subtitle under Well Done');
+assert.ok(!app.includes("T('recordFinalRest')"),'no final rest note on completion record');
 assert.ok(!app.includes("performance.stats"),'no claim of measured intensity/volume');
 const sw=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
 const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');

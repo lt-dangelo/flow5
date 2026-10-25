@@ -162,7 +162,6 @@ function renderWorkout(){
  const group=T(isRest?'restCaps':'workCaps');
  const displayName=finalRest?T('lastRest'):present.name;
  const cue=finalRest?T('recoveryCue'):present.cue;
- const after=isRest?(next?T('afterWork'):T('afterFinish')):(next?T('nextPrefix')+E(next.exerciseId).name:T('afterDone'));
  const actionLabel=finalRest?'':isRest?T('readySoon'):(isStudy(present.pose)?(present.pose==='plank'?(prefs.lang==='de'?'HALTEN':'HOLD'):(prefs.lang==='de'?'START → ENDE':'START → END')):'');
  lastPhaseKey=String(snap.index);
  app.innerHTML=`<div class="training-screen v13 v13-clean ${isRest?'rest-mode':''}">
@@ -178,7 +177,6 @@ function renderWorkout(){
     <div class="v13-drawing">${studyPicture(finalRest?'recovery':present.pose,displayName,prefs.lang,present.id)}</div>
     <p class="v13-art-cue">${escapeHtml(cue)}</p>
   </section>
-  <div class="v13-next"><span title="${escapeHtml(after)}">${escapeHtml(after)}</span>${prefs.sound? `<span class="v13-audio-mark" aria-label="${T('sounds')}">${icon('sound')}</span>`:''}</div>
  </main>
  <footer class="training-controls v13-controls"><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div><div id="wake-indicator" class="wake-indicator visually-hidden" aria-live="polite">${T('checkingWake')}</div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
  <div class="visually-hidden" id="phase-announcement" aria-live="polite">${group}: ${displayName}</div></div>`;
@@ -192,8 +190,6 @@ function renderDone(){
   includeFinalRest:prefs.includeFinalRest,customized:!!prefs.custom[currentCustomKey()]
  };
  const stats=engine?planStats(engine.phases):planStats(buildPlan(session.ids,session));
- const focus=P(PRESET_BY_ID[session.presetId]).name;
- const level=T(session.difficulty==='beginner'?'easy':'medium');
  const date=new Intl.DateTimeFormat(prefs.lang==='de'?'de-DE':'en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date());
  const names=session.ids.map((id,i)=>`<li><span class="record-number">${String(i+1).padStart(2,'0')}</span><span>${escapeHtml(E(id).name)}</span></li>`).join('');
  const workRest=`${session.workSec} ${T('sec')} ${T('work')} · ${session.restSec} ${T('sec')} ${T('rest')}`;
@@ -204,11 +200,10 @@ function renderDone(){
   <section class="workout-record" aria-label="${T('workoutRecord')}">
    <div class="record-top"><span class="record-success">${icon('check')} ${T('complete')}</span><span class="record-date">${escapeHtml(date)}</span></div>
    <h1>${T('wellDone')}</h1>
-   <div class="record-focus">${escapeHtml(focus)} <span aria-hidden="true">·</span> ${escapeHtml(level)}${session.customized?` <span class="record-custom">· ${T('recordCustom')}</span>`:''}</div>
    <div class="record-stats"><div><strong>${secsLabel(stats.totalMs)}</strong><span>${T('recordTotal')}</span></div><div><strong>${session.rounds} × ${session.ids.length}</strong><span>${T('roundMany')} × ${T('exerciseMany')}</span></div></div>
    <div class="record-intervals"><span>${T('recordIntervals')}</span><strong>${escapeHtml(workRest)}</strong></div>
    <div class="record-exercises"><h2>${T('recordExercises')}</h2><ol>${names}</ol></div>
-   <div class="record-bottom"><span>${T('recordFinalRest')}: ${T(session.includeFinalRest?'recordYes':'recordNo')}</span><span>Flow5 · by Lorenzo D'Angelo</span></div>
+   <div class="record-bottom"><span>Flow5 · by Lorenzo D'Angelo</span></div>
   </section>
   <p class="record-hint">${T('recordHint')}</p>
   <div class="record-actions"><button class="primary-btn" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></div>
