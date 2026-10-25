@@ -60,3 +60,9 @@ Added Standing Knee Raises (march), Bicycle Crunches and Side Plank, with 1440×
 
 ### v1.3.12 – Four additional exercise images
 The preview includes **Plank Shoulder Taps**, **Bird Dog**, **Dead Bug**, and **Superman Hold**, each with a dedicated 1440×960 WebP canvas. Movement figures come from detailed Renaissance-inspired generated anatomical panels, composed with safe margins, no embedded text and no clipped limbs; these source drawings are upscaled rather than native-resolution master engravings. SVG fallbacks remain for other exercises. **Reverse Snow Angels** previously shared the pose ID 'superman'; it deliberately retains its original SVG until appropriate snow-angel-specific artwork exists. The service worker's offline asset cache and HTML build queries are updated to v1.3.12. The production app is unchanged.
+
+### v1.3.13 – Follow-through cue and corrected artwork
+- Dead Bug now instructs users in both English and German to return the extended arm and leg to the starting position **before switching sides**. The form cue about keeping the lower back grounded is unchanged.
+- Shoulder Tap replaces the old same-side gesture: the arm farther from the viewer reaches across the chest while the hand closest to the viewer supports the plank. Movement cue and anatomy stay in a text-free image.
+- Final Rest now uses a new full-length drinking-water study with complete shoes and added safety margins. The previous faded/cropped source is retained for rollback.
+- Two new image filenames and a fresh service-worker cache make the corrections visible on iOS; the production release remains unchanged.

@@ -1,12 +1,12 @@
 // Scoped preview service worker: network-first for app updates, offline fallback.
-const CACHE='flow5-v1.3-preview-12';
+const CACHE='flow5-v1.3-preview-13';
 const CORE=[
  './',
  './index.html',
- './styles.css?build=1.3.12',
- './src/app.js?build=1.3.12',
+ './styles.css?build=1.3.13',
+ './src/app.js?build=1.3.13',
  './manifest.webmanifest',
- './src/art13.js','./src/recovery13.js','./artwork/squat-master.webp','./artwork/pushup-master.webp','./artwork/plank-master.webp','./artwork/recovery.webp','./artwork/lunge-master.webp','./artwork/mountain-master.webp','./artwork/bridge-master.webp','./artwork/recovery-hydration-master.webp','./artwork/march-master.webp','./artwork/bicycle-master.webp','./artwork/sideplank-master.webp','./artwork/shouldertap-master.webp','./artwork/birddog-master.webp','./artwork/deadbug-master.webp','./artwork/superman-master.webp','./src/config.js','./src/audio.js',
+ './src/art13.js','./src/recovery13.js','./artwork/squat-master.webp','./artwork/pushup-master.webp','./artwork/plank-master.webp','./artwork/recovery.webp','./artwork/lunge-master.webp','./artwork/mountain-master.webp','./artwork/bridge-master.webp','./artwork/recovery-hydration-corrected.webp','./artwork/march-master.webp','./artwork/bicycle-master.webp','./artwork/sideplank-master.webp','./artwork/shouldertap-corrected.webp','./artwork/birddog-master.webp','./artwork/deadbug-master.webp','./artwork/superman-master.webp','./src/config.js','./src/audio.js',
  './src/i18n.js','./src/selection.js','./src/data.js',
  './src/art.js','./src/engine.js',
  './audio/work.wav','./audio/rest.wav','./audio/done.wav',
