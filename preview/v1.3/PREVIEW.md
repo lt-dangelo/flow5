@@ -86,3 +86,8 @@ The Wall Push-ups illustration now uses a color-matched 1440 × 960 WebP master 
 - Added `artwork/pikepushup-master-v1318.webp` (1440 × 960 WebP): anatomically recognizable pike starting position with arms extended and a second lowered position with elbows bent, showing movement arrows.
 - Warm parchment matched against the approved Bird Dog reference; full hands, feet and head remain within the image bounds.
 - Updated preview artwork map, offline cache and versioned page assets; production Flow5 remains unchanged.
+
+### v1.3.20 – Wall Sit and Jumping Jacks illustration integration
+- Two standalone 1440×960 WebP exercise illustrations: Wall Sit (upright stance and neutral wall-supported static squat hold) and Jumping Jacks (closed stance and wide stance with arms overhead).
+- Anatomical poses and complete body margins inspected before integration. New Jumping Jacks art is color matched to the approved cream parchment, with terracotta motion arrows.
+- Image registry and offline cache contain both assets. Changed CSS/JS build marker to 1.3.20 for iPhone cache refresh. Production application unchanged.
