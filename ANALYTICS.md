@@ -30,3 +30,14 @@ The tracking script is restricted to the public domain by `data-domains`. Local 
 4. From the finish screen choose restart; check `workout_restarted`.
 5. Disconnect from the network or block Umami and verify the timer still works.
 
+
+
+## Consent-gated rollout and required legal details
+
+`index.html` does **not** directly load Umami. `src/consent.js` loads the remote tracker only after an explicit opt-in, stores the choice locally, and offers a persistent Privacy settings control. Declining analytics does not block workouts. After revoking consent while a tracker is active, the page reloads to clear the current tracker instance.
+
+The linked bilingual `imprint.html` and `privacy.html` are **drafts**, not final legal advice. The release test `tests/legal.test.mjs` deliberately fails until the operator's serviceable address, contact email, and verified Umami retention period are entered. Do not remove this safety check. The Umami DPA, subprocessors, EU storage-region selection and any international access should be reviewed before final release.
+
+The preview branch's previous analytics script was **temporarily disabled** until it has a matching consent UI and complete, accessible legal notices. Restore preview event tracking only after its compliance changes are in place.
+
+Note on branding: use “no personal workout history” rather than the misleading absolute statement “no workout tracking,” since privacy-minimized event analytics can still record workout starts and completions after consent.
