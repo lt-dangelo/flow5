@@ -32,4 +32,4 @@ assert.ok(imprint.includes('§ 18 Abs. 1 MStV'));
 // Do not remove this test simply to get a green build.
 const missing=/\[(?:BESTÄTIGTE ZUORDNUNG|CONFIRMED CUSTOMER IDENTIFIER|STRAẞE|POSTLEITZAHL|KONTAKT-EMAIL|STREET|POSTCODE|CONTACT-EMAIL|VOLLSTÄNDIGE|FULL SERVICEABLE|TARIF UND|CONFIRM PLAN)/;
 assert.doesNotMatch(imprint+privacy,missing,
- 'Complete real legal contact details and Umami retention before publishing.');
+ 'Confirm the address-service contract and replace the assigned c/o identifier before publication.');
