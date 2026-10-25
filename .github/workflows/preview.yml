@@ -1,0 +1,26 @@
+name: Preview branch checks
+on:
+  push:
+    branches: [v1.3-visual-preview]
+  pull_request:
+    branches: [v1.3-visual-preview]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview-test:
+    name: preview-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run preview tests
+        run: npm test
+      - name: Check preview JavaScript syntax
+        run: |
+          node --check src/app.js
+          node --check src/art13.js
