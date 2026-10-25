@@ -46,3 +46,5 @@ Squats, Push-ups, Plank, and Final Rest now use optimized WebP anatomical illust
 
 ### v1.3.7 – Independent image files with full-body safe margins
 The preview uses four new standalone 1440×960 WebP images (Squats, Push-ups, Forearm plank, Final recovery). Each composition includes the complete figure and wider safe margins, with app text kept outside the artwork. The images are **carefully recomposed from the approved visual mockup artwork**, not entirely new AI-generated anatomical originals. Previous v1.3.6 crops remain in the repository for comparison and rollback. The standard app is unchanged.\n
+### v1.3.8 – Bring back water-bottle recovery illustration
+User preferred the earlier recovery study showing a person drinking water. The final-rest artwork now uses the previous `artwork/recovery.webp`, with its original aspect ratio, while Squats, Push-ups and Plank retain the uncropped master illustrations. Both English and German coaching copy, timer behaviour and offline support are unchanged. The PWA cache has been incremented to v1.3-preview-8.
