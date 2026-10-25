@@ -3,8 +3,19 @@ on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: flow5-tests-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
+    name: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13,5 +24,9 @@ jobs:
           node-version: '22'
       - name: Test production workout logic
         run: npm test
-      - name: Test v1.3 visual preview
+      - name: Test published v1.3 preview
         run: npm test --prefix preview/v1.3
+      - name: Verify JavaScript syntax
+        run: |
+          node --check src/app.js
+          node --check preview/v1.3/src/app.js
