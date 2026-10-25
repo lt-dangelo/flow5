@@ -1,6 +1,6 @@
 import {EXERCISES, EXERCISE_BY_ID, PRESETS, PRESET_BY_ID, DIFFICULTIES, presetIds} from './data.js';
 import {buildPlan, planStats, IntervalEngine} from './engine.js';
-import {trackWorkoutEvent} from './analytics.js';
+import {trackWorkoutEvent,trackExerciseCompleted} from './analytics.js';
 import {illustration} from './art.js';
 import {illustration13,isStudy} from './art13.js';
 
@@ -286,6 +286,7 @@ function beginWorkout(restarted=false){
     if(previous)phaseSound(phase);
     if(view==='workout')renderWorkout();
    },
+   onExerciseComplete:phase=>{trackExerciseCompleted(phase.exerciseId);},
    onComplete:()=>{trackWorkoutEvent('workout_completed',workoutSession);if(prefs.sound)cueAudio.play('done');stopTicking();releaseWake();view='done';renderDone();},
    onChange:()=>{if(view==='workout')renderWorkout();}
   });
