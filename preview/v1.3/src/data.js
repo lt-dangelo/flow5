@@ -18,7 +18,7 @@ export const EXERCISES = [
   {id:'march', name:'Knieheben im Stand', group:'Cardio', level:1, pose:'march',
    cue:'Im Stand abwechselnd ein Knie bis etwa Hüfthöhe anheben.',tip:'Rumpf aufrecht halten; bei Bedarf langsamer gehen.'},
   {id:'deadBug', name:'Dead Bug', group:'Core', level:1, pose:'deadbug',
-   cue:'Rückenlage, Arme und Beine angehoben; diagonal Arm und Bein senken.',tip:'Den unteren Rücken sanft Richtung Boden halten.'},
+   cue:'In Rückenlage Arme und Beine anheben. Einen Arm und das gegenüberliegende Bein langsam senken, beide zurückführen und die Seite wechseln.',tip:'Den unteren Rücken sanft Richtung Boden halten.'},
   {id:'bicycle', name:'Bicycle Crunches', group:'Core', level:2, pose:'bicycle',
    cue:'In Rückenlage abwechselnd Schulter zur gegenüberliegenden Knie-Seite drehen.',tip:'Rotation aus dem Oberkörper, nicht am Nacken ziehen.'},
   {id:'sidePlankL', name:'Seitstütz links', group:'Core', level:2, pose:'sideplank',

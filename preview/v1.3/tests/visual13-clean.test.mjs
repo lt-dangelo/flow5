@@ -20,14 +20,14 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.ok(sw.includes('flow5-v1.3-preview-12'));
+assert.ok(sw.includes('flow5-v1.3-preview-13'));
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
 
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(html.includes('styles.css?build=1.3.12'));
-assert.ok(html.includes('src/app.js?build=1.3.12'));
+assert.ok(html.includes('styles.css?build=1.3.13'));
+assert.ok(html.includes('src/app.js?build=1.3.13'));
 assert.match(sw,/cache:'no-store'/);
 assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
 assert.match(app,/finalRest\?T\('recoveryCue'\)/);
@@ -39,7 +39,7 @@ for(const name of ['squat','pushup','plank','recovery']){
 }
 assert.match(css,/v13-study-image/);
 assert.ok(sw.includes('artwork/recovery.webp'));
-assert.ok(app.includes("recovery:'recovery-hydration-master.webp'"));
+assert.ok(app.includes("recovery:'recovery-hydration-corrected.webp'"));
 assert.ok(app.includes("lunge:'lunge-master.webp'"));
 assert.ok(app.includes("mountain:'mountain-master.webp'"));
 assert.ok(app.includes("bridge:'bridge-master.webp'"));
@@ -72,7 +72,7 @@ assert.match(app,/transform:scaleX\(-1\)/);
 assert.match(app,/displayName,prefs.lang,present.id/);
 
 // v1.3.12: four new illustration assets, no accidental reuse for Snow Angels.
-for(const name of ['shouldertap','birddog','deadbug','superman']){
+for(const name of ['birddog','deadbug','superman']){
  const content=readFileSync(new URL('../artwork/'+name+'-master.webp',import.meta.url));
  assert.ok(content.byteLength>100000,name+' illustration should contain high quality WebP data');
  assert.equal(content.subarray(0,4).toString('ascii'),'RIFF');
@@ -81,3 +81,18 @@ for(const name of ['shouldertap','birddog','deadbug','superman']){
 }
 assert.match(app,/pose==='superman'&&exerciseId==='snowAngel'/);
 assert.match(app,/return illustration13\(pose,name,lang\)/);
+
+// v1.3.13: verify correction assets, localized Dead Bug follow-through, and offline caching.
+for (const asset of ['shouldertap-corrected.webp','recovery-hydration-corrected.webp']) {
+ const image=readFileSync(new URL('../artwork/'+asset,import.meta.url));
+ assert.ok(image.byteLength>100000,asset+' must contain nontrivial high-quality image data');
+ assert.equal(image.subarray(0,4).toString('ascii'),'RIFF');
+ assert.ok(sw.includes('artwork/'+asset),asset+' must be precached');
+ assert.ok(app.includes(asset),asset+' must be mapped in the app');
+}
+assert.ok(!app.includes("shouldertap:'shouldertap-master.webp'"));
+assert.ok(!app.includes("recovery:'recovery-hydration-master.webp'"));
+const data=readFileSync(new URL('../src/data.js',import.meta.url),'utf8');
+const i18n=readFileSync(new URL('../src/i18n.js',import.meta.url),'utf8');
+assert.match(data,/beide zurückführen und die Seite wechseln/);
+assert.match(i18n,/bring both back up, then switch sides/);
