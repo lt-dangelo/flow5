@@ -72,7 +72,14 @@ const MUSCLE_THUMBNAILS=Object.freeze({
  mountainClimber:'mountainClimber-muscles.webp',
  bicycle:'bicycle-muscles.webp',
  pikePushup:'pikePushup-muscles.webp',
- superman:'superman-muscles.webp'
+ superman:'superman-muscles.webp',
+ sidePlankL:'sidePlankL-muscles.webp',
+ sidePlankR:'sidePlankR-muscles.webp',
+ shoulderTap:'shoulderTap-muscles.webp',
+ wallSit:'wallSit-muscles.webp',
+ heelTouch:'heelTouch-muscles.webp',
+ bearHold:'bearHold-muscles.webp',
+ assistedSingleLegSquat:'assistedSingleLegSquat-muscles.webp'
 });
 function exerciseThumbnail(e){
  const file=MUSCLE_THUMBNAILS[e.id];
@@ -219,7 +226,7 @@ function renderDone(){
  };
  const stats=engine?planStats(engine.phases):planStats(buildPlan(session.ids,session));
  const date=new Intl.DateTimeFormat(prefs.lang==='de'?'de-DE':'en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date());
- const names=session.ids.map((id,i)=>`<li><span class="record-number">${String(i+1).padStart(2,'0')}</span><span>${escapeHtml(E(id).name)}</span></li>`).join('');
+ const names=session.ids.map((id,i)=>{const e=E(id);return `<li><span class="record-number">${String(i+1).padStart(2,'0')}</span><span class="record-exercise-thumb" aria-hidden="true">${exerciseThumbnail(e)}</span><span class="record-exercise-name">${escapeHtml(e.name)}</span></li>`;}).join('');
  const workRest=`${session.workSec} ${T('sec')} ${T('work')} · ${session.restSec} ${T('sec')} ${T('rest')}`;
  view='done';
  app.innerHTML=`<div class="done-page done-record-page">
