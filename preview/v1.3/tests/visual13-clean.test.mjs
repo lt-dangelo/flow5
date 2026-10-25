@@ -20,14 +20,14 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.ok(sw.includes('flow5-v1.3-preview-14'));
+assert.ok(sw.includes('flow5-v1.3-preview-15'));
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
 
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(html.includes('styles.css?build=1.3.14'));
-assert.ok(html.includes('src/app.js?build=1.3.14'));
+assert.ok(html.includes('styles.css?build=1.3.15'));
+assert.ok(html.includes('src/app.js?build=1.3.15'));
 assert.match(sw,/cache:'no-store'/);
 assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
 assert.match(app,/finalRest\?T\('recoveryCue'\)/);
@@ -73,7 +73,7 @@ assert.match(app,/transform:scaleX\(-1\)/);
 assert.match(app,/displayName,prefs.lang,present.id/);
 
 // v1.3.12: four new illustration assets, no accidental reuse for Snow Angels.
-for(const name of ['birddog','deadbug','superman']){
+for(const name of ['birddog','superman']){
  const content=readFileSync(new URL('../artwork/'+name+'-master.webp',import.meta.url));
  assert.ok(content.byteLength>100000,name+' illustration should contain high quality WebP data');
  assert.equal(content.subarray(0,4).toString('ascii'),'RIFF');
@@ -84,7 +84,7 @@ assert.match(app,/pose==='superman'&&exerciseId==='snowAngel'/);
 assert.match(app,/return illustration13\(pose,name,lang\)/);
 
 // v1.3.13: verify correction assets, localized Dead Bug follow-through, and offline caching.
-for (const asset of ['shouldertap-neutral.webp','recovery-hydration-corrected.webp']) {
+for (const asset of ['shouldertap-clean-v1315.webp','recovery-hydration-corrected.webp']) {
  const image=readFileSync(new URL('../artwork/'+asset,import.meta.url));
  assert.ok(image.byteLength>100000,asset+' must contain nontrivial high-quality image data');
  assert.equal(image.subarray(0,4).toString('ascii'),'RIFF');
@@ -99,7 +99,18 @@ assert.match(data,/beide zurückführen und die Seite wechseln/);
 assert.match(i18n,/bring both back up, then switch sides/);
 
 // v1.3.14: neutral Shoulder Tap palette without altering the recovery artwork.
-assert.ok(app.includes("shouldertap:'shouldertap-neutral.webp'"));
+assert.ok(app.includes("shouldertap:'shouldertap-clean-v1315.webp'"));
 assert.ok(app.includes("recovery:'recovery-hydration-corrected.webp'"));
 assert.ok(!app.includes("shouldertap:'shouldertap-corrected.webp'"));
-assert.ok(sw.includes('./artwork/shouldertap-neutral.webp'));
+assert.ok(sw.includes('./artwork/shouldertap-clean-v1315.webp'));
+
+// v1.3.15 – New clean anatomical studies replace the composite-source images.
+for(const [pose,file] of [['deadbug','deadbug-clean-v1315.webp'],['shouldertap','shouldertap-clean-v1315.webp']]){
+ const data=readFileSync(new URL('../artwork/'+file,import.meta.url));
+ assert.ok(data.byteLength>100000,file+' must contain source illustration detail');
+ assert.equal(data.subarray(0,4).toString('ascii'),'RIFF');
+ assert.ok(app.includes(pose+":'"+file+"'"),file+' should be active');
+ assert.ok(sw.includes('./artwork/'+file),file+' should be precached');
+}
+assert.doesNotMatch(app,/deadbug:'deadbug-master.webp'/);
+assert.doesNotMatch(app,/shouldertap:'shouldertap-neutral.webp'/);

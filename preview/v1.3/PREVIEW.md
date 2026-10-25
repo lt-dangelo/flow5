@@ -69,3 +69,6 @@ The preview includes **Plank Shoulder Taps**, **Bird Dog**, **Dead Bug**, and **
 
 ### v1.3.14 – Shoulder Tap palette harmonization
 The corrected Shoulder Tap illustration was rebalanced to match the lighter cream parchment and softer sepia linework of the other workout illustrations, without changing the poses, arrows or dimensions. A distinct asset filename (`shouldertap-neutral.webp`) and updated preview cache avoid outdated artwork on iOS. The separate final-rest water-bottle image (`recovery-hydration-corrected.webp`) remains unchanged by design. Production v1.2 remains unchanged.
+
+### v1.3.15 – Clean Dead Bug and Shoulder Tap illustrations
+The two 1440 × 960 WebP studies have been reconstructed using full-body anatomical drawings rather than blended fragments. The Shoulder Tap no longer shows vertical smears near the head or the planted hand; Dead Bug now shows distinct hands and full limb extensions. The near hand stays planted and the far hand crosses toward the near shoulder. The new filenames are versioned to avoid stale iOS artwork. All other illustrations and production Flow5 remain unchanged.
