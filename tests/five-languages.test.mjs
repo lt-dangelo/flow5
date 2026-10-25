@@ -33,7 +33,7 @@ for(const lang of ['it','fr','es']){
  assert.equal(Object.keys(EXERCISE_EXTRA[lang]).length,27);
  assert.equal(Object.keys(UI_EXTRA[lang]).length,100);
 }
-assert.equal(t('en','footer'),'Your workout stays on your device. No registration, no setup, no workout tracking');
+assert.equal(t('en','footer'),'Your exercise choices stay on your device. No registration, no setup, no personal workout history');
 const app=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
 const sw=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
 assert.ok(app.includes('next.includeFinalRest=true'),'stored preferences must be overridden');
