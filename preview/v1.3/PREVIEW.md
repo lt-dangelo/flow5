@@ -130,3 +130,6 @@ Removed the redundant next-exercise text and audio icon between the exercise ill
 - Technique review: ACE Hip Hinge (bodyweight variant), ACE Bent Knee Push-up, ACE Seated Row. Heart & Stroke provides general activity guidance, but no matching exercise-specific descriptions were verified.
 - The band row cue is revised in both languages to describe the pictured seated band-around-feet setup without an external anchor. Single-leg Glute Bridge and Assisted Single-leg Squat remain placeholders.
 - Service-worker offline cache v1.3-preview-27. No production-app changes.
+
+### v1.3.28 – Consistent-character corrections
+Replaced Knee Push-ups and Resistance-band Row artwork with male anatomical studies matching the existing character and parchment palette; both 1440 × 960 WebP. Exercise IDs and timing unchanged. Band-row description now includes a long-towel alternative (an isometric tension hold rather than an elastic-band row). Equipment note now says resistance band or long towel, in both English and German. Updated mapping/precache to the v1328 assets. v1327 assets remain in Git history for rollback.
