@@ -133,3 +133,7 @@ Removed the redundant next-exercise text and audio icon between the exercise ill
 
 ### v1.3.28 – Consistent-character corrections
 Replaced Knee Push-ups and Resistance-band Row artwork with male anatomical studies matching the existing character and parchment palette; both 1440 × 960 WebP. Exercise IDs and timing unchanged. Band-row description now includes a long-towel alternative (an isometric tension hold rather than an elastic-band row). Equipment note now says resistance band or long towel, in both English and German. Updated mapping/precache to the v1328 assets. v1327 assets remain in Git history for rollback.
+
+
+### v1.3.29 — Anatomical illustration library complete
+Added verified 1440×960 sepia-parchment WebP artwork for Single-leg Glute Bridge (one supporting foot; controlled hip lift) and Assisted Single-leg Squat (one planted foot, free leg raised, hand holding a stable chair behind the body). ACE exercise guidance plus NHS physiotherapy material used for movement validation. Bridge and squat illustrations color-matched to the established Bird Dog parchment. Both mapped into studyPicture() and precached by the scoped preview service worker. 27/27 exercise entries now have individual artwork (Reverse Snow Angels deliberately uses its dedicated image). No production files changed. PWA cache v1.3.29.
