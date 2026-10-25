@@ -289,16 +289,9 @@
 /* v1.3 pilot: anatomical muscle-map thumbnails, setup and exercise picker only. */
 .thumb .muscle-thumb{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
 
-/* v1.3.34: image-enhanced completed-workout record. */
-.record-exercises .record-exercise-thumb{
- display:block;flex:0 0 54px;width:54px;height:44px;
- border-radius:9px;overflow:hidden;background:#f2eadb;
- border:1px solid #526159;
-}
-.record-exercises .record-exercise-thumb .muscle-thumb{display:block;width:100%;height:100%;object-fit:cover}
-.record-exercises .record-exercise-name{min-width:0;flex:1;overflow-wrap:anywhere}
-@media(max-width:480px){
- .record-exercises li{gap:9px;padding:5px 2px}
- .record-exercises .record-exercise-thumb{flex-basis:48px;width:48px;height:39px}
- .record-exercises .record-number{flex-basis:19px}
-}
+/* Five-language selector; remove obsolete fitness labels and footer asterisk note. */
+.language-select{appearance:none;min-height:42px;max-width:140px;min-width:106px;border:1px solid var(--outline);border-radius:12px;background:var(--panel2);color:var(--text);font:700 12px/1.2 system-ui,sans-serif;cursor:pointer;padding:10px 26px 10px 12px;outline-offset:2px}
+.language-select:focus-visible{outline:3px solid var(--lime)}
+.topbar-actions{min-width:0}
+.footer span:first-child{display:block;max-width:660px;margin:0 auto;line-height:1.6}
+@media(max-width:375px){.language-select{max-width:108px;min-width:96px;padding:8px 3px;font-size:11px}.topbar-actions{gap:7px}}
