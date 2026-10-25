@@ -1,0 +1,76 @@
+name: Publish Pick5Go production and preview
+on:
+  push:
+    branches: [main]
+  workflow_run:
+    workflows: ["Preview branch checks"]
+    types: [completed]
+    branches: [v1.3-visual-preview]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: ${{ github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out protected production source
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Check out independent preview source
+        uses: actions/checkout@v4
+        with:
+          ref: v1.3-visual-preview
+          path: preview-source
+          persist-credentials: false
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Verify both published applications
+        run: |
+          npm test
+          npm test --prefix preview-source
+          node --check src/app.js
+          node --check preview-source/src/app.js
+          node --check preview-source/src/art13.js
+
+      - name: Assemble independent deployment
+        run: |
+          mkdir -p _site/preview/v1.3
+          rsync -a --exclude '/.git/' --exclude '/.github/' --exclude '/_site/' \
+            --exclude '/preview-source/' --exclude '/preview/' --exclude '/tests/' \
+            --exclude '/node_modules/' ./ _site/
+          rsync -a --exclude '/.git/' --exclude '/.github/' --exclude '/tests/' \
+            --exclude '/node_modules/' preview-source/ _site/preview/v1.3/
+          touch _site/.nojekyll
+          test -f _site/index.html
+          test -f _site/preview/v1.3/index.html
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload website artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
