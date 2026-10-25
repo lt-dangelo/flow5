@@ -20,14 +20,14 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.ok(sw.includes('flow5-v1.3-preview-13'));
+assert.ok(sw.includes('flow5-v1.3-preview-14'));
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
 
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(html.includes('styles.css?build=1.3.13'));
-assert.ok(html.includes('src/app.js?build=1.3.13'));
+assert.ok(html.includes('styles.css?build=1.3.14'));
+assert.ok(html.includes('src/app.js?build=1.3.14'));
 assert.match(sw,/cache:'no-store'/);
 assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
 assert.match(app,/finalRest\?T\('recoveryCue'\)/);
@@ -84,7 +84,7 @@ assert.match(app,/pose==='superman'&&exerciseId==='snowAngel'/);
 assert.match(app,/return illustration13\(pose,name,lang\)/);
 
 // v1.3.13: verify correction assets, localized Dead Bug follow-through, and offline caching.
-for (const asset of ['shouldertap-corrected.webp','recovery-hydration-corrected.webp']) {
+for (const asset of ['shouldertap-neutral.webp','recovery-hydration-corrected.webp']) {
  const image=readFileSync(new URL('../artwork/'+asset,import.meta.url));
  assert.ok(image.byteLength>100000,asset+' must contain nontrivial high-quality image data');
  assert.equal(image.subarray(0,4).toString('ascii'),'RIFF');
@@ -97,3 +97,9 @@ const data=readFileSync(new URL('../src/data.js',import.meta.url),'utf8');
 const i18n=readFileSync(new URL('../src/i18n.js',import.meta.url),'utf8');
 assert.match(data,/beide zurückführen und die Seite wechseln/);
 assert.match(i18n,/bring both back up, then switch sides/);
+
+// v1.3.14: neutral Shoulder Tap palette without altering the recovery artwork.
+assert.ok(app.includes("shouldertap:'shouldertap-neutral.webp'"));
+assert.ok(app.includes("recovery:'recovery-hydration-corrected.webp'"));
+assert.ok(!app.includes("shouldertap:'shouldertap-corrected.webp'"));
+assert.ok(sw.includes('./artwork/shouldertap-neutral.webp'));

@@ -66,3 +66,6 @@ The preview includes **Plank Shoulder Taps**, **Bird Dog**, **Dead Bug**, and **
 - Shoulder Tap replaces the old same-side gesture: the arm farther from the viewer reaches across the chest while the hand closest to the viewer supports the plank. Movement cue and anatomy stay in a text-free image.
 - Final Rest now uses a new full-length drinking-water study with complete shoes and added safety margins. The previous faded/cropped source is retained for rollback.
 - Two new image filenames and a fresh service-worker cache make the corrections visible on iOS; the production release remains unchanged.
+
+### v1.3.14 – Shoulder Tap palette harmonization
+The corrected Shoulder Tap illustration was rebalanced to match the lighter cream parchment and softer sepia linework of the other workout illustrations, without changing the poses, arrows or dimensions. A distinct asset filename (`shouldertap-neutral.webp`) and updated preview cache avoid outdated artwork on iOS. The separate final-rest water-bottle image (`recovery-hydration-corrected.webp`) remains unchanged by design. Production v1.2 remains unchanged.
