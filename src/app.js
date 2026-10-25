@@ -1,35 +1,52 @@
-import {EXERCISES, EXERCISE_BY_ID, PRESETS, PRESET_BY_ID} from './data.js';
+import {EXERCISES, EXERCISE_BY_ID, PRESETS, PRESET_BY_ID, DIFFICULTIES, presetIds} from './data.js';
 import {buildPlan, planStats, IntervalEngine} from './engine.js';
 import {illustration} from './art.js';
+import {illustration13,isStudy} from './art13.js';
+
 import {optionsFor,stepSetting} from './config.js';
 import {CueAudio} from './audio.js';
-import {t,exerciseText,presetText} from './i18n.js';
-import {validSelection,removeExercise,chooseExercise} from './selection.js';
+import {t,exerciseText,presetText,LANGUAGES,normalizeLang,localeFor} from './i18n.js';
+import {validSelection,removeExercise,chooseExercise,pickerChoices} from './selection.js';
 
-const STORAGE_KEY='flow5-prefs-v1';
-const DEFAULTS={presetId:'full', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en'};
+const STORAGE_KEY='pick5go-prefs-v13';
+const PRIOR_KEYS=['flow5-prefs-v13-preview','flow5-prefs-v1'];
+const DEFAULTS={presetId:'full',difficulty:'beginner', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en'};
 const app=document.getElementById('app');
 
 function loadPreferences(){
  try {
-  const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+  const saved=localStorage.getItem(STORAGE_KEY);
+  const preview=saved===null?localStorage.getItem(PRIOR_KEYS[0]):null;
+  const legacy=saved===null&&preview===null?localStorage.getItem(PRIOR_KEYS[1]):null;
+  const raw=JSON.parse(saved??preview??legacy??'{}');
+  // Upgrade v1.2 custom workouts to the level-aware format without losing choices.
+  if(legacy!==null&&raw.custom&&typeof raw.custom==='object'){
+   const migrated={};
+   for(const [key,ids] of Object.entries(raw.custom)){
+    if(PRESET_BY_ID[key])migrated[key+':beginner']=ids;
+   }
+   raw.custom=migrated;
+  }
   const next={...DEFAULTS,...raw};
   if(!PRESET_BY_ID[next.presetId]) next.presetId='full';
+  if(!DIFFICULTIES.includes(next.difficulty))next.difficulty='beginner';
   for(const [key,min,max] of [['workSec',5,600],['restSec',0,300],['rounds',1,20]]){
    next[key]=Number.isInteger(next[key])?Math.max(min,Math.min(max,next[key])):DEFAULTS[key];
   }
-  next.includeFinalRest=!!next.includeFinalRest;
+  next.includeFinalRest=true; // fixed: always include rest after the last exercise
   next.sound=!!next.sound;
-  next.lang=next.lang==='de'?'de':'en';
+  next.lang=normalizeLang(next.lang);
   if(!next.custom||typeof next.custom!=='object')next.custom={};
   const knownIds=new Set(EXERCISES.map(e=>e.id));
   for(const [key,value] of Object.entries(next.custom)){
-   if(!PRESET_BY_ID[key]||!validSelection(value,knownIds)) delete next.custom[key];
+   const [preset,level]=key.split(':');
+   if(!PRESET_BY_ID[preset]||!DIFFICULTIES.includes(level)||!validSelection(value,knownIds))delete next.custom[key];
   }
   return next;
  } catch {return {...DEFAULTS};}
 }
 let prefs=loadPreferences();
+save(); // Persist migrated settings under the stable production key.
 document.documentElement.lang=prefs.lang;
 let view='setup';
 let swapIndex=null;
@@ -43,17 +60,41 @@ let installPrompt=null;
 let lastPhaseKey='';
 let pendingExit=false;
 let workoutCount=5;
+let workoutSession=null;
 const knownIds=new Set(EXERCISES.map(e=>e.id));
 const T=(key,params)=>t(prefs.lang,key,params);
 const E=id=>exerciseText(EXERCISE_BY_ID[id],prefs.lang);
 const P=p=>presetText(p,prefs.lang);
+const MUSCLE_THUMBNAILS=Object.freeze({
+ squat:'squat-muscles.webp',
+ kneePushup:'kneePushup-muscles.webp',
+ hipHinge:'hipHinge-muscles.webp',
+ birdDog:'birdDog-muscles.webp',
+ march:'march-muscles.webp',
+ pushup:'pushup-muscles.webp',
+ wallPushup:'wallPushup-muscles.webp',
+ bandRow:'bandRow-muscles.webp',
+ snowAngel:'snowAngel-muscles.webp',
+ plank:'plank-muscles.webp',
+ deadBug:'deadBug-muscles.webp',
+ gluteBridge:'gluteBridge-muscles.webp',
+ singleLegBridge:'singleLegBridge-muscles.webp',
+ calfRaise:'calfRaise-muscles.webp',
+ jumpingJack:'jumpingJack-muscles.webp'
+});
+function exerciseThumbnail(e){
+ const file=MUSCLE_THUMBNAILS[e.id];
+ return file
+  ? `<img class="muscle-thumb" src="./artwork/thumbs/${file}" alt="" width="192" height="154" loading="lazy" decoding="async"/>`
+  : illustration(e.pose,e.name,prefs.lang);
+}
 const countLabel=n=>`${n} ${T(n===1?'exerciseOne':'exerciseMany')}`;
 const summaryLabel=()=>`${prefs.rounds} ${T(prefs.rounds===1?'roundOne':'roundMany')} × ${countLabel(currentIds().length)} · ${prefs.workSec}s / ${prefs.restSec}s`;
-const restHelp=()=>T('finalRestOn',{time:humanDuration((prefs.workSec+prefs.restSec)*currentIds().length*prefs.rounds*1000)});
 
 function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(prefs));}catch{/* Privater Modus möglich */}}
-function currentIds(){return prefs.custom[prefs.presetId]||PRESET_BY_ID[prefs.presetId].ids;}
-function currentConfig(){return {workSec:prefs.workSec,restSec:prefs.restSec,rounds:prefs.rounds,includeFinalRest:prefs.includeFinalRest};}
+function currentCustomKey(){return `${prefs.presetId}:${prefs.difficulty}`;}
+function currentIds(){return prefs.custom[currentCustomKey()]||presetIds(prefs.presetId,prefs.difficulty);}
+function currentConfig(){return {workSec:prefs.workSec,restSec:prefs.restSec,rounds:prefs.rounds,includeFinalRest:true};}
 function currentPlan(){return buildPlan(currentIds(),currentConfig());}
 function secsLabel(ms){const sec=Math.ceil(Math.max(0,ms)/1000);return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;}
 function humanDuration(ms){const minutes=Math.floor(ms/60000),seconds=Math.round(ms%60000/1000);return seconds?(prefs.lang==='de'?`${minutes} Min. ${seconds} Sek.`:`${minutes} min ${seconds} sec`):(prefs.lang==='de'?`${minutes} Min.`:`${minutes} min`);}
@@ -78,7 +119,7 @@ function icon(name){
   spark:'<path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>'};
  return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.info}</svg>`;
 }
-function brand(){return `<div class="brand"><div class="brand-mark"><span>5</span><i></i></div><div><strong>FLOW<span>5</span></strong><small>CALISTHENICS TIMER</small></div></div>`;}
+function brand(){return `<div class="brand"><img class="brand-logo" src="./icons/pick5go-mark.svg" alt="Pick5Go" width="72" height="50"/></div>`;}
 function stepper(field,label,unit){
  const values=optionsFor(field,prefs[field]), index=values.indexOf(prefs[field]);
  const options=values.map(value=>`<option value="${value}" ${value===prefs[field]?'selected':''}>${value}</option>`).join('');
@@ -97,20 +138,22 @@ function updatePicker(field){
 function render(){if(view==='setup')renderSetup();else if(view==='workout')renderWorkout();else renderDone();}
 function renderSetup(){
  const preset=P(PRESET_BY_ID[prefs.presetId]),ids=currentIds(),count=ids.length,stats=planStats(currentPlan());
- const cards=PRESETS.map(raw=>{const p=P(raw);return `<button class="preset-card ${p.id===prefs.presetId?'selected':''}" type="button" data-action="preset" data-value="${p.id}" aria-pressed="${p.id===prefs.presetId}"><div class="preset-icon">${p.icon}</div><span class="preset-tag">${escapeHtml(p.tag)}</span><strong>${escapeHtml(p.name)}</strong><small>${escapeHtml(p.subtitle)}</small></button>`;}).join('');
- const rows=ids.map((id,i)=>{const e=E(id);return `<div class="exercise-row"><div class="thumb">${illustration(e.pose,e.name,prefs.lang)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} <span aria-hidden="true">·</span> ${T(['','easy','medium','advanced'][e.level])}</small></div><div class="exercise-actions"><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${T('swap')}: ${escapeHtml(e.name)}">${icon('swap')}<span>${T('swap')}</span></button><button type="button" class="remove-btn" data-action="remove" data-index="${i}" aria-label="${T('remove')}: ${escapeHtml(e.name)}" ${count===1?'disabled':''}>${icon('close')}<span>${T('remove')}</span></button></div></div>`;}).join('');
+ const languageChoices=LANGUAGES.map(l=>`<option value="${l.code}" ${l.code===prefs.lang?'selected':''}>${l.label}</option>`).join('');
+ const cards=PRESETS.map(raw=>{const p=P(raw);return `<button class="preset-card ${p.id===prefs.presetId?'selected':''}" type="button" data-action="preset" data-value="${p.id}" aria-pressed="${p.id===prefs.presetId}"><div class="preset-icon">${p.icon}</div><strong>${escapeHtml(p.name)}</strong><small>${escapeHtml(p.subtitle)}</small></button>`;}).join('');
+ const levelChoices=DIFFICULTIES.map((level,index)=>`<button class="difficulty-option ${prefs.difficulty===level?'selected':''}" type="button" data-action="difficulty" data-value="${level}" aria-pressed="${prefs.difficulty===level}">${T(index===0?'easy':'medium')}</button>`).join('');
+ const rows=ids.map((id,i)=>{const e=E(id);return `<div class="exercise-row"><div class="thumb">${exerciseThumbnail(e)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} <span aria-hidden="true">·</span> ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small></div><div class="exercise-actions"><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${T('swap')}: ${escapeHtml(e.name)}">${icon('swap')}<span>${T('swap')}</span></button><button type="button" class="remove-btn" data-action="remove" data-index="${i}" aria-label="${T('remove')}: ${escapeHtml(e.name)}" ${count===1?'disabled':''}>${icon('close')}<span>${T('remove')}</span></button></div></div>`;}).join('');
  app.innerHTML=`<div class="site-shell">
- <header class="topbar">${brand()}<div class="topbar-actions"><button type="button" class="language-btn" data-action="language" aria-label="${T('switchLanguage')}" title="${T('switchLanguage')}"><span aria-hidden="true">${prefs.lang==='de'?'🇩🇪':'🇬🇧'}</span><span>${prefs.lang.toUpperCase()}</span></button><button class="icon-button help-button" type="button" data-action="help" aria-label="${T('help')}">${icon('info')}</button></div></header>
- <main class="layout"><section class="intro"><div class="eyebrow"><span class="live-dot"></span> ${T('heroEyebrow')}</div><h1>${T('heroFirst')}<br/><em>${T('heroSecond')}</em></h1><p>${T('heroDesc')}</p><div class="intro-stats"><span>${icon('clock')} ${T('flexible')}</span><span>${icon('sun')} ${T('awake')}</span></div></section>
- <section class="panel preset-panel"><div class="section-heading"><div><span class="step-label">01 / ${T('focus').toUpperCase()}</span><h2>${T('focus')}</h2></div><span class="subtle">${PRESETS.length} ${T('programs')}</span></div><div class="preset-list">${cards}</div></section>
- <section class="panel lineup-panel"><div class="section-heading"><div><span class="step-label">02 / ${T('exercisesTitle').toUpperCase()}</span><h2>${T('exercisesTitle')} <span class="exercise-count">${count}/5</span></h2></div>${prefs.custom[prefs.presetId]?`<button class="reset-btn" type="button" data-action="reset">${T('reset')}</button>`:`<span class="subtle">${escapeHtml(preset.name)}</span>`}</div><div class="exercise-list">${rows}</div>${count<5?`<button type="button" class="add-exercise-btn" data-action="add"><strong>＋</strong> ${T('add')} <span>${count}/5</span></button>`:''}<p class="hint">${icon('swap')} ${T('removeHint')}</p></section>
+ <header class="topbar">${brand()}<div class="topbar-actions"><select class="language-select" data-language aria-label="${T('switchLanguage')}" title="${T('switchLanguage')}">${languageChoices}</select><button class="icon-button help-button" type="button" data-action="help" aria-label="${T('help')}">${icon('info')}</button></div></header>
+ <p class="health-notice" role="note">${icon('info')}<span>${escapeHtml(T('healthNotice'))}</span></p>
+ <main class="layout"><section class="intro"><div class="eyebrow"><span class="live-dot"></span> ${T('heroEyebrow')}</div><h1>${T('heroFirst')}<br/><em>${T('heroSecond')}</em></h1><p>${T('heroDesc')}</p></section>
+ <section class="panel preset-panel"><div class="difficulty-selector"><div class="difficulty-head"><strong>${T('levelHeading')}</strong><small>${T('levelHint')}</small></div><div class="difficulty-options" role="group" aria-label="${T('levelHeading')}">${levelChoices}</div></div><div class="section-heading"><div><span class="step-label">01 / ${T('focus').toUpperCase()}</span><h2>${T('focus')}</h2></div><span class="subtle">${PRESETS.length} ${T('programs')}</span></div><div class="preset-list">${cards}</div></section>
+ <section class="panel lineup-panel"><div class="section-heading"><div><span class="step-label">02 / ${T('exercisesTitle').toUpperCase()}</span><h2>${T('exercisesTitle')} <span class="exercise-count">${count}/5</span></h2></div>${prefs.custom[currentCustomKey()]?`<button class="reset-btn" type="button" data-action="reset">${T('reset')}</button>`:`<span class="subtle">${escapeHtml(preset.name)}</span>`}</div><div class="exercise-list">${rows}</div>${ids.some(id=>EXERCISE_BY_ID[id].equipment==='band')?`<p class="band-note">${icon('info')} ${T('bandRequired')}</p>`:''}${count<5?`<button type="button" class="add-exercise-btn" data-action="add"><strong>＋</strong> ${T('add')} <span>${count}/5</span></button>`:''}<p class="hint">${icon('swap')} ${T('removeHint')}</p></section>
  <section class="panel config-panel"><div class="section-heading"><div><span class="step-label">03 / ${T('timing').toUpperCase()}</span><h2>${T('timing')}</h2></div></div>
  <div class="config-grid">${stepper('workSec',T('work'),T('sec'))}${stepper('restSec',T('rest'),T('sec'))}${stepper('rounds',T('rounds'),'× '+count)}</div>
- <label class="toggle-line"><div><strong>${T('finalRest')}</strong><small>${restHelp()}</small></div><input type="checkbox" data-config="includeFinalRest" ${prefs.includeFinalRest?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
  <label class="toggle-line"><div><strong>${T('sounds')}</strong><small>${T('soundsDesc')}</small></div><input type="checkbox" data-config="sound" ${prefs.sound?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
  </section>
- <aside class="summary-panel"><div class="summary-head"><span>${T('plan')}</span>${icon('spark')}</div><div class="total-time">${secsLabel(stats.totalMs)}</div><span class="summary-note">${T('duration')}</span><div class="meter"><div class="meter-work" style="width:${stats.workMs/stats.totalMs*100}%"></div></div><div class="summary-breakdown"><span><i class="dot work-dot"></i> ${T('workBreakdown')} <b>${secsLabel(stats.workMs)}</b></span><span><i class="dot rest-dot"></i> ${T('restBreakdown')} <b>${secsLabel(stats.restMs)}</b></span></div><div class="summary-desc">${summaryLabel()}</div><button type="button" data-action="start" class="primary-btn">${T('start')} ${icon('arrow')}</button><small class="footnote">${T('footnote')}</small></aside>
- </main><footer class="footer">${T('footer')}</footer>
+ <aside class="summary-panel"><div class="summary-head"><span>${T('plan')}</span>${icon('spark')}</div><div class="total-time">${secsLabel(stats.totalMs)}</div><span class="summary-note">${T('duration')}</span><div class="meter"><div class="meter-work" style="width:${stats.workMs/stats.totalMs*100}%"></div></div><div class="summary-breakdown"><span><i class="dot work-dot"></i> ${T('workBreakdown')} <b>${secsLabel(stats.workMs)}</b></span><span><i class="dot rest-dot"></i> ${T('restBreakdown')} <b>${secsLabel(stats.restMs)}</b></span></div><div class="summary-desc">${summaryLabel()}</div><button type="button" data-action="start" class="primary-btn">${T('start')} ${icon('arrow')}</button></aside>
+ </main><footer class="footer"><span>${T('footer')}</span><span class="author-credit">by Lorenzo D'Angelo</span></footer>
  </div>${swapIndex!==null?renderSwapDialog():''}`;
 }
 function updateSettingsSummary(){
@@ -122,34 +165,84 @@ function updateSettingsSummary(){
  if(labels[0])labels[0].textContent=secsLabel(stats.workMs);
  if(labels[1])labels[1].textContent=secsLabel(stats.restMs);
  put('.summary-desc',summaryLabel());
- const note=app.querySelector('.toggle-line small');if(note)note.textContent=restHelp();
 }
 function renderSwapDialog(){
- const isAdd=swapIndex===-1,selected=new Set(currentIds());
- const filtered=EXERCISES.filter(raw=>{const e=exerciseText(raw,prefs.lang);return !selected.has(e.id)&&`${e.name} ${e.group}`.toLocaleLowerCase(prefs.lang).includes(swapQuery.toLocaleLowerCase(prefs.lang));});
- return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(raw=>{const e=exerciseText(raw,prefs.lang);return `<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${illustration(e.pose,e.name,prefs.lang)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`;}).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
+ const isAdd=swapIndex===-1;
+ const localized=EXERCISES.map(raw=>exerciseText(raw,prefs.lang));
+ // Already selected exercises, including the currently edited slot, cannot be picked twice.
+ const filtered=pickerChoices(localized,currentIds(),swapQuery,prefs.lang);
+ return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(e=>`<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${exerciseThumbnail(e)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
 }
 function nextWork(index){if(!engine)return null;return engine.phases.slice(index+1).find(p=>p.kind==='work')||null;}
+const STUDY_IMAGE={singlelegbridge:'singlelegbridge-master-v1329.webp',assistedsquat:'assistedsquat-master-v1329.webp',hiphinge:'hiphinge-master-v1327.webp',kneepushup:'kneepushup-master-v1328.webp',bandrow:'bandrow-master-v1328.webp',bear:'bear-master-v1322.webp',heeltouch:'heeltouch-master-v1322.webp',snowangel:'snowangel-master-v1322.webp',calf:'calfraise-master-v1321.webp',wallsit:'wallsit-master-v1319.webp',jumping:'jumpingjacks-master-v1320.webp',pike:'pikepushup-master-v1318.webp',wall:'wallpushup-master-v1317.webp',squat:'squat-master.webp',pushup:'pushup-master.webp',plank:'plank-master.webp',lunge:'lunge-master.webp',mountain:'mountain-master.webp',bridge:'bridge-master.webp',march:'march-master.webp',bicycle:'bicycle-master.webp',sideplank:'sideplank-master.webp',recovery:'recovery-hydration-corrected.webp',shouldertap:'shouldertap-clean-v1315.webp',birddog:'birddog-master.webp',deadbug:'deadbug-clean-v1315.webp',superman:'superman-master.webp'};
+function studyPicture(pose,name,lang,exerciseId=''){
+ // Reverse Snow Angels shares a legacy pose identifier with Superman Hold.
+ // Resolve the exercise ID first so each receives the correct movement illustration.
+ const file=exerciseId==='snowAngel'?STUDY_IMAGE.snowangel:STUDY_IMAGE[pose];
+ if(!file)return `<div class="v13-art-placeholder" role="img" aria-label="${escapeHtml(name)}"><span aria-hidden="true">✧</span><small>${T('placeholder')}</small></div>`;
+ const dimensions='width="1440" height="960"';
+ const mirrored=pose==='sideplank'&&exerciseId==='sidePlankL';
+ return `<img class="v13-study-image" src="./artwork/${file}" data-pose="${escapeHtml(pose)}" ${mirrored?'style="transform:scaleX(-1)"':''} ${dimensions} alt="${escapeHtml(name)}" decoding="async" fetchpriority="high"/>`;
+}
 function renderWorkout(){
  if(!engine)return;
- const snap=engine.snapshot();if(snap.status==='completed'){view='done';renderDone();return;}
+ const snap=engine.snapshot();
+ if(snap.status==='completed'){view='done';renderDone();return;}
  const p=snap.phase,isRest=p.kind==='rest',next=nextWork(snap.index);
+ const finalRest=isRest&&!next;
  const present=E(isRest&&next?next.exerciseId:p.exerciseId);
- const title=isRest?(next?T('nextPrefix')+present.name:T('lastRest')):present.name;
- const descr=isRest?(next?present.cue:T('restFinished')):present.cue;
+ const shownPosition=(isRest&&next)?next.position:p.position;
+ const shownRound=(isRest&&next)?next.round:p.round;
  const group=T(isRest?'restCaps':'workCaps');
+ const displayName=finalRest?T('lastRest'):present.name;
+ const cue=finalRest?T('recoveryCue'):present.cue;
+ const studyLabels={en:['HOLD','START → END'],de:['HALTEN','START → ENDE'],it:['TIENI','INIZIO → FINE'],fr:['TENIR','DÉBUT → FIN'],es:['MANTÉN','INICIO → FIN']};
+ const actionLabel=finalRest?'':isRest?T('readySoon'):(isStudy(present.pose)?studyLabels[prefs.lang][present.pose==='plank'?0:1]:'');
  lastPhaseKey=String(snap.index);
- app.innerHTML=`<div class="training-screen ${isRest?'rest-mode':''}"><header class="training-header"><div>${brand()}<div class="status-row"><span class="status-pill ${isRest?'is-rest':''}"><i></i>${group}</span><span class="training-meta">${T('roundLabel')} ${p.round}/${prefs.rounds} · ${T('exerciseLabel')} ${p.position}/${workoutCount}</span></div></div><button type="button" class="quiet-btn" data-action="exit">${icon('close')} ${T('exit')}</button></header>
- <main class="training-main"><div class="clock-side"><div class="timer-ring" id="timer-ring" style="--progress:${snap.phaseProgress*100}%"><div class="timer-inner"><span class="ring-label">${T(isRest?'pauseLabel':'leftLabel')}</span><strong id="phase-time" aria-label="${T('remaining')}">${secsLabel(snap.remainingMs)}</strong><span class="ring-hint">${T('clockHint')}</span></div></div><div class="whole-timer"><span>${T('remaining')}</span><strong id="remaining-time">${secsLabel(snap.totalRemainingMs)}</strong></div><div class="whole-track"><div id="whole-progress" style="width:${snap.overallProgress*100}%"></div></div></div>
- <div class="exercise-side"><div class="training-illustration">${illustration(present.pose,present.name,prefs.lang)}<span class="art-tag">${isRest?T('readySoon'):present.group.toUpperCase()}</span></div><div class="workout-exercise"><span class="step-label">${T(isRest?'nextPreview':'activeExercise')}</span><h1>${escapeHtml(title)}</h1><p>${escapeHtml(descr)}</p><small>${escapeHtml(present.tip)}</small></div><div class="up-next">${icon('arrow')} <span>${isRest?(next?T('afterWork'):T('afterFinish')):(next?T('afterPrefix')+E(next.exerciseId).name:T('afterDone'))}</span></div></div></main>
- <footer class="training-controls"><div id="wake-indicator" class="wake-indicator">${icon('sun')} ${T('checkingWake')}</div><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
- <div class="visually-hidden" id="phase-announcement" aria-live="polite">${group}: ${title}</div></div>`;
+ app.innerHTML=`<div class="training-screen v13 v13-clean ${isRest?'rest-mode':''}">
+ <header class="training-header v13-header"><img class="brand-logo" src="./icons/pick5go-mark.svg" alt="Pick5Go" width="72" height="50"/><button type="button" class="quiet-btn" data-action="exit" aria-label="${T('exit')}">${icon('close')} <span>${T('exit')}</span></button></header>
+ <main class="v13-workout">
+  <div class="v13-timing">
+    <div class="v13-current"><span class="v13-state ${isRest?'v13-rest':''}">${group}</span><strong id="phase-time" aria-label="${T('remaining')}">${secsLabel(snap.remainingMs)}</strong></div>
+    <div class="v13-session"><span>${T('roundLabel')} ${p.round}/${prefs.rounds} · ${T('exerciseLabel')} ${p.position}/${workoutCount}</span><div class="v13-total"><span>${T('remaining')}</span> <strong id="remaining-time">${secsLabel(snap.totalRemainingMs)}</strong></div></div>
+  </div>
+  <div class="whole-track v13-progress" role="progressbar" aria-label="${T('remaining')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(snap.overallProgress*100)}"><div id="whole-progress" style="width:${snap.overallProgress*100}%"></div></div>
+  <section class="v13-art ${finalRest?'v13-final-rest':''}" aria-label="${escapeHtml(displayName)}">
+    <div class="v13-art-heading"><span class="v13-art-index">${finalRest?'':String(shownPosition).padStart(2,'0')+' / '+String(workoutCount).padStart(2,'0')}</span><h1>${escapeHtml(displayName)}</h1>${actionLabel?`<span class="v13-motion-label">${actionLabel}</span>`:''}</div>
+    <div class="v13-drawing">${studyPicture(finalRest?'recovery':present.pose,displayName,prefs.lang,present.id)}</div>
+    <p class="v13-art-cue">${escapeHtml(cue)}</p>
+  </section>
+ </main>
+ <footer class="training-controls v13-controls"><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div><div id="wake-indicator" class="wake-indicator visually-hidden" aria-live="polite">${T('checkingWake')}</div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
+ <div class="visually-hidden" id="phase-announcement" aria-live="polite">${group}: ${displayName}</div></div>`;
  updateClock();updateWakeIndicator();
 }
 function renderDone(){
- const stats=engine?planStats(engine.phases):planStats(currentPlan());
+ // Show the actual workout configuration captured on Start, not preferences edited later.
+ const session=workoutSession||{
+  ids:[...currentIds()],presetId:prefs.presetId,difficulty:prefs.difficulty,
+  rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,
+  includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()]
+ };
+ const stats=engine?planStats(engine.phases):planStats(buildPlan(session.ids,session));
+ const date=new Intl.DateTimeFormat(localeFor(prefs.lang),{day:'numeric',month:'short',year:'numeric'}).format(new Date());
+ const names=session.ids.map((id,i)=>`<li><span class="record-number">${String(i+1).padStart(2,'0')}</span><span>${escapeHtml(E(id).name)}</span></li>`).join('');
+ const workRest=`${session.workSec} ${T('sec')} ${T('work')} · ${session.restSec} ${T('sec')} ${T('rest')}`;
  view='done';
- app.innerHTML=`<div class="done-page"><header>${brand()}</header><main><div class="done-check">${icon('check')}</div><span class="eyebrow">${T('complete')}</span><h1>${T('wellDone')}</h1><p>${T('doneMessage')}</p><div class="done-stats"><div><strong>${secsLabel(stats.totalMs)}</strong><small>${T('planned')}</small></div><div><strong>${prefs.rounds} × ${workoutCount}</strong><small>${T('exercisesDone')}</small></div></div><button class="primary-btn" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></main></div>`;
+ app.innerHTML=`<div class="done-page done-record-page">
+ <header class="done-topbar"><img class="brand-logo" src="./icons/pick5go-mark.svg" alt="Pick5Go" width="72" height="50"/></header>
+ <main>
+  <section class="workout-record" aria-label="${T('workoutRecord')}">
+   <div class="record-top"><span class="record-success">${icon('check')} ${T('complete')}</span><span class="record-date">${escapeHtml(date)}</span></div>
+   <h1>${T('wellDone')}</h1>
+   <div class="record-stats"><div><strong>${secsLabel(stats.totalMs)}</strong><span>${T('recordTotal')}</span></div><div><strong>${session.rounds} × ${session.ids.length}</strong><span>${T('roundMany')} × ${T('exerciseMany')}</span></div></div>
+   <div class="record-intervals"><span>${T('recordIntervals')}</span><strong>${escapeHtml(workRest)}</strong></div>
+   <div class="record-exercises"><h2>${T('recordExercises')}</h2><ol>${names}</ol></div>
+   <div class="record-bottom"><span>Pick5Go · by Lorenzo D'Angelo</span></div>
+  </section>
+  <p class="record-hint">${T('recordHint')}</p>
+  <div class="record-actions"><button class="primary-btn" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></div>
+ </main></div>`;
 }
 function updateClock(){
  if(!engine||view!=='workout')return;
@@ -185,8 +278,10 @@ function updateWakeIndicator(){
 function beginWorkout(){
  try{
   // Der erste Ton wird synchron beim Start-Tipp abgespielt.
-  workoutCount=currentIds().length;
-  engine=new IntervalEngine(currentPlan(),{
+  const ids=[...currentIds()];
+  workoutCount=ids.length;
+  workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()]};
+  engine=new IntervalEngine(buildPlan(ids,currentConfig()),{
    onPhase:(phase,previous)=>{
     if(previous)phaseSound(phase);
     if(view==='workout')renderWorkout();
@@ -199,17 +294,17 @@ function beginWorkout(){
   window.scrollTo({top:0,behavior:'instant'});
  }catch(err){window.alert(T('startError')+err.message);}
 }
-function exitWorkout(){stopTicking();cueAudio.stop();releaseWake();engine=null;pendingExit=false;view='setup';render();}
+function exitWorkout(){stopTicking();cueAudio.stop();releaseWake();engine=null;workoutSession=null;pendingExit=false;view='setup';render();}
 function showHelp(){window.alert(T('helpMessage'));}
 app.addEventListener('click',event=>{
  const button=event.target.closest('[data-action]');if(!button)return;
  const action=button.dataset.action;
  if(action==='preset'){prefs.presetId=button.dataset.value;save();render();}
- else if(action==='reset'){delete prefs.custom[prefs.presetId];save();render();}
- else if(action==='language'){prefs.lang=prefs.lang==='en'?'de':'en';document.documentElement.lang=prefs.lang;save();render();}
+ else if(action==='difficulty'&&DIFFICULTIES.includes(button.dataset.value)){prefs.difficulty=button.dataset.value;save();render();}
+ else if(action==='reset'){delete prefs.custom[currentCustomKey()];save();render();}
  else if(action==='remove'){
   const old=currentIds(),ids=removeExercise(old,Number(button.dataset.index));
-  if(ids.length!==old.length){prefs.custom[prefs.presetId]=ids;save();render();}
+  if(ids.length!==old.length){prefs.custom[currentCustomKey()]=ids;save();render();}
  }
  else if(action==='add'){
   if(currentIds().length<5){swapIndex=-1;swapQuery='';render();document.querySelector('[data-search]')?.focus();}
@@ -220,7 +315,7 @@ app.addEventListener('click',event=>{
   if(swapIndex===null)return;
   const chosen=chooseExercise(ids,swapIndex,id,knownIds);
   if(!chosen)return;
-  prefs.custom[prefs.presetId]=chosen;swapIndex=null;swapQuery='';save();render();
+  prefs.custom[currentCustomKey()]=chosen;swapIndex=null;swapQuery='';save();render();
  }
  else if(action==='close-swap'){swapIndex=null;swapQuery='';render();}
  else if(action==='dismiss-swap' && event.target===button){swapIndex=null;swapQuery='';render();}
@@ -236,12 +331,16 @@ app.addEventListener('click',event=>{
   if(window.confirm(T('exitConfirm')))exitWorkout();
  }
  else if(action==='restart'){beginWorkout();}
- else if(action==='setup'){engine=null;view='setup';render();}
+ else if(action==='setup'){engine=null;workoutSession=null;view='setup';render();}
  else if(action==='help'){showHelp();}
 });
 app.addEventListener('change',event=>{
+ if(event.target.matches('[data-language]')){
+  prefs.lang=normalizeLang(event.target.value);
+  document.documentElement.lang=prefs.lang;save();render();return;
+ }
  const field=event.target.dataset.config;if(!field)return;
- if(field==='sound'||field==='includeFinalRest'){prefs[field]=event.target.checked;if(field==='sound'&&!prefs.sound)cueAudio.stop();}
+ if(field==='sound'){prefs.sound=event.target.checked;if(!prefs.sound)cueAudio.stop();}
  else if(['workSec','restSec','rounds'].includes(field)){const value=Number(event.target.value);if(optionsFor(field,prefs[field]).includes(value))prefs[field]=value;updatePicker(field);}
  else return;
  save();updateSettingsSummary();
@@ -266,3 +365,18 @@ if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostn
  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 }
 render();
+
+// Graceful fallback while new visual-preview assets are being uploaded or offline.
+// Capture image load failures, retaining the original illustration for affected poses.
+document.addEventListener('error',event=>{
+  const target=event.target;
+  if(!(target instanceof HTMLImageElement)||!target.classList.contains('v13-study-image'))return;
+  const pose=target.dataset.pose;
+  if(pose==='recovery'){
+    if(!target.dataset.usedFallback){target.dataset.usedFallback='1';target.src='./artwork/recovery.webp';}
+    return;
+  }
+  const art=illustration13(pose,target.alt,prefs.lang);
+  const wrapper=document.createElement('span');wrapper.className='v13-study-fallback';wrapper.innerHTML=art;
+  target.replaceWith(wrapper);
+},true);

@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "Flow5 – Calisthenics Timer",
-  "short_name": "Flow5",
-  "description": "Calisthenics interval timer. One to five exercises per round, your rhythm.",
+  "name": "Pick5Go – Fitness, simplified.",
+  "short_name": "Pick5Go",
+  "description": "Pick five exercises, set your pace, and start. Fitness, simplified.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
