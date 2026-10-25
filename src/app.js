@@ -1,4 +1,4 @@
-import {EXERCISES, EXERCISE_BY_ID, PRESETS, PRESET_BY_ID} from './data.js';
+import {EXERCISES, EXERCISE_BY_ID, PRESETS, PRESET_BY_ID, DIFFICULTIES, presetIds} from './data.js';
 import {buildPlan, planStats, IntervalEngine} from './engine.js';
 import {illustration} from './art.js';
 import {illustration13,isStudy} from './art13.js';
@@ -9,7 +9,7 @@ import {t,exerciseText,presetText} from './i18n.js';
 import {validSelection,removeExercise,chooseExercise} from './selection.js';
 
 const STORAGE_KEY='flow5-prefs-v13-preview';
-const DEFAULTS={presetId:'full', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en'};
+const DEFAULTS={presetId:'full',difficulty:'beginner', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en'};
 const app=document.getElementById('app');
 
 function loadPreferences(){
@@ -17,6 +17,7 @@ function loadPreferences(){
   const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
   const next={...DEFAULTS,...raw};
   if(!PRESET_BY_ID[next.presetId]) next.presetId='full';
+  if(!DIFFICULTIES.includes(next.difficulty))next.difficulty='beginner';
   for(const [key,min,max] of [['workSec',5,600],['restSec',0,300],['rounds',1,20]]){
    next[key]=Number.isInteger(next[key])?Math.max(min,Math.min(max,next[key])):DEFAULTS[key];
   }
@@ -26,7 +27,8 @@ function loadPreferences(){
   if(!next.custom||typeof next.custom!=='object')next.custom={};
   const knownIds=new Set(EXERCISES.map(e=>e.id));
   for(const [key,value] of Object.entries(next.custom)){
-   if(!PRESET_BY_ID[key]||!validSelection(value,knownIds)) delete next.custom[key];
+   const [preset,level]=key.split(':');
+   if(!PRESET_BY_ID[preset]||!DIFFICULTIES.includes(level)||!validSelection(value,knownIds))delete next.custom[key];
   }
   return next;
  } catch {return {...DEFAULTS};}
@@ -54,7 +56,8 @@ const summaryLabel=()=>`${prefs.rounds} ${T(prefs.rounds===1?'roundOne':'roundMa
 const restHelp=()=>T('finalRestOn',{time:humanDuration((prefs.workSec+prefs.restSec)*currentIds().length*prefs.rounds*1000)});
 
 function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(prefs));}catch{/* Privater Modus möglich */}}
-function currentIds(){return prefs.custom[prefs.presetId]||PRESET_BY_ID[prefs.presetId].ids;}
+function currentCustomKey(){return `${prefs.presetId}:${prefs.difficulty}`;}
+function currentIds(){return prefs.custom[currentCustomKey()]||presetIds(prefs.presetId,prefs.difficulty);}
 function currentConfig(){return {workSec:prefs.workSec,restSec:prefs.restSec,rounds:prefs.rounds,includeFinalRest:prefs.includeFinalRest};}
 function currentPlan(){return buildPlan(currentIds(),currentConfig());}
 function secsLabel(ms){const sec=Math.ceil(Math.max(0,ms)/1000);return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;}
@@ -99,14 +102,14 @@ function updatePicker(field){
 function render(){if(view==='setup')renderSetup();else if(view==='workout')renderWorkout();else renderDone();}
 function renderSetup(){
  const preset=P(PRESET_BY_ID[prefs.presetId]),ids=currentIds(),count=ids.length,stats=planStats(currentPlan());
- const cards=PRESETS.map(raw=>{const p=P(raw);return `<button class="preset-card ${p.id===prefs.presetId?'selected':''}" type="button" data-action="preset" data-value="${p.id}" aria-pressed="${p.id===prefs.presetId}"><div class="preset-icon">${p.icon}</div><span class="preset-tag">${escapeHtml(p.tag)}</span><strong>${escapeHtml(p.name)}</strong><small>${escapeHtml(p.subtitle)}</small></button>`;}).join('');
- const rows=ids.map((id,i)=>{const e=E(id);return `<div class="exercise-row"><div class="thumb">${illustration(e.pose,e.name,prefs.lang)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} <span aria-hidden="true">·</span> ${T(['','easy','medium','advanced'][e.level])}</small></div><div class="exercise-actions"><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${T('swap')}: ${escapeHtml(e.name)}">${icon('swap')}<span>${T('swap')}</span></button><button type="button" class="remove-btn" data-action="remove" data-index="${i}" aria-label="${T('remove')}: ${escapeHtml(e.name)}" ${count===1?'disabled':''}>${icon('close')}<span>${T('remove')}</span></button></div></div>`;}).join('');
+ const cards=PRESETS.map(raw=>{const p=P(raw);return `<button class="preset-card ${p.id===prefs.presetId?'selected':''}" type="button" data-action="preset" data-value="${p.id}" aria-pressed="${p.id===prefs.presetId}"><div class="preset-icon">${p.icon}</div><strong>${escapeHtml(p.name)}</strong><small>${escapeHtml(p.subtitle)}</small></button>`;}).join('');
+ const levelChoices=DIFFICULTIES.map((level,index)=>`<button class="difficulty-option ${prefs.difficulty===level?'selected':''}" type="button" data-action="difficulty" data-value="${level}" aria-pressed="${prefs.difficulty===level}">${T(index===0?'easy':'medium')}</button>`).join('');
+ const rows=ids.map((id,i)=>{const e=E(id);return `<div class="exercise-row"><div class="thumb">${illustration(e.pose,e.name,prefs.lang)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} <span aria-hidden="true">·</span> ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small></div><div class="exercise-actions"><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${T('swap')}: ${escapeHtml(e.name)}">${icon('swap')}<span>${T('swap')}</span></button><button type="button" class="remove-btn" data-action="remove" data-index="${i}" aria-label="${T('remove')}: ${escapeHtml(e.name)}" ${count===1?'disabled':''}>${icon('close')}<span>${T('remove')}</span></button></div></div>`;}).join('');
  app.innerHTML=`<div class="site-shell">
  <header class="topbar">${brand()}<div class="topbar-actions"><button type="button" class="language-btn" data-action="language" aria-label="${T('switchLanguage')}" title="${T('switchLanguage')}"><span aria-hidden="true">${prefs.lang==='de'?'🇩🇪':'🇬🇧'}</span><span>${prefs.lang.toUpperCase()}</span></button><button class="icon-button help-button" type="button" data-action="help" aria-label="${T('help')}">${icon('info')}</button></div></header>
  <main class="layout"><section class="intro"><div class="eyebrow"><span class="live-dot"></span> ${T('heroEyebrow')}</div><h1>${T('heroFirst')}<br/><em>${T('heroSecond')}</em></h1><p>${T('heroDesc')}</p><div class="intro-stats"><span>${icon('clock')} ${T('flexible')}</span><span>${icon('sun')} ${T('awake')}</span></div></section>
- <div class="preview-intro"><span>FLOW5 · v1.3 PREVIEW</span><p>${prefs.lang==='de'?'Neues Layout und drei anatomische Illustrationen testen. Die Live-App bleibt unverändert.':'Test the new workout layout and three anatomical studies. Your live app is unchanged.'}</p><button type="button" data-action="try-studies">${prefs.lang==='de'?'Squats · Push-ups · Plank testen':'Try Squats · Push-ups · Plank'} ${icon('arrow')}</button></div>
- <section class="panel preset-panel"><div class="section-heading"><div><span class="step-label">01 / ${T('focus').toUpperCase()}</span><h2>${T('focus')}</h2></div><span class="subtle">${PRESETS.length} ${T('programs')}</span></div><div class="preset-list">${cards}</div></section>
- <section class="panel lineup-panel"><div class="section-heading"><div><span class="step-label">02 / ${T('exercisesTitle').toUpperCase()}</span><h2>${T('exercisesTitle')} <span class="exercise-count">${count}/5</span></h2></div>${prefs.custom[prefs.presetId]?`<button class="reset-btn" type="button" data-action="reset">${T('reset')}</button>`:`<span class="subtle">${escapeHtml(preset.name)}</span>`}</div><div class="exercise-list">${rows}</div>${count<5?`<button type="button" class="add-exercise-btn" data-action="add"><strong>＋</strong> ${T('add')} <span>${count}/5</span></button>`:''}<p class="hint">${icon('swap')} ${T('removeHint')}</p></section>
+ <section class="panel preset-panel"><div class="difficulty-selector"><div class="difficulty-head"><strong>${T('levelHeading')}</strong><small>${T('levelHint')}</small></div><div class="difficulty-options" role="group" aria-label="${T('levelHeading')}">${levelChoices}</div></div><div class="section-heading"><div><span class="step-label">01 / ${T('focus').toUpperCase()}</span><h2>${T('focus')}</h2></div><span class="subtle">${PRESETS.length} ${T('programs')}</span></div><div class="preset-list">${cards}</div></section>
+ <section class="panel lineup-panel"><div class="section-heading"><div><span class="step-label">02 / ${T('exercisesTitle').toUpperCase()}</span><h2>${T('exercisesTitle')} <span class="exercise-count">${count}/5</span></h2></div>${prefs.custom[currentCustomKey()]?`<button class="reset-btn" type="button" data-action="reset">${T('reset')}</button>`:`<span class="subtle">${escapeHtml(preset.name)}</span>`}</div><div class="exercise-list">${rows}</div>${ids.some(id=>EXERCISE_BY_ID[id].equipment==='band')?`<p class="band-note">${icon('info')} ${T('bandRequired')}</p>`:''}${count<5?`<button type="button" class="add-exercise-btn" data-action="add"><strong>＋</strong> ${T('add')} <span>${count}/5</span></button>`:''}<p class="hint">${icon('swap')} ${T('removeHint')}</p></section>
  <section class="panel config-panel"><div class="section-heading"><div><span class="step-label">03 / ${T('timing').toUpperCase()}</span><h2>${T('timing')}</h2></div></div>
  <div class="config-grid">${stepper('workSec',T('work'),T('sec'))}${stepper('restSec',T('rest'),T('sec'))}${stepper('rounds',T('rounds'),'× '+count)}</div>
  <label class="toggle-line"><div><strong>${T('finalRest')}</strong><small>${restHelp()}</small></div><input type="checkbox" data-config="includeFinalRest" ${prefs.includeFinalRest?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
@@ -130,7 +133,7 @@ function updateSettingsSummary(){
 function renderSwapDialog(){
  const isAdd=swapIndex===-1,selected=new Set(currentIds());
  const filtered=EXERCISES.filter(raw=>{const e=exerciseText(raw,prefs.lang);return !selected.has(e.id)&&`${e.name} ${e.group}`.toLocaleLowerCase(prefs.lang).includes(swapQuery.toLocaleLowerCase(prefs.lang));});
- return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(raw=>{const e=exerciseText(raw,prefs.lang);return `<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${illustration(e.pose,e.name,prefs.lang)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`;}).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
+ return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(raw=>{const e=exerciseText(raw,prefs.lang);return `<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${illustration(e.pose,e.name,prefs.lang)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`;}).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
 }
 function nextWork(index){if(!engine)return null;return engine.phases.slice(index+1).find(p=>p.kind==='work')||null;}
 const STUDY_IMAGE={bear:'bear-master-v1322.webp',heeltouch:'heeltouch-master-v1322.webp',snowangel:'snowangel-master-v1322.webp',calf:'calfraise-master-v1321.webp',wallsit:'wallsit-master-v1319.webp',jumping:'jumpingjacks-master-v1320.webp',pike:'pikepushup-master-v1318.webp',wall:'wallpushup-master-v1317.webp',squat:'squat-master.webp',pushup:'pushup-master.webp',plank:'plank-master.webp',lunge:'lunge-master.webp',mountain:'mountain-master.webp',bridge:'bridge-master.webp',march:'march-master.webp',bicycle:'bicycle-master.webp',sideplank:'sideplank-master.webp',recovery:'recovery-hydration-corrected.webp',shouldertap:'shouldertap-clean-v1315.webp',birddog:'birddog-master.webp',deadbug:'deadbug-clean-v1315.webp',superman:'superman-master.webp'};
@@ -138,7 +141,7 @@ function studyPicture(pose,name,lang,exerciseId=''){
  // Reverse Snow Angels shares a legacy pose identifier with Superman Hold.
  // Resolve the exercise ID first so each receives the correct movement illustration.
  const file=exerciseId==='snowAngel'?STUDY_IMAGE.snowangel:STUDY_IMAGE[pose];
- if(!file)return illustration13(pose,name,lang);
+ if(!file)return `<div class="v13-art-placeholder" role="img" aria-label="${escapeHtml(name)}"><span aria-hidden="true">✧</span><small>${T('placeholder')}</small></div>`;
  const dimensions='width="1440" height="960"';
  const mirrored=pose==='sideplank'&&exerciseId==='sidePlankL';
  return `<img class="v13-study-image" src="./artwork/${file}" data-pose="${escapeHtml(pose)}" ${mirrored?'style="transform:scaleX(-1)"':''} ${dimensions} alt="${escapeHtml(name)}" decoding="async" fetchpriority="high"/>`;
@@ -236,12 +239,12 @@ app.addEventListener('click',event=>{
  const button=event.target.closest('[data-action]');if(!button)return;
  const action=button.dataset.action;
  if(action==='preset'){prefs.presetId=button.dataset.value;save();render();}
- else if(action==='reset'){delete prefs.custom[prefs.presetId];save();render();}
- else if(action==='try-studies'){prefs.presetId='full';prefs.custom.full=['squat','pushup','plank'];prefs.rounds=2;prefs.workSec=25;prefs.restSec=10;save();render();}
+ else if(action==='difficulty'&&DIFFICULTIES.includes(button.dataset.value)){prefs.difficulty=button.dataset.value;save();render();}
+ else if(action==='reset'){delete prefs.custom[currentCustomKey()];save();render();}
  else if(action==='language'){prefs.lang=prefs.lang==='en'?'de':'en';document.documentElement.lang=prefs.lang;save();render();}
  else if(action==='remove'){
   const old=currentIds(),ids=removeExercise(old,Number(button.dataset.index));
-  if(ids.length!==old.length){prefs.custom[prefs.presetId]=ids;save();render();}
+  if(ids.length!==old.length){prefs.custom[currentCustomKey()]=ids;save();render();}
  }
  else if(action==='add'){
   if(currentIds().length<5){swapIndex=-1;swapQuery='';render();document.querySelector('[data-search]')?.focus();}
@@ -252,7 +255,7 @@ app.addEventListener('click',event=>{
   if(swapIndex===null)return;
   const chosen=chooseExercise(ids,swapIndex,id,knownIds);
   if(!chosen)return;
-  prefs.custom[prefs.presetId]=chosen;swapIndex=null;swapQuery='';save();render();
+  prefs.custom[currentCustomKey()]=chosen;swapIndex=null;swapQuery='';save();render();
  }
  else if(action==='close-swap'){swapIndex=null;swapQuery='';render();}
  else if(action==='dismiss-swap' && event.target===button){swapIndex=null;swapQuery='';render();}

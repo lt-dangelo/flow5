@@ -22,7 +22,8 @@ const P = {
  superman:{head:[263,181],paths:['M243 185 L166 184 L105 187','M216 183 L186 153 L141 142','M229 183 L201 164 L167 156','M105 187 L61 170 L38 163','M105 187 L55 204 L31 198']},
 };
 export function illustration(pose='squat', label='Exercise', lang='en') {
- const p=P[pose]||P.squat;
+ if(!P[pose]) return `<svg class="pose-svg pose-placeholder" viewBox="0 0 360 238" role="img" aria-label="${lang==='de'?'Illustration folgt':'Illustration coming soon'}: ${label}" xmlns="http://www.w3.org/2000/svg"><circle cx="180" cy="110" r="78" fill="#b7fa7a" opacity=".08"/><circle cx="180" cy="106" r="29" stroke="#9badb7" stroke-width="5" fill="none" stroke-dasharray="7 10"/><path d="M180 88v36 M162 106h36" stroke="#d9e4eb" stroke-width="5" stroke-linecap="round"/></svg>`;
+ const p=P[pose];
  const paths=p.paths.map((d,i)=>`<path d="${d}" stroke="${i===0?'#eaf2f9':'#b8c9d7'}" stroke-width="${i===0?19:12}" stroke-linecap="round" stroke-linejoin="round" fill="none"/>`).join('');
  const wall=pose==='wall'||pose==='wallsit' ? '<path d="M278 24 V218" stroke="#62788b" stroke-width="3" stroke-dasharray="7 7" opacity=".45"/>':'';
  return `<svg class="pose-svg" viewBox="0 0 360 238" role="img" aria-label="${lang==='de'?'Schematische Illustration':'Exercise illustration'}: ${label}" xmlns="http://www.w3.org/2000/svg"><circle cx="178" cy="112" r="104" fill="#a7f86d" opacity=".07"/><circle cx="178" cy="112" r="72" fill="none" stroke="#a7f86d" stroke-width="1" opacity=".11"/>${wall}<path d="M41 218 H320" stroke="#7894a8" stroke-width="2" opacity=".26" stroke-linecap="round"/>${paths}<circle cx="${p.head[0]}" cy="${p.head[1]}" r="19" fill="#eaf2f9"/><circle cx="${p.head[0]+6}" cy="${p.head[1]-5}" r="3" fill="#344854" opacity=".65"/></svg>`;
