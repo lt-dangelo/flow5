@@ -1,5 +1,6 @@
 import {EXERCISES, EXERCISE_BY_ID, PRESETS, PRESET_BY_ID, DIFFICULTIES, presetIds} from './data.js';
 import {buildPlan, planStats, IntervalEngine} from './engine.js';
+import {trackWorkoutEvent} from './analytics.js';
 import {illustration} from './art.js';
 import {illustration13,isStudy} from './art13.js';
 
@@ -275,26 +276,26 @@ function updateWakeIndicator(){
  node.classList.toggle('is-awake',!!wakeLock);
  node.innerHTML=`${icon('sun')} ${T(wakeLock?'awakeOn':'awakeOff')}`;
 }
-function beginWorkout(){
+function beginWorkout(restarted=false){
  try{
   // Der erste Ton wird synchron beim Start-Tipp abgespielt.
   const ids=[...currentIds()];
   workoutCount=ids.length;
-  workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()]};
+  workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()],skippedPhases:0};
   engine=new IntervalEngine(buildPlan(ids,currentConfig()),{
    onPhase:(phase,previous)=>{
     if(previous)phaseSound(phase);
     if(view==='workout')renderWorkout();
    },
-   onComplete:()=>{if(prefs.sound)cueAudio.play('done');stopTicking();releaseWake();view='done';renderDone();},
+   onComplete:()=>{trackWorkoutEvent('workout_completed',workoutSession);if(prefs.sound)cueAudio.play('done');stopTicking();releaseWake();view='done';renderDone();},
    onChange:()=>{if(view==='workout')renderWorkout();}
   });
-  view='workout';engine.start();phaseSound(engine.phases[0]);
+  view='workout';engine.start();trackWorkoutEvent('workout_started',workoutSession);if(restarted)trackWorkoutEvent('workout_restarted',workoutSession);phaseSound(engine.phases[0]);
   startTicking();acquireWake();
   window.scrollTo({top:0,behavior:'instant'});
  }catch(err){window.alert(T('startError')+err.message);}
 }
-function exitWorkout(){stopTicking();cueAudio.stop();releaseWake();engine=null;workoutSession=null;pendingExit=false;view='setup';render();}
+function exitWorkout(){trackWorkoutEvent('workout_abandoned',workoutSession);stopTicking();cueAudio.stop();releaseWake();engine=null;workoutSession=null;pendingExit=false;view='setup';render();}
 function showHelp(){window.alert(T('helpMessage'));}
 app.addEventListener('click',event=>{
  const button=event.target.closest('[data-action]');if(!button)return;
@@ -326,11 +327,11 @@ app.addEventListener('click',event=>{
   else if(engine.status==='paused'){engine.resume();acquireWake();}
   renderWorkout();
  }
- else if(action==='skip'&&engine){engine.skip();if(view==='workout')renderWorkout();}
+ else if(action==='skip'&&engine){if(workoutSession)workoutSession.skippedPhases++;engine.skip();if(view==='workout')renderWorkout();}
  else if(action==='exit'){
   if(window.confirm(T('exitConfirm')))exitWorkout();
  }
- else if(action==='restart'){beginWorkout();}
+ else if(action==='restart'){beginWorkout(true);}
  else if(action==='setup'){engine=null;workoutSession=null;view='setup';render();}
  else if(action==='help'){showHelp();}
 });
