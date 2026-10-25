@@ -1,20 +1,19 @@
 // Scoped preview service worker: network-first for app updates, offline fallback.
-const CACHE='flow5-v1.3-preview-9';
-const OPTIONAL_ART=['./artwork/lunge-master.webp','./artwork/mountain-master.webp','./artwork/bridge-master.webp','./artwork/recovery-hydration-master.webp'];
+const CACHE='flow5-v1.3-preview-10';
 const CORE=[
  './',
  './index.html',
- './styles.css?build=1.3.9',
- './src/app.js?build=1.3.9',
+ './styles.css?build=1.3.10',
+ './src/app.js?build=1.3.10',
  './manifest.webmanifest',
- './src/art13.js','./src/recovery13.js','./artwork/squat-master.webp','./artwork/pushup-master.webp','./artwork/plank-master.webp','./artwork/recovery.webp','./src/config.js','./src/audio.js',
+ './src/art13.js','./src/recovery13.js','./artwork/squat-master.webp','./artwork/pushup-master.webp','./artwork/plank-master.webp','./artwork/recovery.webp','./artwork/lunge-master.webp','./artwork/mountain-master.webp','./artwork/bridge-master.webp','./artwork/recovery-hydration-master.webp','./src/config.js','./src/audio.js',
  './src/i18n.js','./src/selection.js','./src/data.js',
  './src/art.js','./src/engine.js',
  './audio/work.wav','./audio/rest.wav','./audio/done.wav',
  './icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'
 ];
 self.addEventListener('install',event=>{
- event.waitUntil(caches.open(CACHE).then(async cache=>{await cache.addAll(CORE);await Promise.allSettled(OPTIONAL_ART.map(path=>cache.add(path)));}).then(()=>self.skipWaiting()));
+ event.waitUntil(caches.open(CACHE).then(async cache=>{await cache.addAll(CORE);}).then(()=>self.skipWaiting()));
 });
 self.addEventListener('activate',event=>{
  event.waitUntil(Promise.all([
