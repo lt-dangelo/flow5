@@ -112,3 +112,11 @@ All current active illustrations were individually examined against ACE Fitness,
 
 ### v1.3.24 – Level-first, equipment-minimal programmes
 Four focus presets (Full Body, Core & Stability, Upper Body, Legs & Glutes) now adapt independently to Beginner/Intermediate selection. All five slots remain customizable, with separate saved lineups for each focus+level combination. Five new exercises have deliberately generic placeholders pending anatomical artwork: Bodyweight Hip Hinge, Resistance-band Row, Knee Push-ups, Single-leg Glute Bridge, Assisted Single-leg Squat. The band row is the only exercise requiring special equipment; its requirement is clearly shown in the picker and selected workout. Exercises still carry Beginner/Intermediate/Advanced technique/strength labels, and Advanced exercises can be swapped in manually. Removed the special test preset, banner and reset-button action. Timer interval defaults, audio, translation and production app remain unchanged. Offline cache updated to preview-24.
+
+### v1.3.25 — Exercise picker order, readiness notice and shareable workout record
+- Exercise picker remains strictly unique: selected exercises (including the edited slot) are excluded; choices are sorted by Beginner/Intermediate/Advanced then Upper Body/Core/Legs/Cardio and localized name.
+- Workout title is given a full-width row below index and UP NEXT badge, avoiding awkward wraps on iPhone; next exercise name is allowed two lines rather than forced to ellipsis.
+- Short bilingual health-readiness reminder sits below the setup header; by Lorenzo D'Angelo credited at the bottom and in the completed-workout record.
+- Completion screen shows dated focus/level, captured plan duration, rounds × exercises, work/rest interval, ordered exercise list and final rest option, designed for screenshots.
+- Duration is labeled **planned** (not actual elapsed time); skips/pauses are not presented as completed active exercise measurements.
+- Timer duration options, preset choices and image files remain unchanged. Preview-only PWA cache version updated.
