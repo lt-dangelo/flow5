@@ -50,5 +50,5 @@ assert.ok(!app.includes("performance.stats"),'no claim of measured intensity/vol
 const sw=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
 const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert.ok(sw.includes('flow5-v1.3-preview-28'));
-assert.ok(index.includes('build=1.3.28'));
+assert.ok(index.includes('build=1.3.29'));
 console.log('OK: unique and ordered picker, bilingual readiness text, long titles, screenshot record');
