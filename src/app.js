@@ -133,12 +133,12 @@ function renderSwapDialog(){
  return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(raw=>{const e=exerciseText(raw,prefs.lang);return `<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${illustration(e.pose,e.name,prefs.lang)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`;}).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
 }
 function nextWork(index){if(!engine)return null;return engine.phases.slice(index+1).find(p=>p.kind==='work')||null;}
-const STUDY_IMAGE={squat:'squat-master.webp',pushup:'pushup-master.webp',plank:'plank-master.webp',recovery:'recovery.webp'};
+const STUDY_IMAGE={squat:'squat-master.webp',pushup:'pushup-master.webp',plank:'plank-master.webp',lunge:'lunge-master.webp',mountain:'mountain-master.webp',bridge:'bridge-master.webp',recovery:'recovery-hydration-master.webp'};
 function studyPicture(pose,name,lang){
  const file=STUDY_IMAGE[pose];
  if(!file)return illustration13(pose,name,lang);
- const dimensions=pose==='recovery'?'width="520" height="350"':'width="1440" height="960"';
- return `<img class="v13-study-image" src="./artwork/${file}" ${dimensions} alt="${escapeHtml(name)}" decoding="async" fetchpriority="high"/>`;
+ const dimensions='width="1440" height="960"';
+ return `<img class="v13-study-image" src="./artwork/${file}" data-pose="${escapeHtml(pose)}" ${dimensions} alt="${escapeHtml(name)}" decoding="async" fetchpriority="high"/>`;
 }
 function renderWorkout(){
  if(!engine)return;
@@ -295,3 +295,18 @@ if('serviceWorker' in navigator && (location.protocol==='https:'||location.hostn
  window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 }
 render();
+
+// Graceful fallback while new visual-preview assets are being uploaded or offline.
+// Capture image load failures, retaining the original illustration for affected poses.
+document.addEventListener('error',event=>{
+  const target=event.target;
+  if(!(target instanceof HTMLImageElement)||!target.classList.contains('v13-study-image'))return;
+  const pose=target.dataset.pose;
+  if(pose==='recovery'){
+    if(!target.dataset.usedFallback){target.dataset.usedFallback='1';target.src='./artwork/recovery.webp';}
+    return;
+  }
+  const art=illustration13(pose,target.alt,prefs.lang);
+  const wrapper=document.createElement('span');wrapper.className='v13-study-fallback';wrapper.innerHTML=art;
+  target.replaceWith(wrapper);
+},true);
