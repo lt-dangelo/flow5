@@ -272,3 +272,6 @@
  .workout-record{padding:12px 14px}
  .record-hint{margin:6px 0 10px}
 }
+
+/* v1.3.26: minimalist training view and record signature */
+.record-bottom{justify-content:flex-end}
