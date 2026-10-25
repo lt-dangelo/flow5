@@ -29,10 +29,10 @@ export function planStats(phases) {
 }
 
 export class IntervalEngine {
-  constructor(phases, {clock=()=>performance.now(), onPhase=()=>{}, onComplete=()=>{}, onChange=()=>{}}={}) {
+  constructor(phases, {clock=()=>performance.now(), onPhase=()=>{}, onComplete=()=>{}, onChange=()=>{}, onExerciseComplete=()=>{}}={}) {
     if (!phases.length || phases.some(p=>!(p.durationMs>0))) throw new Error('Leerer oder ungültiger Ablauf');
     this.phases=phases; this.clock=clock;
-    this.onPhase=onPhase; this.onComplete=onComplete; this.onChange=onChange;
+    this.onPhase=onPhase; this.onComplete=onComplete; this.onChange=onChange; this.onExerciseComplete=onExerciseComplete;
     this.status='idle';this.index=0;this.deadline=0;this.pausedMs=0;
     this.totalMs=planStats(phases).totalMs;
     this.afterMs=[];
@@ -51,6 +51,9 @@ export class IntervalEngine {
     if(now<this.deadline) return;
     const previous=this.phases[this.index];
     while(this.index<this.phases.length && now>=this.deadline){
+      const finished=this.phases[this.index];
+      // Only elapsed work intervals count; skip() never invokes this callback.
+      if(finished.kind==='work')this.onExerciseComplete(finished);
       this.index++;
       if(this.index<this.phases.length) this.deadline+=this.phases[this.index].durationMs;
     }

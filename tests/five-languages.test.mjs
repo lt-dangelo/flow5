@@ -33,7 +33,7 @@ for(const lang of ['it','fr','es']){
  assert.equal(Object.keys(EXERCISE_EXTRA[lang]).length,27);
  assert.equal(Object.keys(UI_EXTRA[lang]).length,100);
 }
-assert.equal(t('en','footer'),'Your workout stays on your device. No registration, no setup, no workout tracking');
+assert.equal(t('en','footer'),'Your exercise choices stay on your device. No registration, no setup, no personal workout history');
 const app=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
 const sw=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
 assert.ok(app.includes('next.includeFinalRest=true'),'stored preferences must be overridden');
@@ -43,7 +43,7 @@ assert.ok(!app.includes('class="intro-stats"'),'remove timer/screen-wake labels'
 assert.ok(!app.includes('class="footnote"'),'remove orphan asterisk footnote');
 assert.ok(app.includes('data-language'),'language choice must be interactive');
 assert.ok(app.includes('document.documentElement.lang=prefs.lang'));
-assert.ok(sw.includes('pick5go-v1.3-production-1'));
+assert.ok(sw.includes('pick5go-v1.3-production-2'));
 for(const module of ['locales-ui.js','locales-exercises.js'])assert.ok(sw.includes('./src/'+module),'offline languages '+module);
 const plan=buildPlan(['squat','plank'],{workSec:40,restSec:20,rounds:3,includeFinalRest:true});
 assert.equal(plan.at(-1).kind,'rest');
