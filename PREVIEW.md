@@ -54,3 +54,6 @@ Four 1440×960 parchment image compositions were prepared for reverse lunges, mo
 
 ### v1.3.10 – HD artwork successfully uploaded to GitHub
 All four v1.3.9 prepared images are committed to the preview (`lunge-master.webp`, `mountain-master.webp`, `bridge-master.webp`, and `recovery-hydration-master.webp`). They are now precached as mandatory offline PWA assets. Update cache version to preview-10 and app CSS/JS query parameters to 1.3.10. Existing production app remains unchanged.
+
+### v1.3.11 – Three more anatomical exercise illustrations
+Added Standing Knee Raises (march), Bicycle Crunches and Side Plank, with 1440×960 WebP assets. The figures were recomposed from generated Renaissance-inspired anatomical exercise sheets, with full hands, feet and safe margins; note they are upscaled source illustrations, not independently generated native-resolution figures. The image displayed for Side Plank Left is mirrored horizontally relative to Side Plank Right. All three are included in the preview's offline cache. The production app remains unchanged.
