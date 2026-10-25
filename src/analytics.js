@@ -43,3 +43,27 @@ export function trackWorkoutEvent(name,session){
     return true;
   }catch{return false;}
 }
+
+/**
+ * Record one naturally completed work interval (not a selection or a skipped phase).
+ * Exercise IDs are predefined, language-neutral identifiers; repeated rounds count separately.
+ */
+export function trackExerciseCompleted(exerciseId){
+  if(typeof exerciseId!=='string' || !/^[A-Za-z][A-Za-z0-9]*$/.test(exerciseId) || !consented())return false;
+  try{
+    const tracker=globalThis.window?.umami;
+    if(!globalThis.window)return false;
+    const path=globalThis.window.location?.pathname||'';
+    const data={
+      environment:/\/preview\/v1\.3(?:\/|$)/.test(path)?'preview':'production',
+      exercise_id:exerciseId
+    };
+    if(typeof tracker?.track!=='function'){
+      pending.push(['exercise_completed',data]);
+      return true;
+    }
+    flush();
+    tracker.track('exercise_completed',data)?.catch?.(()=>{});
+    return true;
+  }catch{return false;}
+}
