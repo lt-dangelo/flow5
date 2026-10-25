@@ -5,7 +5,7 @@ const css=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 const sw=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
 const workout=app.slice(app.indexOf('function renderWorkout(){'),app.indexOf('function renderDone(){'));
 assert.match(workout,/v13-clean/);
-assert.match(workout,/v13-wordmark/);
+assert.match(workout,/pick5go-mark/);
 assert.match(workout,/v13-art-heading/);
 assert.match(workout,/v13-art-cue/);
 assert.match(workout,/<h1>.*?displayName.*?<\/h1>/);
@@ -266,3 +266,7 @@ for(const e of EXERCISES_DE){
  if(e.id==='snowAngel'){assert.ok(activeMap.includes("snowangel:'snowangel-master-v1322.webp'"));continue;}
  assert.ok(activeMap.includes(e.pose+":"),'Missing illustration map for '+e.id+' ('+e.pose+')');
 }
+
+// Pick5Go headline is intentionally untranslated; tagline and instructions are localized.
+assert.match(i18n,/heroEyebrow:'FITNESS, SIMPLIFIED.',heroFirst:'pick five',heroSecond:'go'/);
+assert.match(i18n,/heroEyebrow:'FITNESS, GANZ EINFACH.',heroFirst:'pick five',heroSecond:'go'/);
