@@ -78,3 +78,6 @@ The two 1440 × 960 WebP studies have been reconstructed using full-body anatomi
 - Two side-view positions, with hands supported on vertical walls, feet fully on the floor and body aligned: straight elbows then flexed elbows and a controlled return.
 - Full figures with safe margins, Renaissance-style sepia contours and warm cream parchment. No embedded text or cropped/stitched anatomy.
 - Published only in the v1.3 preview, cached offline under a new service-worker revision.
+
+### v1.3.17 – Wall Push-ups parchment harmonization
+The Wall Push-ups illustration now uses a color-matched 1440 × 960 WebP master (`wallpushup-master-v1317.webp`), adjusted against the Bird Dog reference. The light parchment areas are less amber and closely match the standard illustration background, while anatomical drawing, hands and feet, action arrows and the original 2-pose composition are preserved. Versioned URLs and the preview service-worker cache were updated so installed iPhone PWAs receive the new image. The previous wall-push-ups WebP is kept for rollback.

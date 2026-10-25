@@ -116,7 +116,7 @@ assert.doesNotMatch(app,/deadbug:'deadbug-master.webp'/);
 assert.doesNotMatch(app,/shouldertap:'shouldertap-neutral.webp'/);
 
 // v1.3.16: validated, complete wall-push-up study, mapped and cached offline.
-const wallAsset=readFileSync(new URL('../artwork/wallpushup-master-v1316.webp',import.meta.url));
+const wallAsset=readFileSync(new URL('../artwork/wallpushup-master-v1317.webp',import.meta.url));
 assert.ok(wallAsset.byteLength > 100000);
 assert.equal(wallAsset.subarray(0,4).toString('ascii'),'RIFF');
 // WebP VP8 lossy image width/height are 14-bit little-endian at offsets 26/28.
@@ -126,5 +126,19 @@ const wallWidth = wallAsset.readUInt16LE(26)&0x3fff;
 const wallHeight = wallAsset.readUInt16LE(28)&0x3fff;
 assert.equal(wallWidth,1440);
 assert.equal(wallHeight,960);
-assert.ok(app.includes("wall:'wallpushup-master-v1316.webp'"));
-assert.ok(sw.includes('./artwork/wallpushup-master-v1316.webp'));
+assert.ok(app.includes("wall:'wallpushup-master-v1317.webp'"));
+assert.ok(sw.includes('./artwork/wallpushup-master-v1317.webp'));
+
+// v1.3.17 palette-matched Wall Push-ups; preserve the v1.3.16 artwork for rollback.
+const matchedWallAsset=readFileSync(new URL('../artwork/wallpushup-master-v1317.webp',import.meta.url));
+assert.equal(matchedWallAsset.subarray(0,4).toString('ascii'),'RIFF');
+assert.equal(matchedWallAsset.subarray(12,16).toString('ascii'),'VP8 ');
+assert.equal(matchedWallAsset.readUInt16LE(26)&0x3fff,1440);
+assert.equal(matchedWallAsset.readUInt16LE(28)&0x3fff,960);
+assert.ok(matchedWallAsset.length>100000);
+assert.ok(app.includes("wall:'wallpushup-master-v1317.webp'"));
+assert.ok(!app.includes("wall:'wallpushup-master-v1316.webp'"));
+assert.ok(sw.includes('flow5-v1.3-preview-17'));
+assert.ok(sw.includes('./artwork/wallpushup-master-v1317.webp'));
+const updatedHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
+assert.ok(updatedHTML.includes('build=1.3.17'));
