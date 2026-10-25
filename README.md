@@ -1,80 +1,54 @@
-# Flow5 – Calisthenics Timer
+# Pick5Go — Fitness, simplified.
 
-**Flow5** is a lightweight, installable Progressive Web App (PWA) for guided bodyweight interval training. No account, backend, tracking, or app-store registration is required.
+Pick five exercises, set your pace, and go. Pick5Go is a lightweight, bilingual-plus calisthenics progressive web app (PWA) with no registration, no account and no workout tracking.
 
-**Live app:** https://lt-dangelo.github.io/flow5/
+**Production:** https://lt-dangelo.github.io/flow5/  
+**Development preview:** https://lt-dangelo.github.io/flow5/preview/v1.3/
 
 ## Features
 
-- **English by default**, with a German/English language switch in the upper-right corner of the setup screen. The language choice is saved on your device.
-- Five ready-made workouts: Full body, Beginner, Core & stability, Upper body, and Legs & glutes.
-- **One to five exercises per round**. Each preset starts with five; swap, remove, or add exercises, or reset the preset to its original five exercises.
-- Library of 22 exercises with illustrations, difficulty levels, form instructions, and practical tips in both languages.
-- Configurable work intervals (5–600 seconds), rests (0–300 seconds), and rounds (1–20), using touch-friendly native pickers and plus/minus controls.
-- Optional final rest, accurate total duration, and work-versus-rest breakdown.
-- Hands-free workout transitions with audible cues, exercise previews, remaining-time indicator, pause/resume, and skip controls.
-- Screen Wake Lock on supported devices while the app is visible.
-- Offline support after the initial installation and asset caching.
-- Preset changes, interval preferences, and language settings stored locally in the browser.
+- 27 illustrated exercises with short form instructions and technique tips.
+- Four focuses: Full Body, Core & Stability, Upper Body, Legs & Glutes.
+- Beginner and Intermediate filters independently customize the five exercises in each focus, while all difficulty levels remain available when manually swapping.
+- Five interface and exercise-description languages: English, German, Italian, French and Spanish.
+- Swap, remove, and add exercises to customize a round of 1–5 unique exercises. Personal configurations are stored locally by focus and level.
+- Flexible work, rest and round durations. Rest after the final work interval is included when the rest duration is greater than zero.
+- Hands-free transitions with audio cues, pause, skip, progress indication and screen wake lock when supported.
+- Offline usage once the site has loaded and its assets have been cached.
+- Only one exercise (Resistance-band Row) requires an elastic band, with a long-towel isometric alternative. Assisted squats use a stable support.
 
-## Use Flow5 on iPhone
+## Getting started
 
-1. Open **https://lt-dangelo.github.io/flow5/** in Safari.
-2. Tap **Share → Add to Home Screen** and enable **Open as Web App** if shown.
-3. Launch Flow5 from the Home Screen and choose a preset.
-4. Optionally swap/remove/add exercises. Configure intervals and press **Start workout**.
+1. Open the production address in your mobile browser.
+2. Select the language, training level and focus.
+3. Optionally swap or remove exercises, and adjust work, rest and rounds.
+4. Start training. At the end, save or share a screenshot of the workout summary.
 
-The interface is in English on first use. Tap the **🇬🇧 EN** button to switch to **🇩🇪 DE** and back.
+### Add to the iPhone home screen
 
-## Duration examples
+Open Pick5Go in Safari, choose **Share → Add to Home Screen**, then launch the icon. For offline use, reopen the app once while online to ensure assets are cached. Sound and screen-awake behavior depend on iOS/browser support.
 
-Three rounds of five exercises with 40 seconds of work and 20 seconds of rest each gives **15:00** total with final rest enabled. Switching to two exercises per round yields **06:00** with the same interval settings and three rounds. Disabling final rest removes the last rest phase, but not rests between exercises or rounds.
+## Privacy
 
-At least one exercise is required; at most five exercises can be selected. Stored customizations remain independent for each preset. Existing Flow5 v1.0/v1.1 settings are preserved.
+**Your workout stays on your device. No registration, no setup, no workout tracking.**
+
+Preferences such as language, workout configuration and timers are saved in local browser storage. The app has no backend user account or workout-history database.
 
 ## Development
 
-This project uses plain HTML, CSS and JavaScript ES modules, without frameworks or third-party dependencies. Run locally through a static HTTP server (ES modules and service workers do not reliably work from `file://`):
+Plain HTML, CSS, JavaScript modules and a small service worker. No external dependencies are needed to run the site.
 
 ```bash
 python3 -m http.server 8080
-```
-
-Open http://localhost:8080 in your browser.
-
-Tests require Node.js 20 or newer:
-
-```bash
+# open http://localhost:8080/
 npm test
 ```
 
-### Repository structure
+Node.js 20 or later is required for automated tests. The GitHub Actions publisher assembles production from the protected `main` branch and the independently tested `v1.3-visual-preview` branch; see `DEVELOPMENT.md`.
 
-| Path | Purpose |
-| --- | --- |
-| `index.html`, `styles.css` | Accessible responsive interface |
-| `src/app.js` | User interface, persistence, and session controls |
-| `src/data.js` | Exercise and preset IDs with original German text |
-| `src/i18n.js` | English exercise text and bilingual interface strings |
-| `src/selection.js` | Validated add/remove/swap logic for 1–5 exercises |
-| `src/engine.js` | Clock-based workout interval scheduler |
-| `src/config.js` | Picker values and increment/decrement controls |
-| `src/audio.js`, `audio/` | Local sound cues |
-| `src/art.js` | Local SVG exercise illustrations |
-| `sw.js`, `manifest.webmanifest`, `icons/` | Offline caching and PWA installation |
-| `tests/` | Automated tests |
+## Release history
 
-### GitHub Pages deployment
+- **v1.3.0:** Full Pick5Go visual redesign, 27 exercise illustrations, five languages, level-dependent presets, accessibility and offline enhancements.
+- **v1.2.0:** Original Flow5 workout application.
 
-In your repository, open **Settings → Pages**, select **Deploy from a branch**, then set **main** and **/(root)**. Any commit to the main branch is published automatically by GitHub Pages. The service-worker cache version is incremented when deploying application changes so installed PWAs can update.
-
-## Platform notes
-
-- Keep the app visible during workouts. Browser background throttling and iOS screen-lock behaviour limit reliability with the screen off.
-- iOS sound playback is subject to device volume, audio routing, user interaction, and browser policies.
-- Workouts are local-only. Clearing website data may erase saved customizations.
-- Flow5 is a training aid; it does not provide medical advice or assess technique.
-
-## License
-
-No software license has been specified yet. Copyright and reuse permissions remain with the repository owner.
+The v1.3 release upgrades the existing production PWA in place, retaining its manifest identity and migrating locally stored preferences when available.

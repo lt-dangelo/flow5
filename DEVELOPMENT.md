@@ -34,3 +34,8 @@ The GitHub Pages environment must permit deployment from `main`. Preview updates
 - Publishing preview automatically means preview changes become public without a production pull request. Do not push unreviewed secrets or sensitive content.
 - The preview PWA has its own service-worker scope and settings key. Cached pages on installed devices may require a normal reload/update to display new assets.
 - GitHub Free supports public-repository Pages; do not make this repository private without addressing hosting.
+
+
+## Pick5Go v1.3 production release
+
+The first 1.3 release promotes the reviewed v1.3 preview application into production by copying the approved source modules, artwork, translations, icons, sound assets and tests to the repository root via a protected-branch pull request. The dedicated preview branch remains independent for later development. The production PWA retains its original manifest ID `./`, updates branding and scope-aware service-worker caching, and migrates existing Flow5 or preview preferences locally. New production changes must still pass the `test` status check through a pull request.
