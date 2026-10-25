@@ -20,7 +20,7 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.ok(sw.includes('flow5-v1.3-preview-17'));
+assert.ok(sw.includes('flow5-v1.3-preview-18'));
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
 
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
@@ -141,4 +141,14 @@ assert.ok(!app.includes("wall:'wallpushup-master-v1316.webp'"));
 assert.ok(sw.includes('flow5-v1.3-preview-17'));
 assert.ok(sw.includes('./artwork/wallpushup-master-v1317.webp'));
 const updatedHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(updatedHTML.includes('build=1.3.17'));
+assert.ok(updatedHTML.includes('build=1.3.18'));
+
+// v1.3.18 Pike Push-ups: asset is a real Retina-sized two-pose WebP, not a placeholder.
+const pikeAsset=readFileSync(new URL('../artwork/pikepushup-master-v1318.webp',import.meta.url));
+assert.ok(pikeAsset.byteLength > 90000);
+assert.equal(pikeAsset.subarray(0,4).toString('ascii'),'RIFF');
+assert.equal(pikeAsset.subarray(12,16).toString('ascii'),'VP8 ');
+assert.equal(pikeAsset.readUInt16LE(26)&0x3fff,1440);
+assert.equal(pikeAsset.readUInt16LE(28)&0x3fff,960);
+assert.ok(app.includes("pike:'pikepushup-master-v1318.webp'"));
+assert.ok(sw.includes('./artwork/pikepushup-master-v1318.webp'));
