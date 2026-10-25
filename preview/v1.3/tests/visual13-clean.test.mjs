@@ -20,14 +20,14 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.ok(sw.includes('flow5-v1.3-preview-20'));
+assert.ok(sw.includes('flow5-v1.3-preview-21'));
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
 
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(html.includes('styles.css?build=1.3.20'));
-assert.ok(html.includes('src/app.js?build=1.3.20'));
+assert.ok(html.includes('styles.css?build=1.3.21'));
+assert.ok(html.includes('src/app.js?build=1.3.21'));
 assert.match(sw,/cache:'no-store'/);
 assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
 assert.match(app,/finalRest\?T\('recoveryCue'\)/);
@@ -138,10 +138,10 @@ assert.equal(matchedWallAsset.readUInt16LE(28)&0x3fff,960);
 assert.ok(matchedWallAsset.length>100000);
 assert.ok(app.includes("wall:'wallpushup-master-v1317.webp'"));
 assert.ok(!app.includes("wall:'wallpushup-master-v1316.webp'"));
-assert.ok(sw.includes('flow5-v1.3-preview-20'));
+assert.ok(sw.includes('flow5-v1.3-preview-21'));
 assert.ok(sw.includes('./artwork/wallpushup-master-v1317.webp'));
 const updatedHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(updatedHTML.includes('build=1.3.20'));
+assert.ok(updatedHTML.includes('build=1.3.21'));
 
 // v1.3.18 Pike Push-ups: asset is a real Retina-sized two-pose WebP, not a placeholder.
 const pikeAsset=readFileSync(new URL('../artwork/pikepushup-master-v1318.webp',import.meta.url));
@@ -164,5 +164,17 @@ for (const [pose,file] of [ ['wallsit','wallsit-master-v1319.webp'], ['jumping',
  assert.ok(app.includes(pose+":'"+file+"'"));
  assert.ok(sw.includes('./artwork/'+file));
 }
-assert.ok(sw.includes('flow5-v1.3-preview-20'));
-assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.20'));
+assert.ok(sw.includes('flow5-v1.3-preview-21'));
+assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.21'));
+
+// v1.3.21: calf raises (flat feet vs lifted heels), verified WebP file and offline mapping.
+const calf=readFileSync(new URL('../artwork/calfraise-master-v1321.webp',import.meta.url));
+assert.ok(calf.byteLength>70000,'Calf Raises image contains meaningful artwork');
+assert.equal(calf.subarray(0,4).toString('ascii'),'RIFF');
+assert.equal(calf.subarray(12,16).toString('ascii'),'VP8 ');
+assert.equal(calf.readUInt16LE(26)&0x3fff,1440);
+assert.equal(calf.readUInt16LE(28)&0x3fff,960);
+assert.ok(app.includes("calf:'calfraise-master-v1321.webp'"));
+assert.ok(sw.includes('./artwork/calfraise-master-v1321.webp'));
+assert.ok(sw.includes('flow5-v1.3-preview-21'));
+assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.21'));

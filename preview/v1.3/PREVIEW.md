@@ -91,3 +91,9 @@ The Wall Push-ups illustration now uses a color-matched 1440 × 960 WebP master 
 - Two standalone 1440×960 WebP exercise illustrations: Wall Sit (upright stance and neutral wall-supported static squat hold) and Jumping Jacks (closed stance and wide stance with arms overhead).
 - Anatomical poses and complete body margins inspected before integration. New Jumping Jacks art is color matched to the approved cream parchment, with terracotta motion arrows.
 - Image registry and offline cache contain both assets. Changed CSS/JS build marker to 1.3.20 for iPhone cache refresh. Production application unchanged.
+
+### v1.3.21 – Calf Raises master
+- Original standalone 1440 × 960 WebP illustration with side-view positions: heels down and raised onto the balls of both feet. Knees and torso stay nearly straight.
+- Exercise form checked against ACE Fitness and Heart & Stroke Foundation instructions.
+- Warm parchment hue normalized against the approved exercise library; figures retain safe margins.
+- `calf` maps to `calfraise-master-v1321.webp` and is precached for offline use. Production remains unchanged.
