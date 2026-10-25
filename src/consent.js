@@ -4,6 +4,9 @@
   'use strict';
   const KEY='pick5go-analytics-consent-v1';
   const ALLOWED=['pick5go.com','www.pick5go.com'];
+  const allowedHere=()=>ALLOWED.includes(location.hostname) ||
+    (location.hostname==='lt-dangelo.github.io' && /^\/flow5\/preview\/v1\.3\//.test(location.pathname));
+  const HOSTS=[...ALLOWED,'lt-dangelo.github.io'];
   const TXT={
     de:{intro:'Pick5Go verwendet auf Wunsch Umami, um Seitenaufrufe und die Nutzung der Workout-Funktionen auszuwerten. Ohne Ihre Zustimmung wird kein Analyse-Skript geladen.',accept:'Statistik erlauben',decline:'Ablehnen',settings:'Datenschutz-Einstellungen',privacy:'Datenschutzerklärung',imprint:'Impressum'},
     en:{intro:'If you agree, Pick5Go uses Umami to measure page visits and workout usage. No analytics script loads unless you opt in.',accept:'Allow analytics',decline:'Decline',settings:'Privacy settings',privacy:'Privacy notice',imprint:'Legal notice'},
@@ -35,14 +38,18 @@
   const save=(v)=>{try{localStorage.setItem(KEY,v)}catch{}};
   let loaded=false;
   const load=()=>{
-    if(loaded || !ALLOWED.includes(location.hostname))return;
+    if(loaded || !allowedHere())return;
     loaded=true;
     const s=document.createElement('script');
     s.defer=true;
     s.src='https://cloud.umami.is/script.js';
     s.dataset.websiteId='789229c5-0473-4aab-bdfb-cddc54b1c37d';
-    s.dataset.domains=ALLOWED.join(',');
-    s.onerror=()=>{loaded=false};
+    s.dataset.domains=HOSTS.join(',');
+    s.onload=()=>window.dispatchEvent(new Event('pick5go:analyticsready'));
+    s.onerror=()=>{
+      loaded=false;
+      window.dispatchEvent(new Event('pick5go:analyticsunavailable'));
+    };
     document.head.appendChild(s);
   };
   const close=()=>document.getElementById('analytics-consent')?.remove();
