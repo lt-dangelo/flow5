@@ -20,7 +20,7 @@ export function chooseExercise(ids,index,id,knownIds){
  */
 export function pickerChoices(exercises, selectedIds, query='', locale='en'){
  const chosen=new Set(selectedIds);
- const groupOrder={'Oberkörper':0,'Upper body':0,'Core':1,'Beine':2,'Legs':2,'Cardio':3};
+ const groupOrder={'Oberkörper':0,'Upper body':0,'Parte superiore':0,'Haut du corps':0,'Tren superior':0,'Core':1,'Gainage':1,'Zona media':1,'Beine':2,'Legs':2,'Gambe':2,'Jambes':2,'Piernas':2,'Cardio':3};
  const needle=query.trim().toLocaleLowerCase(locale);
  return exercises
   .filter(e=>!chosen.has(e.id) && (!needle || `${e.name} ${e.group}`.toLocaleLowerCase(locale).includes(needle)))

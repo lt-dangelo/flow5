@@ -5,7 +5,7 @@ import {illustration13,isStudy} from './art13.js';
 
 import {optionsFor,stepSetting} from './config.js';
 import {CueAudio} from './audio.js';
-import {t,exerciseText,presetText} from './i18n.js';
+import {t,exerciseText,presetText,LANGUAGES,normalizeLang,localeFor} from './i18n.js';
 import {validSelection,removeExercise,chooseExercise,pickerChoices} from './selection.js';
 
 const STORAGE_KEY='flow5-prefs-v13-preview';
@@ -21,9 +21,9 @@ function loadPreferences(){
   for(const [key,min,max] of [['workSec',5,600],['restSec',0,300],['rounds',1,20]]){
    next[key]=Number.isInteger(next[key])?Math.max(min,Math.min(max,next[key])):DEFAULTS[key];
   }
-  next.includeFinalRest=!!next.includeFinalRest;
+  next.includeFinalRest=true; // fixed: always include rest after the last exercise
   next.sound=!!next.sound;
-  next.lang=next.lang==='de'?'de':'en';
+  next.lang=normalizeLang(next.lang);
   if(!next.custom||typeof next.custom!=='object')next.custom={};
   const knownIds=new Set(EXERCISES.map(e=>e.id));
   for(const [key,value] of Object.entries(next.custom)){
@@ -77,12 +77,11 @@ function exerciseThumbnail(e){
 }
 const countLabel=n=>`${n} ${T(n===1?'exerciseOne':'exerciseMany')}`;
 const summaryLabel=()=>`${prefs.rounds} ${T(prefs.rounds===1?'roundOne':'roundMany')} × ${countLabel(currentIds().length)} · ${prefs.workSec}s / ${prefs.restSec}s`;
-const restHelp=()=>T('finalRestOn',{time:humanDuration((prefs.workSec+prefs.restSec)*currentIds().length*prefs.rounds*1000)});
 
 function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(prefs));}catch{/* Privater Modus möglich */}}
 function currentCustomKey(){return `${prefs.presetId}:${prefs.difficulty}`;}
 function currentIds(){return prefs.custom[currentCustomKey()]||presetIds(prefs.presetId,prefs.difficulty);}
-function currentConfig(){return {workSec:prefs.workSec,restSec:prefs.restSec,rounds:prefs.rounds,includeFinalRest:prefs.includeFinalRest};}
+function currentConfig(){return {workSec:prefs.workSec,restSec:prefs.restSec,rounds:prefs.rounds,includeFinalRest:true};}
 function currentPlan(){return buildPlan(currentIds(),currentConfig());}
 function secsLabel(ms){const sec=Math.ceil(Math.max(0,ms)/1000);return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;}
 function humanDuration(ms){const minutes=Math.floor(ms/60000),seconds=Math.round(ms%60000/1000);return seconds?(prefs.lang==='de'?`${minutes} Min. ${seconds} Sek.`:`${minutes} min ${seconds} sec`):(prefs.lang==='de'?`${minutes} Min.`:`${minutes} min`);}
@@ -126,21 +125,21 @@ function updatePicker(field){
 function render(){if(view==='setup')renderSetup();else if(view==='workout')renderWorkout();else renderDone();}
 function renderSetup(){
  const preset=P(PRESET_BY_ID[prefs.presetId]),ids=currentIds(),count=ids.length,stats=planStats(currentPlan());
+ const languageChoices=LANGUAGES.map(l=>`<option value="${l.code}" ${l.code===prefs.lang?'selected':''}>${l.label}</option>`).join('');
  const cards=PRESETS.map(raw=>{const p=P(raw);return `<button class="preset-card ${p.id===prefs.presetId?'selected':''}" type="button" data-action="preset" data-value="${p.id}" aria-pressed="${p.id===prefs.presetId}"><div class="preset-icon">${p.icon}</div><strong>${escapeHtml(p.name)}</strong><small>${escapeHtml(p.subtitle)}</small></button>`;}).join('');
  const levelChoices=DIFFICULTIES.map((level,index)=>`<button class="difficulty-option ${prefs.difficulty===level?'selected':''}" type="button" data-action="difficulty" data-value="${level}" aria-pressed="${prefs.difficulty===level}">${T(index===0?'easy':'medium')}</button>`).join('');
  const rows=ids.map((id,i)=>{const e=E(id);return `<div class="exercise-row"><div class="thumb">${exerciseThumbnail(e)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} <span aria-hidden="true">·</span> ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small></div><div class="exercise-actions"><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${T('swap')}: ${escapeHtml(e.name)}">${icon('swap')}<span>${T('swap')}</span></button><button type="button" class="remove-btn" data-action="remove" data-index="${i}" aria-label="${T('remove')}: ${escapeHtml(e.name)}" ${count===1?'disabled':''}>${icon('close')}<span>${T('remove')}</span></button></div></div>`;}).join('');
  app.innerHTML=`<div class="site-shell">
- <header class="topbar">${brand()}<div class="topbar-actions"><button type="button" class="language-btn" data-action="language" aria-label="${T('switchLanguage')}" title="${T('switchLanguage')}"><span aria-hidden="true">${prefs.lang==='de'?'🇩🇪':'🇬🇧'}</span><span>${prefs.lang.toUpperCase()}</span></button><button class="icon-button help-button" type="button" data-action="help" aria-label="${T('help')}">${icon('info')}</button></div></header>
+ <header class="topbar">${brand()}<div class="topbar-actions"><select class="language-select" data-language aria-label="${T('switchLanguage')}" title="${T('switchLanguage')}">${languageChoices}</select><button class="icon-button help-button" type="button" data-action="help" aria-label="${T('help')}">${icon('info')}</button></div></header>
  <p class="health-notice" role="note">${icon('info')}<span>${escapeHtml(T('healthNotice'))}</span></p>
- <main class="layout"><section class="intro"><div class="eyebrow"><span class="live-dot"></span> ${T('heroEyebrow')}</div><h1>${T('heroFirst')}<br/><em>${T('heroSecond')}</em></h1><p>${T('heroDesc')}</p><div class="intro-stats"><span>${icon('clock')} ${T('flexible')}</span><span>${icon('sun')} ${T('awake')}</span></div></section>
+ <main class="layout"><section class="intro"><div class="eyebrow"><span class="live-dot"></span> ${T('heroEyebrow')}</div><h1>${T('heroFirst')}<br/><em>${T('heroSecond')}</em></h1><p>${T('heroDesc')}</p></section>
  <section class="panel preset-panel"><div class="difficulty-selector"><div class="difficulty-head"><strong>${T('levelHeading')}</strong><small>${T('levelHint')}</small></div><div class="difficulty-options" role="group" aria-label="${T('levelHeading')}">${levelChoices}</div></div><div class="section-heading"><div><span class="step-label">01 / ${T('focus').toUpperCase()}</span><h2>${T('focus')}</h2></div><span class="subtle">${PRESETS.length} ${T('programs')}</span></div><div class="preset-list">${cards}</div></section>
  <section class="panel lineup-panel"><div class="section-heading"><div><span class="step-label">02 / ${T('exercisesTitle').toUpperCase()}</span><h2>${T('exercisesTitle')} <span class="exercise-count">${count}/5</span></h2></div>${prefs.custom[currentCustomKey()]?`<button class="reset-btn" type="button" data-action="reset">${T('reset')}</button>`:`<span class="subtle">${escapeHtml(preset.name)}</span>`}</div><div class="exercise-list">${rows}</div>${ids.some(id=>EXERCISE_BY_ID[id].equipment==='band')?`<p class="band-note">${icon('info')} ${T('bandRequired')}</p>`:''}${count<5?`<button type="button" class="add-exercise-btn" data-action="add"><strong>＋</strong> ${T('add')} <span>${count}/5</span></button>`:''}<p class="hint">${icon('swap')} ${T('removeHint')}</p></section>
  <section class="panel config-panel"><div class="section-heading"><div><span class="step-label">03 / ${T('timing').toUpperCase()}</span><h2>${T('timing')}</h2></div></div>
  <div class="config-grid">${stepper('workSec',T('work'),T('sec'))}${stepper('restSec',T('rest'),T('sec'))}${stepper('rounds',T('rounds'),'× '+count)}</div>
- <label class="toggle-line"><div><strong>${T('finalRest')}</strong><small>${restHelp()}</small></div><input type="checkbox" data-config="includeFinalRest" ${prefs.includeFinalRest?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
  <label class="toggle-line"><div><strong>${T('sounds')}</strong><small>${T('soundsDesc')}</small></div><input type="checkbox" data-config="sound" ${prefs.sound?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
  </section>
- <aside class="summary-panel"><div class="summary-head"><span>${T('plan')}</span>${icon('spark')}</div><div class="total-time">${secsLabel(stats.totalMs)}</div><span class="summary-note">${T('duration')}</span><div class="meter"><div class="meter-work" style="width:${stats.workMs/stats.totalMs*100}%"></div></div><div class="summary-breakdown"><span><i class="dot work-dot"></i> ${T('workBreakdown')} <b>${secsLabel(stats.workMs)}</b></span><span><i class="dot rest-dot"></i> ${T('restBreakdown')} <b>${secsLabel(stats.restMs)}</b></span></div><div class="summary-desc">${summaryLabel()}</div><button type="button" data-action="start" class="primary-btn">${T('start')} ${icon('arrow')}</button><small class="footnote">${T('footnote')}</small></aside>
+ <aside class="summary-panel"><div class="summary-head"><span>${T('plan')}</span>${icon('spark')}</div><div class="total-time">${secsLabel(stats.totalMs)}</div><span class="summary-note">${T('duration')}</span><div class="meter"><div class="meter-work" style="width:${stats.workMs/stats.totalMs*100}%"></div></div><div class="summary-breakdown"><span><i class="dot work-dot"></i> ${T('workBreakdown')} <b>${secsLabel(stats.workMs)}</b></span><span><i class="dot rest-dot"></i> ${T('restBreakdown')} <b>${secsLabel(stats.restMs)}</b></span></div><div class="summary-desc">${summaryLabel()}</div><button type="button" data-action="start" class="primary-btn">${T('start')} ${icon('arrow')}</button></aside>
  </main><footer class="footer"><span>${T('footer')}</span><span class="author-credit">by Lorenzo D'Angelo</span></footer>
  </div>${swapIndex!==null?renderSwapDialog():''}`;
 }
@@ -153,7 +152,6 @@ function updateSettingsSummary(){
  if(labels[0])labels[0].textContent=secsLabel(stats.workMs);
  if(labels[1])labels[1].textContent=secsLabel(stats.restMs);
  put('.summary-desc',summaryLabel());
- const note=app.querySelector('.toggle-line small');if(note)note.textContent=restHelp();
 }
 function renderSwapDialog(){
  const isAdd=swapIndex===-1;
@@ -185,7 +183,8 @@ function renderWorkout(){
  const group=T(isRest?'restCaps':'workCaps');
  const displayName=finalRest?T('lastRest'):present.name;
  const cue=finalRest?T('recoveryCue'):present.cue;
- const actionLabel=finalRest?'':isRest?T('readySoon'):(isStudy(present.pose)?(present.pose==='plank'?(prefs.lang==='de'?'HALTEN':'HOLD'):(prefs.lang==='de'?'START → ENDE':'START → END')):'');
+ const studyLabels={en:['HOLD','START → END'],de:['HALTEN','START → ENDE'],it:['TIENI','INIZIO → FINE'],fr:['TENIR','DÉBUT → FIN'],es:['MANTÉN','INICIO → FIN']};
+ const actionLabel=finalRest?'':isRest?T('readySoon'):(isStudy(present.pose)?studyLabels[prefs.lang][present.pose==='plank'?0:1]:'');
  lastPhaseKey=String(snap.index);
  app.innerHTML=`<div class="training-screen v13 v13-clean ${isRest?'rest-mode':''}">
  <header class="training-header v13-header"><img class="brand-logo" src="./icons/pick5go-mark.svg" alt="Pick5Go" width="72" height="50"/><button type="button" class="quiet-btn" data-action="exit" aria-label="${T('exit')}">${icon('close')} <span>${T('exit')}</span></button></header>
@@ -210,10 +209,10 @@ function renderDone(){
  const session=workoutSession||{
   ids:[...currentIds()],presetId:prefs.presetId,difficulty:prefs.difficulty,
   rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,
-  includeFinalRest:prefs.includeFinalRest,customized:!!prefs.custom[currentCustomKey()]
+  includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()]
  };
  const stats=engine?planStats(engine.phases):planStats(buildPlan(session.ids,session));
- const date=new Intl.DateTimeFormat(prefs.lang==='de'?'de-DE':'en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date());
+ const date=new Intl.DateTimeFormat(localeFor(prefs.lang),{day:'numeric',month:'short',year:'numeric'}).format(new Date());
  const names=session.ids.map((id,i)=>`<li><span class="record-number">${String(i+1).padStart(2,'0')}</span><span>${escapeHtml(E(id).name)}</span></li>`).join('');
  const workRest=`${session.workSec} ${T('sec')} ${T('work')} · ${session.restSec} ${T('sec')} ${T('rest')}`;
  view='done';
@@ -268,7 +267,7 @@ function beginWorkout(){
   // Der erste Ton wird synchron beim Start-Tipp abgespielt.
   const ids=[...currentIds()];
   workoutCount=ids.length;
-  workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:prefs.includeFinalRest,customized:!!prefs.custom[currentCustomKey()]};
+  workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()]};
   engine=new IntervalEngine(buildPlan(ids,currentConfig()),{
    onPhase:(phase,previous)=>{
     if(previous)phaseSound(phase);
@@ -290,7 +289,6 @@ app.addEventListener('click',event=>{
  if(action==='preset'){prefs.presetId=button.dataset.value;save();render();}
  else if(action==='difficulty'&&DIFFICULTIES.includes(button.dataset.value)){prefs.difficulty=button.dataset.value;save();render();}
  else if(action==='reset'){delete prefs.custom[currentCustomKey()];save();render();}
- else if(action==='language'){prefs.lang=prefs.lang==='en'?'de':'en';document.documentElement.lang=prefs.lang;save();render();}
  else if(action==='remove'){
   const old=currentIds(),ids=removeExercise(old,Number(button.dataset.index));
   if(ids.length!==old.length){prefs.custom[currentCustomKey()]=ids;save();render();}
@@ -324,8 +322,12 @@ app.addEventListener('click',event=>{
  else if(action==='help'){showHelp();}
 });
 app.addEventListener('change',event=>{
+ if(event.target.matches('[data-language]')){
+  prefs.lang=normalizeLang(event.target.value);
+  document.documentElement.lang=prefs.lang;save();render();return;
+ }
  const field=event.target.dataset.config;if(!field)return;
- if(field==='sound'||field==='includeFinalRest'){prefs[field]=event.target.checked;if(field==='sound'&&!prefs.sound)cueAudio.stop();}
+ if(field==='sound'){prefs.sound=event.target.checked;if(!prefs.sound)cueAudio.stop();}
  else if(['workSec','restSec','rounds'].includes(field)){const value=Number(event.target.value);if(optionsFor(field,prefs[field]).includes(value))prefs[field]=value;updatePicker(field);}
  else return;
  save();updateSettingsSummary();
