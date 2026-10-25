@@ -84,7 +84,7 @@ function icon(name){
   spark:'<path d="m12 2 2.5 7.5L22 12l-7.5 2.5L12 22l-2.5-7.5L2 12l7.5-2.5z"/>'};
  return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||paths.info}</svg>`;
 }
-function brand(){return `<div class="brand"><div class="brand-mark"><span>5</span><i></i></div><div><strong>FLOW<span>5</span></strong></div></div>`;}
+function brand(){return `<div class="brand"><img class="brand-logo" src="./icons/pick5go-mark.svg" alt="Pick5Go" width="72" height="50"/></div>`;}
 function stepper(field,label,unit){
  const values=optionsFor(field,prefs[field]), index=values.indexOf(prefs[field]);
  const options=values.map(value=>`<option value="${value}" ${value===prefs[field]?'selected':''}>${value}</option>`).join('');
@@ -165,7 +165,7 @@ function renderWorkout(){
  const actionLabel=finalRest?'':isRest?T('readySoon'):(isStudy(present.pose)?(present.pose==='plank'?(prefs.lang==='de'?'HALTEN':'HOLD'):(prefs.lang==='de'?'START → ENDE':'START → END')):'');
  lastPhaseKey=String(snap.index);
  app.innerHTML=`<div class="training-screen v13 v13-clean ${isRest?'rest-mode':''}">
- <header class="training-header v13-header"><div class="v13-wordmark" aria-label="Flow5">Flow<span>5</span></div><button type="button" class="quiet-btn" data-action="exit" aria-label="${T('exit')}">${icon('close')} <span>${T('exit')}</span></button></header>
+ <header class="training-header v13-header"><img class="brand-logo" src="./icons/pick5go-mark.svg" alt="Pick5Go" width="72" height="50"/><button type="button" class="quiet-btn" data-action="exit" aria-label="${T('exit')}">${icon('close')} <span>${T('exit')}</span></button></header>
  <main class="v13-workout">
   <div class="v13-timing">
     <div class="v13-current"><span class="v13-state ${isRest?'v13-rest':''}">${group}</span><strong id="phase-time" aria-label="${T('remaining')}">${secsLabel(snap.remainingMs)}</strong></div>
@@ -195,7 +195,7 @@ function renderDone(){
  const workRest=`${session.workSec} ${T('sec')} ${T('work')} · ${session.restSec} ${T('sec')} ${T('rest')}`;
  view='done';
  app.innerHTML=`<div class="done-page done-record-page">
- <header class="done-topbar"><div class="v13-wordmark" aria-label="Flow5">Flow<span>5</span></div></header>
+ <header class="done-topbar"><img class="brand-logo" src="./icons/pick5go-mark.svg" alt="Pick5Go" width="72" height="50"/></header>
  <main>
   <section class="workout-record" aria-label="${T('workoutRecord')}">
    <div class="record-top"><span class="record-success">${icon('check')} ${T('complete')}</span><span class="record-date">${escapeHtml(date)}</span></div>
@@ -203,7 +203,7 @@ function renderDone(){
    <div class="record-stats"><div><strong>${secsLabel(stats.totalMs)}</strong><span>${T('recordTotal')}</span></div><div><strong>${session.rounds} × ${session.ids.length}</strong><span>${T('roundMany')} × ${T('exerciseMany')}</span></div></div>
    <div class="record-intervals"><span>${T('recordIntervals')}</span><strong>${escapeHtml(workRest)}</strong></div>
    <div class="record-exercises"><h2>${T('recordExercises')}</h2><ol>${names}</ol></div>
-   <div class="record-bottom"><span>Flow5 · by Lorenzo D'Angelo</span></div>
+   <div class="record-bottom"><span>Pick5Go · by Lorenzo D'Angelo</span></div>
   </section>
   <p class="record-hint">${T('recordHint')}</p>
   <div class="record-actions"><button class="primary-btn" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></div>
