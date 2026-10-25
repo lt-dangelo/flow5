@@ -177,3 +177,29 @@
   display:block;min-height:0;max-height:100%;border:0;flex:1 1 auto;
 }
 .v13-clean .v13-drawing:has(.v13-study-image){padding-top:1px}
+
+
+/* v1.3.24 – level-first programme selection, four focuses, temporary art. */
+.difficulty-selector{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:var(--panel2);border:1px solid var(--outline);border-radius:15px;padding:14px 16px;margin-bottom:21px}
+.difficulty-head{display:flex;flex-direction:column;gap:5px;flex:1 1 190px}
+.difficulty-head strong{font-size:14px}
+.difficulty-head small{font-size:11px;color:var(--muted);line-height:1.4}
+.difficulty-options{display:flex;flex:0 1 auto;gap:5px;background:#0d151e;border:1px solid #364251;border-radius:11px;padding:4px}
+.difficulty-option{cursor:pointer;color:#b7c5cf;border:0;background:transparent;border-radius:8px;padding:11px 14px;min-height:42px;font-size:12px;font-weight:750}
+.difficulty-option.selected{background:var(--lime);color:#1d2d1e;box-shadow:0 1px 5px #0004}
+.difficulty-option:focus-visible{outline:2px solid white;outline-offset:2px}
+.preset-list{grid-template-columns:repeat(4,minmax(0,1fr))}
+.preset-card{min-height:128px}
+.preset-card strong{margin-top:13px;font-size:13px}
+.band-note{display:flex;gap:8px;align-items:center;padding:11px 14px;color:#d0dfc8;background:#1c2b26;border:1px solid #415846;border-radius:11px;font-size:12px;margin:12px 0 0}
+.band-note svg{flex:none;max-width:16px}
+.v13-art-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:160px;width:100%;height:100%;border:1px dashed #c4ae8d;border-radius:15px;color:#8c7356;background:radial-gradient(ellipse,#f7ebd4,#ead7b5);text-align:center}
+.v13-art-placeholder>span{font-size:64px;line-height:1;opacity:.55}
+.v13-art-placeholder small{font:600 13px/1.4 -apple-system,BlinkMacSystemFont,Arial,sans-serif;letter-spacing:.02em}
+@media(max-width:760px){
+ .preset-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .difficulty-selector{padding:12px;gap:12px}
+ .difficulty-options{width:100%}
+ .difficulty-option{flex:1 1 50%}
+ .preset-card{min-height:117px}
+}

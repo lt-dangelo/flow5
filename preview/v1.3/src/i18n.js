@@ -21,14 +21,18 @@ wallSit:['Wall sit','Legs','Back against a wall, feet slightly forward; slide do
 jumpingJack:['Jumping jacks','Cardio','Jump feet apart as arms rise overhead, then return to the starting position.','Low-impact option: step one foot out at a time.'],
 superman:['Superman hold','Core','Lie face down and gently lift arms and legs, then hold.','Look down at the floor; avoid excessive back extension.'],
 heelTouch:['Heel touches','Core','Lie on your back, knees bent and feet flat; reach toward each same-side heel alternately.','Use small side-to-side movements and lift shoulders slightly.'],
-bearHold:['Bear hold','Core','From all fours, tuck your toes, lift knees a few centimetres and hold.','Keep your back neutral and breathe calmly. Lower knees if needed.']
+bearHold:['Bear hold','Core','From all fours, tuck your toes, lift knees a few centimetres and hold.','Keep your back neutral and breathe calmly. Lower knees if needed.'],
+hipHinge:['Hip hinge','Legs','Bend your knees slightly, push hips back and stand tall with a neutral spine.','Hinge at your hips and keep weight across your whole foot.'],
+bandRow:['Resistance-band row','Upper body','Secure the band, pull elbows back close to your sides, then release slowly.','Keep shoulders down. Check the band anchor before every set.'],
+kneePushup:['Knee push-ups','Upper body','From your knees, lower your chest with control and press back up.','Keep a straight line from head to knees.'],
+singleLegBridge:['Single-leg glute bridge','Legs','On your back, lift one leg and raise then lower your hips using the planted foot.','Keep your hips level; switch legs halfway through.'],
+assistedSingleLegSquat:['Assisted single-leg squat','Legs','Hold a stable support, bend one leg slowly, then stand back up.','Lower only as far as controlled; switch legs halfway through.'],
 };
 const PRESET_EN={
-full:['Full body','Balanced & effective','Popular'],
-beginner:['Beginner','A gentle introduction','Easy'],
-core:['Core & stability','Core strength and posture','Moderate'],
-upper:['Upper body','Pressing & stability','Intense'],
-legs:['Legs & glutes','Strength from the ground up','Moderate']
+full:['Full body','Balanced & effective',''],
+core:['Core & stability','Core strength and posture',''],
+upper:['Upper body','Pressing & stability',''],
+legs:['Legs & glutes','Strength from the ground up','']
 };
 const STRINGS={
 en:{
@@ -45,7 +49,7 @@ footnote:'* On supported devices while the app remains visible, subject to iOS l
 footer:'FLOW5 v1.3 PREVIEW · Your workout stays on this device. No account, no tracking.',
 swapEyebrow:'SWAP EXERCISE',addEyebrow:'ADD EXERCISE',swapTitle:'Choose a replacement',addTitle:'Choose an exercise',
 close:'Close',search:'Search exercise or muscle group…',searchAria:'Search exercises',noMatches:'No matching exercises found.',
-easy:'Easy',medium:'Moderate',advanced:'Advanced',
+easy:'Beginner',medium:'Intermediate',advanced:'Advanced',levelHeading:'Training level',levelHint:'Changes the five exercises in each focus. You can still swap any exercise.',bandRequired:'Resistance band required',placeholder:'Illustration coming soon',
 workCaps:'WORK',restCaps:'REST',nextPrefix:'Next: ',lastRest:'Final rest',
 restFinished:'You have finished every exercise. Breathe and recover.',
 recoveryCue:'Breathe slowly. Relax your shoulders. Let your body recover.',
@@ -72,7 +76,7 @@ footnote:'* Auf unterstützten Geräten, solange die App sichtbar ist und iOS di
 footer:'FLOW5 v1.3 PREVIEW · Dein Training bleibt auf diesem Gerät. Keine Anmeldung, kein Tracking.',
 swapEyebrow:'ÜBUNG AUSTAUSCHEN',addEyebrow:'ÜBUNG HINZUFÜGEN',swapTitle:'Neue Übung wählen',addTitle:'Übung auswählen',
 close:'Schließen',search:'Übung oder Muskelgruppe suchen …',searchAria:'Übungen durchsuchen',noMatches:'Keine weiteren passenden Übungen gefunden.',
-easy:'Leicht',medium:'Mittel',advanced:'Fortgeschritten',
+easy:'Einsteiger',medium:'Mittelstufe',advanced:'Fortgeschritten',levelHeading:'Trainingsniveau',levelHint:'Passt die fünf Übungen je Schwerpunkt an. Jede Übung kann frei getauscht werden.',bandRequired:'Widerstandsband benötigt',placeholder:'Illustration folgt',
 workCaps:'BELASTUNG',restCaps:'ERHOLUNG',nextPrefix:'Als Nächstes: ',lastRest:'Letzte Erholung',
 restFinished:'Du hast alle Übungen geschafft. Atme ruhig durch.',
 recoveryCue:'Atme ruhig und gleichmäßig. Entspanne die Schultern. Komm zur Ruhe.',
