@@ -11,13 +11,26 @@ const sw=read('sw.js');
 assert.ok(index.includes('href="./imprint.html"'));
 assert.ok(index.includes('href="./privacy.html"'));
 assert.ok(index.includes('id="analytics-settings"'));
-assert.ok(index.includes('src/consent.js?build=1.3.36'));
+assert.ok(index.includes('src/consent.js?build=1.3.37'));
 assert.ok(!index.includes('cloud.umami.is/script.js'),'Never inject Umami before opt-in');
 assert.ok(consent.includes("if(read()==='yes')load()"));
 assert.ok(consent.includes("save('no')"));
 assert.ok(consent.includes("save('yes')"));
 assert.ok(consent.includes('789229c5-0473-4aab-bdfb-cddc54b1c37d'));
-assert.ok(sw.includes('src/consent.js?build=1.3.36'));
+assert.ok(sw.includes('src/consent.js?build=1.3.37'));
+assert.ok(sw.includes('./src/legal-language.js'));
+assert.ok(!index.includes('by Lorenzo D\'Angelo'));
+const legalI18n=read('src/legal-language.js');
+assert.ok(legalI18n.includes("['en','de','it','fr','es']"));
+assert.ok(legalI18n.includes('flow5-prefs-v13-preview'));
+for(const lang of ['en','de','it','fr','es']){
+ for(const file of [imprint,privacy]){
+  assert.ok(file.includes('<section class="lang" lang="'+lang+'">'), 'missing legal locale '+lang);
+ }
+}
+assert.ok(consent.includes('flow5-prefs-v13-preview'));
+assert.ok(consent.includes('pick5go:languagechange'));
+assert.ok(index.includes('data-legal="imprint"') && index.includes('data-legal="privacy"'));
 for(const file of [imprint,privacy]){
   assert.ok(file.includes('content="noindex,nofollow,nosnippet"'));
   assert.ok(!file.includes('impressum-address.png'));
