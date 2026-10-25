@@ -67,7 +67,12 @@ const MUSCLE_THUMBNAILS=Object.freeze({
  gluteBridge:'gluteBridge-muscles.webp',
  singleLegBridge:'singleLegBridge-muscles.webp',
  calfRaise:'calfRaise-muscles.webp',
- jumpingJack:'jumpingJack-muscles.webp'
+ jumpingJack:'jumpingJack-muscles.webp',
+ reverseLunge:'reverseLunge-muscles.webp',
+ mountainClimber:'mountainClimber-muscles.webp',
+ bicycle:'bicycle-muscles.webp',
+ pikePushup:'pikePushup-muscles.webp',
+ superman:'superman-muscles.webp'
 });
 function exerciseThumbnail(e){
  const file=MUSCLE_THUMBNAILS[e.id];
