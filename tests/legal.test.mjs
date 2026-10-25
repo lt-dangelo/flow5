@@ -18,10 +18,12 @@ assert.ok(consent.includes("save('no')"));
 assert.ok(consent.includes("save('yes')"));
 assert.ok(sw.includes('./privacy.html') && sw.includes('./imprint.html'));
 assert.ok(privacy.includes('GitHub Pages') && privacy.includes('Umami Cloud'));
+assert.ok(privacy.includes('sechs Monate') && privacy.includes('six months'));
+assert.ok(imprint.includes('noindex,nosnippet') && privacy.includes('noindex,nosnippet'));
 assert.ok(imprint.includes('§ 18 Abs. 1 MStV'));
 
 // Intentionally block a production release until the serviceable address,
-// direct contact email, and data-retention period have been reviewed and filled.
+// direct contact email, have been reviewed and filled.
 // Do not remove this test simply to get a green build.
 const missing=/\[(?:STRAẞE|POSTLEITZAHL|KONTAKT-EMAIL|STREET|POSTCODE|CONTACT-EMAIL|VOLLSTÄNDIGE|FULL SERVICEABLE|TARIF UND|CONFIRM PLAN)/;
 assert.doesNotMatch(imprint+privacy,missing,
