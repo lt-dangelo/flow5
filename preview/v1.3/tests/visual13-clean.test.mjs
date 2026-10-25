@@ -20,14 +20,14 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.ok(sw.includes('flow5-v1.3-preview-22'));
+assert.ok(sw.includes('flow5-v1.3-preview-23'));
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
 
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(html.includes('styles.css?build=1.3.22'));
-assert.ok(html.includes('src/app.js?build=1.3.22'));
+assert.ok(html.includes('styles.css?build=1.3.23'));
+assert.ok(html.includes('src/app.js?build=1.3.23'));
 assert.match(sw,/cache:'no-store'/);
 assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
 assert.match(app,/finalRest\?T\('recoveryCue'\)/);
@@ -138,10 +138,10 @@ assert.equal(matchedWallAsset.readUInt16LE(28)&0x3fff,960);
 assert.ok(matchedWallAsset.length>100000);
 assert.ok(app.includes("wall:'wallpushup-master-v1317.webp'"));
 assert.ok(!app.includes("wall:'wallpushup-master-v1316.webp'"));
-assert.ok(sw.includes('flow5-v1.3-preview-22'));
+assert.ok(sw.includes('flow5-v1.3-preview-23'));
 assert.ok(sw.includes('./artwork/wallpushup-master-v1317.webp'));
 const updatedHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(updatedHTML.includes('build=1.3.22'));
+assert.ok(updatedHTML.includes('build=1.3.23'));
 
 // v1.3.18 Pike Push-ups: asset is a real Retina-sized two-pose WebP, not a placeholder.
 const pikeAsset=readFileSync(new URL('../artwork/pikepushup-master-v1318.webp',import.meta.url));
@@ -164,8 +164,8 @@ for (const [pose,file] of [ ['wallsit','wallsit-master-v1319.webp'], ['jumping',
  assert.ok(app.includes(pose+":'"+file+"'"));
  assert.ok(sw.includes('./artwork/'+file));
 }
-assert.ok(sw.includes('flow5-v1.3-preview-22'));
-assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.22'));
+assert.ok(sw.includes('flow5-v1.3-preview-23'));
+assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.23'));
 
 // v1.3.21: calf raises (flat feet vs lifted heels), verified WebP file and offline mapping.
 const calf=readFileSync(new URL('../artwork/calfraise-master-v1321.webp',import.meta.url));
@@ -176,8 +176,8 @@ assert.equal(calf.readUInt16LE(26)&0x3fff,1440);
 assert.equal(calf.readUInt16LE(28)&0x3fff,960);
 assert.ok(app.includes("calf:'calfraise-master-v1321.webp'"));
 assert.ok(sw.includes('./artwork/calfraise-master-v1321.webp'));
-assert.ok(sw.includes('flow5-v1.3-preview-22'));
-assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.22'));
+assert.ok(sw.includes('flow5-v1.3-preview-23'));
+assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.23'));
 
 // v1.3.22 – Final three placeholders replaced with reviewed 1440 x 960 WebP artwork.
 for(const [pose,file] of [['bear','bear-master-v1322.webp'],['heeltouch','heeltouch-master-v1322.webp'],['snowangel','snowangel-master-v1322.webp']]){
@@ -192,5 +192,32 @@ for(const [pose,file] of [['bear','bear-master-v1322.webp'],['heeltouch','heelto
 }
 assert.ok(app.includes("exerciseId==='snowAngel'?STUDY_IMAGE.snowangel"));
 assert.ok(app.includes("superman:'superman-master.webp'"));
-assert.ok(sw.includes('flow5-v1.3-preview-22'));
-assert.ok(html.includes('src/app.js?build=1.3.22'));
+assert.ok(sw.includes('flow5-v1.3-preview-23'));
+assert.ok(html.includes('src/app.js?build=1.3.23'));
+
+
+// v1.3.23 technique audit: short bilingual cues, no illustration asset changes.
+const EXERCISES_DE = (await import('../src/data.js')).EXERCISES;
+const exerciseTextEN = (await import('../src/i18n.js')).exerciseText;
+assert.equal(EXERCISES_DE.length,22);
+for (const exercise of EXERCISES_DE) {
+  const translated=exerciseTextEN(exercise,'en');
+  assert.ok(exercise.cue.length<=165, exercise.id+' German cue too long');
+  assert.ok(translated.cue.length<=165, exercise.id+' English cue too long');
+  assert.ok(exercise.tip&&translated.tip,exercise.id+' coaching tip is present');
+}
+for (const [id,deFragment,enFragment] of [
+ ['pushup','wieder hochdrücken','push back up'],
+ ['birdDog','zurückführen','return'],
+ ['bicycle','anderes Bein strecken','other leg extends'],
+ ['pikePushup','wieder hochdrücken','press back up'],
+ ['snowAngel','Beine bleiben unten','keep legs down'],
+ ['wallSit','Füße davor','feet slightly forward'],
+ ['jumpingJack','Arme über Kopf','arms rise overhead'],
+ ['heelTouch','gleichseitigen Ferse','same-side heel'],
+ ['bearHold','Zehen aufstellen','tuck your toes']
+]) {
+ const ex=EXERCISES_DE.find(e=>e.id===id);
+ assert.ok(ex.cue.includes(deFragment),id+' German movement cue');
+ assert.ok(exerciseTextEN(ex,'en').cue.includes(enFragment),id+' English movement cue');
+}

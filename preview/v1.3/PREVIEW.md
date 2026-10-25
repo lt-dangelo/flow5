@@ -106,3 +106,6 @@ The Wall Push-ups illustration now uses a color-matched 1440 × 960 WebP master 
 - Exercise-specific reference checks: ACE Fitness describes reverse snow angels; Ohio University/UCLA Health detail bear hold; heel-touch form follows documented oblique heel touches. Heart & Stroke Foundation provides general strength-training guidance, not validated exercise-specific cues for all three.
 - The legacy Snow Angel pose key `superman` is now overridden by exercise ID so Superman Hold and Reverse Snow Angels receive different images.
 - New images are precached; HTML, JS and CSS are versioned to 1.3.22 for iOS refresh. Production v1.2 is unchanged.
+
+### v1.3.23 – Complete exercise-technique audit (22 exercises)
+All current active illustrations were individually examined against ACE Fitness, NASM, Harvard Health, Cleveland Clinic and Ohio University exercise technique references where applicable. No illustration was judged to depict a materially different exercise; artistic and minor visual imperfections are not grounds for replacement in this audit. Nine English/German coaching cues were minimally clarified to specify pressing back up, returning from a repetition, opposing limb movements, feet positioning, or a static hold. Image assets and the production app remain unchanged. PWA cache bumped to `flow5-v1.3-preview-23`.

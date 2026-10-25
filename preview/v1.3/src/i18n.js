@@ -1,27 +1,27 @@
 
 const EX_EN={
 squat:['Squats','Legs','Stand with feet shoulder-width apart. Sit back and down, keeping your back neutral.','Track your knees over your toes. Push through your whole foot.'],
-pushup:['Push-ups','Upper body','Hands below the shoulders. Lower your body in a straight line with control.','Easier: keep your knees on the floor. Do not flare your elbows too widely.'],
+pushup:['Push-ups','Upper body','Hands under shoulders; lower your body in a straight line, then push back up.','Easier: keep your knees on the floor. Do not flare your elbows too widely.'],
 reverseLunge:['Reverse lunges','Legs','Step one foot backward at a time, bend both knees, then stand tall.','Keep your front knee aligned over the foot. Use a wall for balance if needed.'],
 plank:['Forearm plank','Core','Place forearms on the floor, brace your abdomen and glutes, and keep a straight line.','Avoid arching your lower back. Drop your knees if needed.'],
 mountainClimber:['Mountain climbers','Cardio','From a high plank, alternately drive each knee toward your chest.','Keep shoulders above wrists. Slow down for better control.'],
 wallPushup:['Wall push-ups','Upper body','Lean your straight body toward a wall, bend your elbows, then push away.','The farther your feet are from the wall, the harder the exercise.'],
 gluteBridge:['Glute bridges','Legs','Lie on your back with knees bent, raise your hips, and lower them with control.','Brace your core at the top; avoid arching your back.'],
-birdDog:['Bird dog','Core','On hands and knees, extend opposite arm and leg, then switch sides.','Keep your pelvis steady; move slowly and deliberately.'],
+birdDog:['Bird dog','Core','From all fours, extend opposite arm and leg, return, then switch sides.','Keep your pelvis steady; move slowly and deliberately.'],
 march:['Standing knee raises','Cardio','Stand tall and alternately lift your knees toward hip height.','Keep your torso upright. Slow down if needed.'],
 deadBug:['Dead bug','Core','On your back, raise your arms and legs. Slowly lower one arm and the opposite leg, bring both back up, then switch sides.','Gently keep your lower back in contact with the floor.'],
-bicycle:['Bicycle crunches','Core','On your back, rotate one shoulder toward the opposite knee, alternating sides.','Rotate through your torso; do not pull on your neck.'],
+bicycle:['Bicycle crunches','Core','On your back, turn one shoulder toward the opposite knee as the other leg extends; switch sides.','Rotate through your torso; do not pull on your neck.'],
 sidePlankL:['Side plank – left','Core','Balance on your left forearm, lift your hips, and hold your body straight.','Keep the elbow under your shoulder. Easier: rest your bottom knee.'],
 sidePlankR:['Side plank – right','Core','Balance on your right forearm, lift your hips, and hold your body straight.','Keep the elbow under your shoulder. Easier: rest your bottom knee.'],
-pikePushup:['Pike push-ups','Upper body','From an inverted V, lower your head between your hands with control.','Move slowly and keep your neck neutral. Only lower as far as comfortable.'],
+pikePushup:['Pike push-ups','Upper body','From an inverted V, lower your head between your hands, then press back up.','Move slowly and keep your neck neutral. Only lower as far as comfortable.'],
 shoulderTap:['Plank shoulder taps','Upper body','From a high plank, touch the opposite shoulder with each hand in turn.','Place feet wider apart to reduce hip movement.'],
-snowAngel:['Reverse snow angels','Upper body','Lie face down, lift your arms slightly, and sweep them toward your head.','Use small movements; keep your neck long and relaxed.'],
+snowAngel:['Reverse snow angels','Upper body','Lie face down. Sweep slightly raised straight arms out and overhead, then back; keep legs down.','Use small movements; keep your neck long and relaxed.'],
 calfRaise:['Calf raises','Legs','Stand tall, raise your heels slowly, then lower them again.','Hold on lightly if needed. Avoid bouncing.'],
-wallSit:['Wall sit','Legs','Slide down a wall with your back supported and hold the position.','Choose a comfortable knee angle and keep knees aligned with feet.'],
-jumpingJack:['Jumping jacks','Cardio','Open arms and legs together, then return to the starting position.','Low-impact option: step one foot out at a time.'],
+wallSit:['Wall sit','Legs','Back against a wall, feet slightly forward; slide down and hold.','Choose a comfortable knee angle and keep knees aligned with feet.'],
+jumpingJack:['Jumping jacks','Cardio','Jump feet apart as arms rise overhead, then return to the starting position.','Low-impact option: step one foot out at a time.'],
 superman:['Superman hold','Core','Lie face down and gently lift arms and legs, then hold.','Look down at the floor; avoid excessive back extension.'],
-heelTouch:['Heel touches','Core','Lie on your back, knees bent; reach one hand toward each heel alternately.','Use small side-to-side movements and lift shoulders slightly.'],
-bearHold:['Bear hold','Core','From hands and knees, hover your knees a few centimetres above the floor.','Keep your back neutral and breathe calmly. Lower knees if needed.']
+heelTouch:['Heel touches','Core','Lie on your back, knees bent and feet flat; reach toward each same-side heel alternately.','Use small side-to-side movements and lift shoulders slightly.'],
+bearHold:['Bear hold','Core','From all fours, tuck your toes, lift knees a few centimetres and hold.','Keep your back neutral and breathe calmly. Lower knees if needed.']
 };
 const PRESET_EN={
 full:['Full body','Balanced & effective','Popular'],
