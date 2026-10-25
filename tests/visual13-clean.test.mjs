@@ -26,8 +26,8 @@ console.log('OK: integrated illustration and instructions, clean header and time
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(html.includes('styles.css?build=1.3.17'));
-assert.ok(html.includes('src/app.js?build=1.3.17'));
+assert.ok(html.includes('styles.css?build=1.3.18'));
+assert.ok(html.includes('src/app.js?build=1.3.18'));
 assert.match(sw,/cache:'no-store'/);
 assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
 assert.match(app,/finalRest\?T\('recoveryCue'\)/);
@@ -138,7 +138,7 @@ assert.equal(matchedWallAsset.readUInt16LE(28)&0x3fff,960);
 assert.ok(matchedWallAsset.length>100000);
 assert.ok(app.includes("wall:'wallpushup-master-v1317.webp'"));
 assert.ok(!app.includes("wall:'wallpushup-master-v1316.webp'"));
-assert.ok(sw.includes('flow5-v1.3-preview-17'));
+assert.ok(sw.includes('flow5-v1.3-preview-18'));
 assert.ok(sw.includes('./artwork/wallpushup-master-v1317.webp'));
 const updatedHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert.ok(updatedHTML.includes('build=1.3.18'));
