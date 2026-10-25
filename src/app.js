@@ -52,6 +52,29 @@ const knownIds=new Set(EXERCISES.map(e=>e.id));
 const T=(key,params)=>t(prefs.lang,key,params);
 const E=id=>exerciseText(EXERCISE_BY_ID[id],prefs.lang);
 const P=p=>presetText(p,prefs.lang);
+const MUSCLE_THUMBNAILS=Object.freeze({
+ squat:'squat-muscles.webp',
+ kneePushup:'kneePushup-muscles.webp',
+ hipHinge:'hipHinge-muscles.webp',
+ birdDog:'birdDog-muscles.webp',
+ march:'march-muscles.webp',
+ pushup:'pushup-muscles.webp',
+ wallPushup:'wallPushup-muscles.webp',
+ bandRow:'bandRow-muscles.webp',
+ snowAngel:'snowAngel-muscles.webp',
+ plank:'plank-muscles.webp',
+ deadBug:'deadBug-muscles.webp',
+ gluteBridge:'gluteBridge-muscles.webp',
+ singleLegBridge:'singleLegBridge-muscles.webp',
+ calfRaise:'calfRaise-muscles.webp',
+ jumpingJack:'jumpingJack-muscles.webp'
+});
+function exerciseThumbnail(e){
+ const file=MUSCLE_THUMBNAILS[e.id];
+ return file
+  ? `<img class="muscle-thumb" src="./artwork/thumbs/${file}" alt="" width="192" height="154" loading="lazy" decoding="async"/>`
+  : illustration(e.pose,e.name,prefs.lang);
+}
 const countLabel=n=>`${n} ${T(n===1?'exerciseOne':'exerciseMany')}`;
 const summaryLabel=()=>`${prefs.rounds} ${T(prefs.rounds===1?'roundOne':'roundMany')} × ${countLabel(currentIds().length)} · ${prefs.workSec}s / ${prefs.restSec}s`;
 const restHelp=()=>T('finalRestOn',{time:humanDuration((prefs.workSec+prefs.restSec)*currentIds().length*prefs.rounds*1000)});
@@ -105,7 +128,7 @@ function renderSetup(){
  const preset=P(PRESET_BY_ID[prefs.presetId]),ids=currentIds(),count=ids.length,stats=planStats(currentPlan());
  const cards=PRESETS.map(raw=>{const p=P(raw);return `<button class="preset-card ${p.id===prefs.presetId?'selected':''}" type="button" data-action="preset" data-value="${p.id}" aria-pressed="${p.id===prefs.presetId}"><div class="preset-icon">${p.icon}</div><strong>${escapeHtml(p.name)}</strong><small>${escapeHtml(p.subtitle)}</small></button>`;}).join('');
  const levelChoices=DIFFICULTIES.map((level,index)=>`<button class="difficulty-option ${prefs.difficulty===level?'selected':''}" type="button" data-action="difficulty" data-value="${level}" aria-pressed="${prefs.difficulty===level}">${T(index===0?'easy':'medium')}</button>`).join('');
- const rows=ids.map((id,i)=>{const e=E(id);return `<div class="exercise-row"><div class="thumb">${illustration(e.pose,e.name,prefs.lang)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} <span aria-hidden="true">·</span> ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small></div><div class="exercise-actions"><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${T('swap')}: ${escapeHtml(e.name)}">${icon('swap')}<span>${T('swap')}</span></button><button type="button" class="remove-btn" data-action="remove" data-index="${i}" aria-label="${T('remove')}: ${escapeHtml(e.name)}" ${count===1?'disabled':''}>${icon('close')}<span>${T('remove')}</span></button></div></div>`;}).join('');
+ const rows=ids.map((id,i)=>{const e=E(id);return `<div class="exercise-row"><div class="thumb">${exerciseThumbnail(e)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} <span aria-hidden="true">·</span> ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small></div><div class="exercise-actions"><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${T('swap')}: ${escapeHtml(e.name)}">${icon('swap')}<span>${T('swap')}</span></button><button type="button" class="remove-btn" data-action="remove" data-index="${i}" aria-label="${T('remove')}: ${escapeHtml(e.name)}" ${count===1?'disabled':''}>${icon('close')}<span>${T('remove')}</span></button></div></div>`;}).join('');
  app.innerHTML=`<div class="site-shell">
  <header class="topbar">${brand()}<div class="topbar-actions"><button type="button" class="language-btn" data-action="language" aria-label="${T('switchLanguage')}" title="${T('switchLanguage')}"><span aria-hidden="true">${prefs.lang==='de'?'🇩🇪':'🇬🇧'}</span><span>${prefs.lang.toUpperCase()}</span></button><button class="icon-button help-button" type="button" data-action="help" aria-label="${T('help')}">${icon('info')}</button></div></header>
  <p class="health-notice" role="note">${icon('info')}<span>${escapeHtml(T('healthNotice'))}</span></p>
@@ -137,7 +160,7 @@ function renderSwapDialog(){
  const localized=EXERCISES.map(raw=>exerciseText(raw,prefs.lang));
  // Already selected exercises, including the currently edited slot, cannot be picked twice.
  const filtered=pickerChoices(localized,currentIds(),swapQuery,prefs.lang);
- return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(e=>`<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${illustration(e.pose,e.name,prefs.lang)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
+ return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(e=>`<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${exerciseThumbnail(e)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
 }
 function nextWork(index){if(!engine)return null;return engine.phases.slice(index+1).find(p=>p.kind==='work')||null;}
 const STUDY_IMAGE={singlelegbridge:'singlelegbridge-master-v1329.webp',assistedsquat:'assistedsquat-master-v1329.webp',hiphinge:'hiphinge-master-v1327.webp',kneepushup:'kneepushup-master-v1328.webp',bandrow:'bandrow-master-v1328.webp',bear:'bear-master-v1322.webp',heeltouch:'heeltouch-master-v1322.webp',snowangel:'snowangel-master-v1322.webp',calf:'calfraise-master-v1321.webp',wallsit:'wallsit-master-v1319.webp',jumping:'jumpingjacks-master-v1320.webp',pike:'pikepushup-master-v1318.webp',wall:'wallpushup-master-v1317.webp',squat:'squat-master.webp',pushup:'pushup-master.webp',plank:'plank-master.webp',lunge:'lunge-master.webp',mountain:'mountain-master.webp',bridge:'bridge-master.webp',march:'march-master.webp',bicycle:'bicycle-master.webp',sideplank:'sideplank-master.webp',recovery:'recovery-hydration-corrected.webp',shouldertap:'shouldertap-clean-v1315.webp',birddog:'birddog-master.webp',deadbug:'deadbug-clean-v1315.webp',superman:'superman-master.webp'};
