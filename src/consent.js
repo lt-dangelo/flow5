@@ -45,12 +45,18 @@
     s.src='https://cloud.umami.is/script.js';
     s.dataset.websiteId='789229c5-0473-4aab-bdfb-cddc54b1c37d';
     s.dataset.domains=HOSTS.join(',');
-    s.onload=()=>window.dispatchEvent(new Event('pick5go:analyticsready'));
+    s.onload=()=>{
+      s.dataset.pick5goState='loaded';
+      window.dispatchEvent(new Event('pick5go:analyticsready'));
+    };
     s.onerror=()=>{
       loaded=false;
+      s.dataset.pick5goState='error';
       window.dispatchEvent(new Event('pick5go:analyticsunavailable'));
     };
+    s.dataset.pick5goState='pending';
     document.head.appendChild(s);
+    window.dispatchEvent(new Event('pick5go:analyticsloading'));
   };
   const close=()=>document.getElementById('analytics-consent')?.remove();
   const show=()=>{
@@ -78,7 +84,7 @@
       // If tracking was already active, unload the tracker immediately by reloading.
       if(loaded)location.reload();
     });
-    accept.addEventListener('click',()=>{save('yes');close();load()});
+    accept.addEventListener('click',()=>{save('yes');close();window.dispatchEvent(new Event('pick5go:consentchange'));load()});
     buttons.append(decline,accept);
     panel.append(desc,buttons);
     document.body.append(panel);
