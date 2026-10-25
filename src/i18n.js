@@ -23,7 +23,7 @@ superman:['Superman hold','Core','Lie face down and gently lift arms and legs, t
 heelTouch:['Heel touches','Core','Lie on your back, knees bent and feet flat; reach toward each same-side heel alternately.','Use small side-to-side movements and lift shoulders slightly.'],
 bearHold:['Bear hold','Core','From all fours, tuck your toes, lift knees a few centimetres and hold.','Keep your back neutral and breathe calmly. Lower knees if needed.'],
 hipHinge:['Hip hinge','Legs','Bend your knees slightly, push hips back and stand tall with a neutral spine.','Hinge at your hips and keep weight across your whole foot.'],
-bandRow:['Resistance-band row','Upper body','Secure the band, pull elbows back close to your sides, then release slowly.','Keep shoulders down. Check the band anchor before every set.'],
+bandRow:['Resistance-band row','Upper body','Sit tall with the band around both feet. Pull elbows back, then release slowly.','Keep the band secure around your feet and your shoulders down.'],
 kneePushup:['Knee push-ups','Upper body','From your knees, lower your chest with control and press back up.','Keep a straight line from head to knees.'],
 singleLegBridge:['Single-leg glute bridge','Legs','On your back, lift one leg and raise then lower your hips using the planted foot.','Keep your hips level; switch legs halfway through.'],
 assistedSingleLegSquat:['Assisted single-leg squat','Legs','Hold a stable support, bend one leg slowly, then stand back up.','Lower only as far as controlled; switch legs halfway through.'],

@@ -46,7 +46,7 @@ export const EXERCISES = [
   {id:'hipHinge', name:'Hip Hinge', group:'Beine', level:1, pose:'hiphinge',
    cue:'Knie leicht beugen, Hüfte nach hinten schieben und mit neutralem Rücken aufrichten.',tip:'Bewegung aus der Hüfte, Gewicht auf dem ganzen Fuß.'},
   {id:'bandRow', name:'Rudern mit Widerstandsband', group:'Oberkörper', level:1, pose:'bandrow', equipment:'band',
-   cue:'Band sicher fixieren, Ellbogen am Körper nach hinten ziehen und langsam lösen.',tip:'Schultern unten lassen; Band vor jedem Satz sicher befestigen.'},
+   cue:'Im Sitzen Band um beide Füße legen, Ellbogen nach hinten ziehen und langsam lösen.',tip:'Band sicher um die Füße führen, Rücken aufrecht, Schultern unten.'},
   {id:'kneePushup', name:'Knie-Liegestütze', group:'Oberkörper', level:1, pose:'kneepushup',
    cue:'Im Stütz auf den Knien Brust kontrolliert senken und wieder hochdrücken.',tip:'Körper von Kopf bis Knie in einer Linie halten.'},
   {id:'singleLegBridge', name:'Einbeinige Glute Bridge', group:'Beine', level:2, pose:'singlelegbridge',

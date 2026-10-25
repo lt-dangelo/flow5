@@ -123,3 +123,10 @@ Four focus presets (Full Body, Core & Stability, Upper Body, Legs & Glutes) now 
 
 ### v1.3.26 — Simplified workout and summary
 Removed the redundant next-exercise text and audio icon between the exercise illustration and controls without changing the audible cues. Removed the focus/level line under Well Done and the final-rest-included note, retaining the exercise list and author credit. PWA cache bumped to v1.3-preview-26. Production remains unchanged.
+
+
+### v1.3.27 — Three new HD exercise illustrations
+- Replaces placeholders for Hip Hinge, Knee Push-ups, and Resistance-band Row with 1440 × 960 WebP illustrations matched to the existing parchment tone. Hip Hinge uses a standalone study; Knee Push-ups and seated band rows are carefully isolated, composited and recolored from a generated movement-study sheet with full limb margins.
+- Technique review: ACE Hip Hinge (bodyweight variant), ACE Bent Knee Push-up, ACE Seated Row. Heart & Stroke provides general activity guidance, but no matching exercise-specific descriptions were verified.
+- The band row cue is revised in both languages to describe the pictured seated band-around-feet setup without an external anchor. Single-leg Glute Bridge and Assisted Single-leg Squat remain placeholders.
+- Service-worker offline cache v1.3-preview-27. No production-app changes.
