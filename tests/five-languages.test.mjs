@@ -43,7 +43,7 @@ assert.ok(!app.includes('class="intro-stats"'),'remove timer/screen-wake labels'
 assert.ok(!app.includes('class="footnote"'),'remove orphan asterisk footnote');
 assert.ok(app.includes('data-language'),'language choice must be interactive');
 assert.ok(app.includes('document.documentElement.lang=prefs.lang'));
-assert.ok(sw.includes('pick5go-v1.3-preview-34'));
+assert.ok(sw.includes('pick5go-v1.3-preview-35'));
 for(const module of ['locales-ui.js','locales-exercises.js'])assert.ok(sw.includes('./src/'+module),'offline languages '+module);
 const plan=buildPlan(['squat','plank'],{workSec:40,restSec:20,rounds:3,includeFinalRest:true});
 assert.equal(plan.at(-1).kind,'rest');
