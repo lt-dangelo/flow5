@@ -81,3 +81,8 @@ The two 1440 × 960 WebP studies have been reconstructed using full-body anatomi
 
 ### v1.3.17 – Wall Push-ups parchment harmonization
 The Wall Push-ups illustration now uses a color-matched 1440 × 960 WebP master (`wallpushup-master-v1317.webp`), adjusted against the Bird Dog reference. The light parchment areas are less amber and closely match the standard illustration background, while anatomical drawing, hands and feet, action arrows and the original 2-pose composition are preserved. Versioned URLs and the preview service-worker cache were updated so installed iPhone PWAs receive the new image. The previous wall-push-ups WebP is kept for rollback.
+
+### v1.3.18 – Pike Push-ups original illustration
+- Added `artwork/pikepushup-master-v1318.webp` (1440 × 960 WebP): anatomically recognizable pike starting position with arms extended and a second lowered position with elbows bent, showing movement arrows.
+- Warm parchment matched against the approved Bird Dog reference; full hands, feet and head remain within the image bounds.
+- Updated preview artwork map, offline cache and versioned page assets; production Flow5 remains unchanged.
