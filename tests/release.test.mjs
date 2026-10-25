@@ -40,7 +40,7 @@ for(const p of PRESETS){
   }
 }
 for(const l of LANGUAGES){for(const e of EXERCISES){const t=exerciseText(e,l.code);assert.ok(t.name&&t.cue&&t.tip)}}
-assert.equal(t('en','footer'),'Your workout stays on your device. No registration, no setup, no workout tracking');
+assert.equal(t('en','footer'),'Your exercise choices stay on your device. No registration, no setup, no personal workout history');
 const phases=buildPlan(['squat','pushup'],{workSec:40,restSec:20,rounds:3,includeFinalRest:true});
 assert.equal(phases.at(-1).kind,'rest');
 console.log('OK: Pick5Go production identity, migration, offline scoping, 27 exercise catalogue, five languages');
