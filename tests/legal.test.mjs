@@ -20,11 +20,16 @@ assert.ok(sw.includes('./privacy.html') && sw.includes('./imprint.html'));
 assert.ok(privacy.includes('GitHub Pages') && privacy.includes('Umami Cloud'));
 assert.ok(privacy.includes('sechs Monate') && privacy.includes('six months'));
 assert.ok(imprint.includes('noindex,nosnippet') && privacy.includes('noindex,nosnippet'));
+assert.ok(imprint.includes('https://impressum-ohne-adresse.de/'), 'Free provider requires an imprint backlink');
+assert.ok(imprint.includes('69214 Eppelheim') && privacy.includes('69214 Eppelheim'));
+// The contact email is HTML-entity encoded to deter trivial address harvesters, not to conceal it from users.
+const encodedEmail=Array.from('impressum@pick5go.com').map(char=>'&#'+char.charCodeAt(0)+';').join('');
+assert.ok(imprint.includes('mailto:'+encodedEmail) && privacy.includes('mailto:'+encodedEmail));
 assert.ok(imprint.includes('§ 18 Abs. 1 MStV'));
 
 // Intentionally block a production release until the serviceable address,
 // direct contact email, have been reviewed and filled.
 // Do not remove this test simply to get a green build.
-const missing=/\[(?:STRAẞE|POSTLEITZAHL|KONTAKT-EMAIL|STREET|POSTCODE|CONTACT-EMAIL|VOLLSTÄNDIGE|FULL SERVICEABLE|TARIF UND|CONFIRM PLAN)/;
+const missing=/\[(?:BESTÄTIGTE ZUORDNUNG|CONFIRMED CUSTOMER IDENTIFIER|STRAẞE|POSTLEITZAHL|KONTAKT-EMAIL|STREET|POSTCODE|CONTACT-EMAIL|VOLLSTÄNDIGE|FULL SERVICEABLE|TARIF UND|CONFIRM PLAN)/;
 assert.doesNotMatch(imprint+privacy,missing,
  'Complete real legal contact details and Umami retention before publishing.');
