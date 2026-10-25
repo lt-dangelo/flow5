@@ -51,3 +51,6 @@ User preferred the earlier recovery study showing a person drinking water. The f
 
 ### v1.3.9 – Four enhanced exercise studies
 Four 1440×960 parchment image compositions were prepared for reverse lunges, mountain climbers, glute bridge and drinking-water final rest, with enlarged and feathered anatomical reference drawings. They use optimized WebP images and safe margins, but their original source drawings were lower-resolution composites and may retain some softness. The exercise image registry includes the corresponding new filenames; missing preview images fall back gracefully to the existing SVG studies (or previous hydration image). The optional asset cache supports staged upload without breaking installation. No production app changes.
+
+### v1.3.10 – HD artwork successfully uploaded to GitHub
+All four v1.3.9 prepared images are committed to the preview (`lunge-master.webp`, `mountain-master.webp`, `bridge-master.webp`, and `recovery-hydration-master.webp`). They are now precached as mandatory offline PWA assets. Update cache version to preview-10 and app CSS/JS query parameters to 1.3.10. Existing production app remains unchanged.
