@@ -81,7 +81,7 @@ for(const name of ['birddog','superman']){
  assert.ok(sw.includes('artwork/'+name+'-master.webp'),name+' must be available offline');
 }
 assert.match(app,/exerciseId==='snowAngel'\?STUDY_IMAGE\.snowangel/);
-assert.match(app,/return illustration13\(pose,name,lang\)/);
+assert.ok(app.includes("T('placeholder')"),'unillustrated exercises must display honest temporary artwork');
 
 // v1.3.13: verify correction assets, localized Dead Bug follow-through, and offline caching.
 for (const asset of ['shouldertap-clean-v1315.webp','recovery-hydration-corrected.webp']) {
