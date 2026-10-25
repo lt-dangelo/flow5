@@ -51,7 +51,8 @@ for(const name of ['squat','pushup','plank'])assert.ok(app.includes(name+'-maste
 assert.doesNotMatch(sw,/OPTIONAL_ART/);
 assert.match(sw,/cache\.addAll\(CORE\)/);
 assert.match(app,/data-pose/);
-for(const name of ['lunge','mountain','bridge','recovery-hydration'])assert.ok(sw.includes(name+'-master.webp')||sw.includes(name+'.webp'));
+for(const name of ['lunge','mountain','bridge'])assert.ok(sw.includes(name+'-master.webp')||sw.includes(name+'.webp'));
+assert.ok(sw.includes('recovery-hydration-corrected.webp'));
 
 for(const name of ['lunge','mountain','bridge','recovery-hydration']){
  const file=readFileSync(new URL('../artwork/'+name+'-master.webp',import.meta.url));
