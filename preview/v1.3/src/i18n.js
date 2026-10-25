@@ -1,3 +1,5 @@
+import {UI_EXTRA} from './locales-ui.js';
+import {EXERCISE_EXTRA,GROUP_EXTRA} from './locales-exercises.js';
 
 const EX_EN={
 squat:['Squats','Legs','Stand with feet shoulder-width apart. Sit back and down, keeping your back neutral.','Track your knees over your toes. Push through your whole foot.'],
@@ -48,7 +50,7 @@ finalRest:'Rest after the last exercise',finalRestOn:'On: continuous intervals f
 sounds:'Sound cues',soundsDesc:'Play a tone when switching between work and rest.',
 plan:'YOUR WORKOUT PLAN',duration:'Total duration',workBreakdown:'Work',restBreakdown:'Rest',roundOne:'round',roundMany:'rounds',exerciseOne:'exercise',exerciseMany:'exercises',start:'Start workout',
 footnote:'* On supported devices while the app remains visible, subject to iOS limitations.',
-footer:'PICK5GO v1.3 PREVIEW · Your workout stays on this device. No account, no tracking.',
+footer:'Your workout stays on your device. No registration, no setup, no workout tracking',
 swapEyebrow:'SWAP EXERCISE',addEyebrow:'ADD EXERCISE',swapTitle:'Choose a replacement',addTitle:'Choose an exercise',
 close:'Close',search:'Search exercise or muscle group…',searchAria:'Search exercises',noMatches:'No matching exercises found.',
 easy:'Beginner',medium:'Intermediate',advanced:'Advanced',levelHeading:'Training level',levelHint:'Changes the five exercises in each focus. You can still swap any exercise.',bandRequired:'Resistance band or long towel',placeholder:'Illustration coming soon',
@@ -77,7 +79,7 @@ finalRest:'Erholung nach der letzten Übung',finalRestOn:'Ein: genau {time} bei 
 sounds:'Akustische Signale',soundsDesc:'Töne beim Wechsel zwischen Belastung und Erholung.',
 plan:'DEIN TRAININGSPLAN',duration:'Gesamtdauer',workBreakdown:'Belastung',restBreakdown:'Erholung',roundOne:'Runde',roundMany:'Runden',exerciseOne:'Übung',exerciseMany:'Übungen',start:'Training starten',
 footnote:'* Auf unterstützten Geräten, solange die App sichtbar ist und iOS die Funktion zulässt.',
-footer:'PICK5GO v1.3 PREVIEW · Dein Training bleibt auf diesem Gerät. Keine Anmeldung, kein Tracking.',
+footer:'Dein Training bleibt auf deinem Gerät. Keine Anmeldung, keine Einrichtung, keine Trainingsaufzeichnung.',
 swapEyebrow:'ÜBUNG AUSTAUSCHEN',addEyebrow:'ÜBUNG HINZUFÜGEN',swapTitle:'Neue Übung wählen',addTitle:'Übung auswählen',
 close:'Schließen',search:'Übung oder Muskelgruppe suchen …',searchAria:'Übungen durchsuchen',noMatches:'Keine weiteren passenden Übungen gefunden.',
 easy:'Einsteiger',medium:'Mittelstufe',advanced:'Fortgeschritten',levelHeading:'Trainingsniveau',levelHint:'Passt die fünf Übungen je Schwerpunkt an. Jede Übung kann frei getauscht werden.',bandRequired:'Widerstandsband oder langes Handtuch',placeholder:'Illustration folgt',
@@ -94,7 +96,45 @@ exitConfirm:'Training wirklich beenden? Dein Fortschritt geht verloren.',startEr
 helpMessage:'INSTALLATION AUF DEM IPHONE\n\n1. Diese HTTPS-Website in Safari öffnen.\n2. Auf Teilen tippen.\n3. „Zum Home-Bildschirm“ wählen.\n\nDer Trainingsmodus funktioniert auch ohne Installation. Für die Offline-Nutzung die installierte App nach dem ersten Online-Aufruf erneut öffnen.\n\nFür die Display-Aktivhaltung muss die App sichtbar bleiben; iOS kann die Funktion im Stromsparmodus verweigern.'
 }
 };
-export function t(lang,key,params={}){const template=STRINGS[lang==='de'?'de':'en'][key];if(template===undefined)throw Error('Missing translation: '+key);return template.replace(/\{(\w+)\}/g,(_,k)=>String(params[k]??''));}
-export function exerciseText(exercise,lang){if(lang==='de')return exercise;const text=EX_EN[exercise.id];if(!text)throw Error('Missing exercise: '+exercise.id);return {...exercise,name:text[0],group:text[1],cue:text[2],tip:text[3]};}
-export function presetText(preset,lang){if(lang==='de')return preset;const text=PRESET_EN[preset.id];if(!text)throw Error('Missing preset: '+preset.id);return {...preset,name:text[0],subtitle:text[1],tag:text[2]};}
-export function levelText(level,lang){return level? t(lang,['','easy','medium','advanced'][level]):'';}
+// Public language list: English and German from the original app; 3 complete new locales.
+export const LANGUAGES=[
+ {code:'en',label:'English',short:'EN',locale:'en-GB'},
+ {code:'de',label:'Deutsch',short:'DE',locale:'de-DE'},
+ {code:'it',label:'Italiano',short:'IT',locale:'it-IT'},
+ {code:'fr',label:'Français',short:'FR',locale:'fr-FR'},
+ {code:'es',label:'Español',short:'ES',locale:'es-ES'}
+];
+const VALID_LANGUAGES=new Set(LANGUAGES.map(l=>l.code));
+export function normalizeLang(lang){return VALID_LANGUAGES.has(lang)?lang:'en';}
+export function localeFor(lang){return LANGUAGES.find(l=>l.code===normalizeLang(lang)).locale;}
+export function t(lang,key,params={}){
+ const chosen=normalizeLang(lang),dictionary=chosen==='en'||chosen==='de'?STRINGS[chosen]:UI_EXTRA[chosen];
+ const template=dictionary[key];
+ if(template===undefined)throw Error('Missing '+chosen+' translation: '+key);
+ return template.replace(/\{(\w+)\}/g,(_,k)=>String(params[k]??''));
+}
+export function exerciseText(exercise,lang){
+ const chosen=normalizeLang(lang);
+ if(chosen==='de')return exercise;
+ if(chosen==='en'){
+  const en=EX_EN[exercise.id];if(!en)throw Error('Missing exercise: '+exercise.id);
+  return {...exercise,name:en[0],group:en[1],cue:en[2],tip:en[3]};
+ }
+ const entry=EXERCISE_EXTRA[chosen][exercise.id];
+ if(!entry)throw Error('Missing '+chosen+' exercise: '+exercise.id);
+ return {...exercise,name:entry[0],group:GROUP_EXTRA[chosen][exercise.group],cue:entry[1],tip:entry[2]};
+}
+export function presetText(preset,lang){
+ const chosen=normalizeLang(lang);
+ if(chosen==='de')return preset;
+ const entry=PRESET_EN[preset.id];if(!entry)throw Error('Missing preset: '+preset.id);
+ if(chosen==='en')return {...preset,name:entry[0],subtitle:entry[1],tag:entry[2]};
+ const extra=PRESET_EXTRA[chosen][preset.id];
+ return {...preset,name:extra[0],subtitle:extra[1],tag:''};
+}
+const PRESET_EXTRA={
+ it:{full:['Corpo intero','Allenamento equilibrato'],core:['Core e stabilità','Forza e postura'],upper:['Parte superiore','Spinta e stabilità'],legs:['Gambe e glutei','Forza dalla base']},
+ fr:{full:['Corps entier','Séance équilibrée'],core:['Gainage et stabilité','Force et posture'],upper:['Haut du corps','Poussée et stabilité'],legs:['Jambes et fessiers','Renforcement ciblé']},
+ es:{full:['Cuerpo completo','Entrenamiento equilibrado'],core:['Zona media y estabilidad','Fuerza y postura'],upper:['Tren superior','Empuje y estabilidad'],legs:['Piernas y glúteos','Fuerza desde la base']}
+};
+export function levelText(level,lang){return level?t(lang,['','easy','medium','advanced'][level]):'';}
