@@ -1,5 +1,6 @@
 import {EXERCISES, EXERCISE_BY_ID, PRESETS, PRESET_BY_ID, DIFFICULTIES, presetIds} from './data.js';
 import {buildPlan, planStats, IntervalEngine} from './engine.js';
+import {trackWorkoutEvent,trackExerciseCompleted} from './analytics.js';
 import {illustration} from './art.js';
 import {illustration13,isStudy} from './art13.js';
 
@@ -46,7 +47,6 @@ function loadPreferences(){
  } catch {return {...DEFAULTS};}
 }
 let prefs=loadPreferences();
-save(); // Persist migrated settings under the stable production key.
 document.documentElement.lang=prefs.lang;
 let view='setup';
 let swapIndex=null;
@@ -80,7 +80,19 @@ const MUSCLE_THUMBNAILS=Object.freeze({
  gluteBridge:'gluteBridge-muscles.webp',
  singleLegBridge:'singleLegBridge-muscles.webp',
  calfRaise:'calfRaise-muscles.webp',
- jumpingJack:'jumpingJack-muscles.webp'
+ jumpingJack:'jumpingJack-muscles.webp',
+ reverseLunge:'reverseLunge-muscles.webp',
+ mountainClimber:'mountainClimber-muscles.webp',
+ bicycle:'bicycle-muscles.webp',
+ pikePushup:'pikePushup-muscles.webp',
+ superman:'superman-muscles.webp',
+ sidePlankL:'sidePlankL-muscles.webp',
+ sidePlankR:'sidePlankR-muscles.webp',
+ shoulderTap:'shoulderTap-muscles.webp',
+ wallSit:'wallSit-muscles.webp',
+ heelTouch:'heelTouch-muscles.webp',
+ bearHold:'bearHold-muscles.webp',
+ assistedSingleLegSquat:'assistedSingleLegSquat-muscles.webp'
 });
 function exerciseThumbnail(e){
  const file=MUSCLE_THUMBNAILS[e.id];
@@ -153,7 +165,7 @@ function renderSetup(){
  <label class="toggle-line"><div><strong>${T('sounds')}</strong><small>${T('soundsDesc')}</small></div><input type="checkbox" data-config="sound" ${prefs.sound?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
  </section>
  <aside class="summary-panel"><div class="summary-head"><span>${T('plan')}</span>${icon('spark')}</div><div class="total-time">${secsLabel(stats.totalMs)}</div><span class="summary-note">${T('duration')}</span><div class="meter"><div class="meter-work" style="width:${stats.workMs/stats.totalMs*100}%"></div></div><div class="summary-breakdown"><span><i class="dot work-dot"></i> ${T('workBreakdown')} <b>${secsLabel(stats.workMs)}</b></span><span><i class="dot rest-dot"></i> ${T('restBreakdown')} <b>${secsLabel(stats.restMs)}</b></span></div><div class="summary-desc">${summaryLabel()}</div><button type="button" data-action="start" class="primary-btn">${T('start')} ${icon('arrow')}</button></aside>
- </main><footer class="footer"><span>${T('footer')}</span><span class="author-credit">by Lorenzo D'Angelo</span></footer>
+ </main><footer class="footer"><span>${T('footer')}</span></footer>
  </div>${swapIndex!==null?renderSwapDialog():''}`;
 }
 function updateSettingsSummary(){
@@ -226,7 +238,7 @@ function renderDone(){
  };
  const stats=engine?planStats(engine.phases):planStats(buildPlan(session.ids,session));
  const date=new Intl.DateTimeFormat(localeFor(prefs.lang),{day:'numeric',month:'short',year:'numeric'}).format(new Date());
- const names=session.ids.map((id,i)=>`<li><span class="record-number">${String(i+1).padStart(2,'0')}</span><span>${escapeHtml(E(id).name)}</span></li>`).join('');
+ const names=session.ids.map((id,i)=>{const e=E(id);return `<li><span class="record-number">${String(i+1).padStart(2,'0')}</span><span class="record-exercise-thumb" aria-hidden="true">${exerciseThumbnail(e)}</span><span class="record-exercise-name">${escapeHtml(e.name)}</span></li>`;}).join('');
  const workRest=`${session.workSec} ${T('sec')} ${T('work')} · ${session.restSec} ${T('sec')} ${T('rest')}`;
  view='done';
  app.innerHTML=`<div class="done-page done-record-page">
@@ -238,7 +250,7 @@ function renderDone(){
    <div class="record-stats"><div><strong>${secsLabel(stats.totalMs)}</strong><span>${T('recordTotal')}</span></div><div><strong>${session.rounds} × ${session.ids.length}</strong><span>${T('roundMany')} × ${T('exerciseMany')}</span></div></div>
    <div class="record-intervals"><span>${T('recordIntervals')}</span><strong>${escapeHtml(workRest)}</strong></div>
    <div class="record-exercises"><h2>${T('recordExercises')}</h2><ol>${names}</ol></div>
-   <div class="record-bottom"><span>Pick5Go · by Lorenzo D'Angelo</span></div>
+   <div class="record-bottom"><span>Pick5Go</span></div>
   </section>
   <p class="record-hint">${T('recordHint')}</p>
   <div class="record-actions"><button class="primary-btn" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></div>
@@ -275,26 +287,27 @@ function updateWakeIndicator(){
  node.classList.toggle('is-awake',!!wakeLock);
  node.innerHTML=`${icon('sun')} ${T(wakeLock?'awakeOn':'awakeOff')}`;
 }
-function beginWorkout(){
+function beginWorkout(restarted=false){
  try{
   // Der erste Ton wird synchron beim Start-Tipp abgespielt.
   const ids=[...currentIds()];
   workoutCount=ids.length;
-  workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()]};
+  workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()],skippedPhases:0};
   engine=new IntervalEngine(buildPlan(ids,currentConfig()),{
    onPhase:(phase,previous)=>{
     if(previous)phaseSound(phase);
     if(view==='workout')renderWorkout();
    },
-   onComplete:()=>{if(prefs.sound)cueAudio.play('done');stopTicking();releaseWake();view='done';renderDone();},
+   onExerciseComplete:phase=>{trackExerciseCompleted(phase.exerciseId);},
+   onComplete:()=>{trackWorkoutEvent('workout_completed',workoutSession);if(prefs.sound)cueAudio.play('done');stopTicking();releaseWake();view='done';renderDone();},
    onChange:()=>{if(view==='workout')renderWorkout();}
   });
-  view='workout';engine.start();phaseSound(engine.phases[0]);
+  view='workout';engine.start();trackWorkoutEvent('workout_started',workoutSession);if(restarted)trackWorkoutEvent('workout_restarted',workoutSession);phaseSound(engine.phases[0]);
   startTicking();acquireWake();
   window.scrollTo({top:0,behavior:'instant'});
  }catch(err){window.alert(T('startError')+err.message);}
 }
-function exitWorkout(){stopTicking();cueAudio.stop();releaseWake();engine=null;workoutSession=null;pendingExit=false;view='setup';render();}
+function exitWorkout(){trackWorkoutEvent('workout_abandoned',workoutSession);stopTicking();cueAudio.stop();releaseWake();engine=null;workoutSession=null;pendingExit=false;view='setup';render();}
 function showHelp(){window.alert(T('helpMessage'));}
 app.addEventListener('click',event=>{
  const button=event.target.closest('[data-action]');if(!button)return;
@@ -326,18 +339,18 @@ app.addEventListener('click',event=>{
   else if(engine.status==='paused'){engine.resume();acquireWake();}
   renderWorkout();
  }
- else if(action==='skip'&&engine){engine.skip();if(view==='workout')renderWorkout();}
+ else if(action==='skip'&&engine){if(workoutSession)workoutSession.skippedPhases++;engine.skip();if(view==='workout')renderWorkout();}
  else if(action==='exit'){
   if(window.confirm(T('exitConfirm')))exitWorkout();
  }
- else if(action==='restart'){beginWorkout();}
+ else if(action==='restart'){beginWorkout(true);}
  else if(action==='setup'){engine=null;workoutSession=null;view='setup';render();}
  else if(action==='help'){showHelp();}
 });
 app.addEventListener('change',event=>{
  if(event.target.matches('[data-language]')){
   prefs.lang=normalizeLang(event.target.value);
-  document.documentElement.lang=prefs.lang;save();render();return;
+  document.documentElement.lang=prefs.lang;save();render();window.dispatchEvent(new CustomEvent('pick5go:languagechange',{detail:{language:prefs.lang}}));return;
  }
  const field=event.target.dataset.config;if(!field)return;
  if(field==='sound'){prefs.sound=event.target.checked;if(!prefs.sound)cueAudio.stop();}
