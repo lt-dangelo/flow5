@@ -57,7 +57,17 @@ const MUSCLE_THUMBNAILS=Object.freeze({
  kneePushup:'kneePushup-muscles.webp',
  hipHinge:'hipHinge-muscles.webp',
  birdDog:'birdDog-muscles.webp',
- march:'march-muscles.webp'
+ march:'march-muscles.webp',
+ pushup:'pushup-muscles.webp',
+ wallPushup:'wallPushup-muscles.webp',
+ bandRow:'bandRow-muscles.webp',
+ snowAngel:'snowAngel-muscles.webp',
+ plank:'plank-muscles.webp',
+ deadBug:'deadBug-muscles.webp',
+ gluteBridge:'gluteBridge-muscles.webp',
+ singleLegBridge:'singleLegBridge-muscles.webp',
+ calfRaise:'calfRaise-muscles.webp',
+ jumpingJack:'jumpingJack-muscles.webp'
 });
 function exerciseThumbnail(e){
  const file=MUSCLE_THUMBNAILS[e.id];
