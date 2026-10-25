@@ -203,3 +203,72 @@
  .difficulty-option{flex:1 1 50%}
  .preset-card{min-height:117px}
 }
+
+
+/* v1.3.25 — medical readiness, responsive titles and shareable workout record */
+.health-notice{display:flex;align-items:flex-start;gap:8px;max-width:920px;margin:13px 0 0;padding:0 2px;color:#a9b9c5;font-size:12px;line-height:1.5}
+.health-notice svg{width:16px;height:16px;margin-top:1px;flex:none;color:#a9b9c5}
+.author-credit{display:block;margin-top:6px;color:#c4d4de;font-weight:650;letter-spacing:.1px}
+
+/* The state label and index have their own row: names get the full card width. */
+.v13-clean .v13-art-heading{display:grid;grid-template-columns:1fr auto;align-items:center;column-gap:9px;row-gap:5px;padding-bottom:8px}
+.v13-clean .v13-art-index{grid-column:1;grid-row:1}
+.v13-clean .v13-motion-label{grid-column:2;grid-row:1;justify-self:end;max-width:100%;white-space:nowrap}
+.v13-clean .v13-art-heading h1{grid-column:1 / -1;grid-row:2;min-width:0;max-width:100%;font-size:clamp(19px,4.9vw,26px);line-height:1.13;overflow-wrap:normal;word-break:normal;hyphens:auto}
+.v13-clean .v13-next{align-items:flex-start}
+.v13-clean .v13-next>span:first-child{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:break-word;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-width:0}
+.v13-clean .v13-audio-mark{flex:none}
+
+/* Compact, screenshot-ready completed-workout record */
+.done-record-page{max-width:640px;padding:16px 16px 26px;min-height:100dvh}
+.done-record-page .done-topbar{padding:3px 2px 13px}
+.done-record-page main{display:block;flex:1;padding:0;text-align:left}
+.workout-record{background:linear-gradient(150deg,#19282a,#142125 66%,#14251c);border:1px solid #63815b;border-radius:22px;padding:21px 23px 16px;box-shadow:0 12px 42px #0003}
+.record-top{display:flex;align-items:center;justify-content:space-between;gap:9px;font-size:11px;color:#b3c3bf}
+.record-success{display:inline-flex;align-items:center;gap:7px;font-size:10px;letter-spacing:1.3px;color:var(--lime);font-weight:850}
+.record-success svg{height:15px;width:15px}
+.record-date{font-variant-numeric:tabular-nums}
+.workout-record h1{margin:12px 0 4px;font-size:clamp(27px,6.3vw,36px);letter-spacing:-.9px;line-height:1.07}
+.record-focus{font-size:14px;font-weight:700;color:#dcead7;line-height:1.4}
+.record-custom{font-size:11px;font-weight:500;color:#aebda9}
+.record-stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:16px}
+.record-stats>div{background:#263b37;border:1px solid #3d594c;border-radius:12px;padding:11px 13px;min-width:0}
+.record-stats strong{display:block;font-size:clamp(22px,5vw,29px);line-height:1.1;font-weight:850;font-variant-numeric:tabular-nums}
+.record-stats span{display:block;margin-top:4px;font-size:10px;color:#b4c5b9;line-height:1.3}
+.record-intervals{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:13px;padding:9px 2px 12px;border-bottom:1px solid #3c534b;font-size:11px;color:#aec2b6}
+.record-intervals strong{color:#e6f0e9;font-size:12px;font-weight:700;text-align:right}
+.record-exercises{padding-top:12px}
+.record-exercises h2{text-transform:uppercase;letter-spacing:1.2px;font-size:10px;color:#b1c8b1;margin-bottom:6px}
+.record-exercises ol{padding:0;margin:0;list-style:none}
+.record-exercises li{display:flex;gap:11px;align-items:center;min-width:0;border-bottom:1px solid #2b413b;padding:7px 2px;font-weight:650;font-size:13px;line-height:1.28}
+.record-exercises li:last-child{border-bottom:0}
+.record-exercises li>span:last-child{min-width:0;overflow-wrap:break-word}
+.record-number{flex:0 0 24px;color:var(--lime);font-size:11px;font-variant-numeric:tabular-nums;font-weight:850}
+.record-bottom{border-top:1px solid #3b5047;padding-top:11px;margin-top:8px;color:#aebdb0;font-size:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.record-bottom>span:last-child{color:#dce5d7;font-weight:600}
+.record-hint{color:#a2b4ba;text-align:center;font-size:11px;line-height:1.3;margin:11px 0 14px}
+.record-actions{display:flex;flex-direction:column;align-items:stretch;gap:9px;max-width:430px;margin:auto}
+.record-actions .primary-btn{width:100%;max-width:100%;min-height:50px}
+.record-actions .text-btn{margin:0 auto}
+@media(max-width:480px){
+ .health-notice{font-size:11px;margin:10px 0 0}
+ .done-record-page{padding:11px 12px 20px}
+ .workout-record{padding:15px 16px 12px;border-radius:17px}
+ .record-top{font-size:10px}
+ .workout-record h1{margin-top:8px;font-size:27px}
+ .record-focus{font-size:12px}
+ .record-stats{margin-top:11px}
+ .record-stats>div{padding:9px 10px}
+ .record-intervals{margin-top:7px;padding:7px 1px 9px}
+ .record-exercises{padding-top:9px}
+ .record-exercises li{padding:6px 2px;font-size:12px}
+ .record-bottom{padding-top:8px;margin-top:5px;font-size:9px}
+ .record-hint{margin:8px 0 12px}
+ .v13-clean .v13-art-heading h1{font-size:clamp(19px,5.2vw,23px)}
+}
+@media(max-height:680px) and (max-width:480px){
+ .record-exercises li{padding:5px 2px}
+ .record-stats>div{padding:7px 9px}
+ .workout-record{padding:12px 14px}
+ .record-hint{margin:6px 0 10px}
+}

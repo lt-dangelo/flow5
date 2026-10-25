@@ -6,7 +6,7 @@ import {illustration13,isStudy} from './art13.js';
 import {optionsFor,stepSetting} from './config.js';
 import {CueAudio} from './audio.js';
 import {t,exerciseText,presetText} from './i18n.js';
-import {validSelection,removeExercise,chooseExercise} from './selection.js';
+import {validSelection,removeExercise,chooseExercise,pickerChoices} from './selection.js';
 
 const STORAGE_KEY='flow5-prefs-v13-preview';
 const DEFAULTS={presetId:'full',difficulty:'beginner', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en'};
@@ -47,6 +47,7 @@ let installPrompt=null;
 let lastPhaseKey='';
 let pendingExit=false;
 let workoutCount=5;
+let workoutSession=null;
 const knownIds=new Set(EXERCISES.map(e=>e.id));
 const T=(key,params)=>t(prefs.lang,key,params);
 const E=id=>exerciseText(EXERCISE_BY_ID[id],prefs.lang);
@@ -107,6 +108,7 @@ function renderSetup(){
  const rows=ids.map((id,i)=>{const e=E(id);return `<div class="exercise-row"><div class="thumb">${illustration(e.pose,e.name,prefs.lang)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} <span aria-hidden="true">·</span> ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small></div><div class="exercise-actions"><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${T('swap')}: ${escapeHtml(e.name)}">${icon('swap')}<span>${T('swap')}</span></button><button type="button" class="remove-btn" data-action="remove" data-index="${i}" aria-label="${T('remove')}: ${escapeHtml(e.name)}" ${count===1?'disabled':''}>${icon('close')}<span>${T('remove')}</span></button></div></div>`;}).join('');
  app.innerHTML=`<div class="site-shell">
  <header class="topbar">${brand()}<div class="topbar-actions"><button type="button" class="language-btn" data-action="language" aria-label="${T('switchLanguage')}" title="${T('switchLanguage')}"><span aria-hidden="true">${prefs.lang==='de'?'🇩🇪':'🇬🇧'}</span><span>${prefs.lang.toUpperCase()}</span></button><button class="icon-button help-button" type="button" data-action="help" aria-label="${T('help')}">${icon('info')}</button></div></header>
+ <p class="health-notice" role="note">${icon('info')}<span>${escapeHtml(T('healthNotice'))}</span></p>
  <main class="layout"><section class="intro"><div class="eyebrow"><span class="live-dot"></span> ${T('heroEyebrow')}</div><h1>${T('heroFirst')}<br/><em>${T('heroSecond')}</em></h1><p>${T('heroDesc')}</p><div class="intro-stats"><span>${icon('clock')} ${T('flexible')}</span><span>${icon('sun')} ${T('awake')}</span></div></section>
  <section class="panel preset-panel"><div class="difficulty-selector"><div class="difficulty-head"><strong>${T('levelHeading')}</strong><small>${T('levelHint')}</small></div><div class="difficulty-options" role="group" aria-label="${T('levelHeading')}">${levelChoices}</div></div><div class="section-heading"><div><span class="step-label">01 / ${T('focus').toUpperCase()}</span><h2>${T('focus')}</h2></div><span class="subtle">${PRESETS.length} ${T('programs')}</span></div><div class="preset-list">${cards}</div></section>
  <section class="panel lineup-panel"><div class="section-heading"><div><span class="step-label">02 / ${T('exercisesTitle').toUpperCase()}</span><h2>${T('exercisesTitle')} <span class="exercise-count">${count}/5</span></h2></div>${prefs.custom[currentCustomKey()]?`<button class="reset-btn" type="button" data-action="reset">${T('reset')}</button>`:`<span class="subtle">${escapeHtml(preset.name)}</span>`}</div><div class="exercise-list">${rows}</div>${ids.some(id=>EXERCISE_BY_ID[id].equipment==='band')?`<p class="band-note">${icon('info')} ${T('bandRequired')}</p>`:''}${count<5?`<button type="button" class="add-exercise-btn" data-action="add"><strong>＋</strong> ${T('add')} <span>${count}/5</span></button>`:''}<p class="hint">${icon('swap')} ${T('removeHint')}</p></section>
@@ -116,7 +118,7 @@ function renderSetup(){
  <label class="toggle-line"><div><strong>${T('sounds')}</strong><small>${T('soundsDesc')}</small></div><input type="checkbox" data-config="sound" ${prefs.sound?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
  </section>
  <aside class="summary-panel"><div class="summary-head"><span>${T('plan')}</span>${icon('spark')}</div><div class="total-time">${secsLabel(stats.totalMs)}</div><span class="summary-note">${T('duration')}</span><div class="meter"><div class="meter-work" style="width:${stats.workMs/stats.totalMs*100}%"></div></div><div class="summary-breakdown"><span><i class="dot work-dot"></i> ${T('workBreakdown')} <b>${secsLabel(stats.workMs)}</b></span><span><i class="dot rest-dot"></i> ${T('restBreakdown')} <b>${secsLabel(stats.restMs)}</b></span></div><div class="summary-desc">${summaryLabel()}</div><button type="button" data-action="start" class="primary-btn">${T('start')} ${icon('arrow')}</button><small class="footnote">${T('footnote')}</small></aside>
- </main><footer class="footer">${T('footer')}</footer>
+ </main><footer class="footer"><span>${T('footer')}</span><span class="author-credit">by Lorenzo D'Angelo</span></footer>
  </div>${swapIndex!==null?renderSwapDialog():''}`;
 }
 function updateSettingsSummary(){
@@ -131,9 +133,11 @@ function updateSettingsSummary(){
  const note=app.querySelector('.toggle-line small');if(note)note.textContent=restHelp();
 }
 function renderSwapDialog(){
- const isAdd=swapIndex===-1,selected=new Set(currentIds());
- const filtered=EXERCISES.filter(raw=>{const e=exerciseText(raw,prefs.lang);return !selected.has(e.id)&&`${e.name} ${e.group}`.toLocaleLowerCase(prefs.lang).includes(swapQuery.toLocaleLowerCase(prefs.lang));});
- return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(raw=>{const e=exerciseText(raw,prefs.lang);return `<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${illustration(e.pose,e.name,prefs.lang)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`;}).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
+ const isAdd=swapIndex===-1;
+ const localized=EXERCISES.map(raw=>exerciseText(raw,prefs.lang));
+ // Already selected exercises, including the currently edited slot, cannot be picked twice.
+ const filtered=pickerChoices(localized,currentIds(),swapQuery,prefs.lang);
+ return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(e=>`<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${illustration(e.pose,e.name,prefs.lang)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
 }
 function nextWork(index){if(!engine)return null;return engine.phases.slice(index+1).find(p=>p.kind==='work')||null;}
 const STUDY_IMAGE={bear:'bear-master-v1322.webp',heeltouch:'heeltouch-master-v1322.webp',snowangel:'snowangel-master-v1322.webp',calf:'calfraise-master-v1321.webp',wallsit:'wallsit-master-v1319.webp',jumping:'jumpingjacks-master-v1320.webp',pike:'pikepushup-master-v1318.webp',wall:'wallpushup-master-v1317.webp',squat:'squat-master.webp',pushup:'pushup-master.webp',plank:'plank-master.webp',lunge:'lunge-master.webp',mountain:'mountain-master.webp',bridge:'bridge-master.webp',march:'march-master.webp',bicycle:'bicycle-master.webp',sideplank:'sideplank-master.webp',recovery:'recovery-hydration-corrected.webp',shouldertap:'shouldertap-clean-v1315.webp',birddog:'birddog-master.webp',deadbug:'deadbug-clean-v1315.webp',superman:'superman-master.webp'};
@@ -174,16 +178,41 @@ function renderWorkout(){
     <div class="v13-drawing">${studyPicture(finalRest?'recovery':present.pose,displayName,prefs.lang,present.id)}</div>
     <p class="v13-art-cue">${escapeHtml(cue)}</p>
   </section>
-  <div class="v13-next"><span>${after}</span>${prefs.sound? `<span class="v13-audio-mark" aria-label="${T('sounds')}">${icon('sound')}</span>`:''}</div>
+  <div class="v13-next"><span title="${escapeHtml(after)}">${escapeHtml(after)}</span>${prefs.sound? `<span class="v13-audio-mark" aria-label="${T('sounds')}">${icon('sound')}</span>`:''}</div>
  </main>
  <footer class="training-controls v13-controls"><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div><div id="wake-indicator" class="wake-indicator visually-hidden" aria-live="polite">${T('checkingWake')}</div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
  <div class="visually-hidden" id="phase-announcement" aria-live="polite">${group}: ${displayName}</div></div>`;
  updateClock();updateWakeIndicator();
 }
 function renderDone(){
- const stats=engine?planStats(engine.phases):planStats(currentPlan());
+ // Show the actual workout configuration captured on Start, not preferences edited later.
+ const session=workoutSession||{
+  ids:[...currentIds()],presetId:prefs.presetId,difficulty:prefs.difficulty,
+  rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,
+  includeFinalRest:prefs.includeFinalRest,customized:!!prefs.custom[currentCustomKey()]
+ };
+ const stats=engine?planStats(engine.phases):planStats(buildPlan(session.ids,session));
+ const focus=P(PRESET_BY_ID[session.presetId]).name;
+ const level=T(session.difficulty==='beginner'?'easy':'medium');
+ const date=new Intl.DateTimeFormat(prefs.lang==='de'?'de-DE':'en-GB',{day:'numeric',month:'short',year:'numeric'}).format(new Date());
+ const names=session.ids.map((id,i)=>`<li><span class="record-number">${String(i+1).padStart(2,'0')}</span><span>${escapeHtml(E(id).name)}</span></li>`).join('');
+ const workRest=`${session.workSec} ${T('sec')} ${T('work')} · ${session.restSec} ${T('sec')} ${T('rest')}`;
  view='done';
- app.innerHTML=`<div class="done-page"><header>${brand()}</header><main><div class="done-check">${icon('check')}</div><span class="eyebrow">${T('complete')}</span><h1>${T('wellDone')}</h1><p>${T('doneMessage')}</p><div class="done-stats"><div><strong>${secsLabel(stats.totalMs)}</strong><small>${T('planned')}</small></div><div><strong>${prefs.rounds} × ${workoutCount}</strong><small>${T('exercisesDone')}</small></div></div><button class="primary-btn" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></main></div>`;
+ app.innerHTML=`<div class="done-page done-record-page">
+ <header class="done-topbar"><div class="v13-wordmark" aria-label="Flow5">Flow<span>5</span></div></header>
+ <main>
+  <section class="workout-record" aria-label="${T('workoutRecord')}">
+   <div class="record-top"><span class="record-success">${icon('check')} ${T('complete')}</span><span class="record-date">${escapeHtml(date)}</span></div>
+   <h1>${T('wellDone')}</h1>
+   <div class="record-focus">${escapeHtml(focus)} <span aria-hidden="true">·</span> ${escapeHtml(level)}${session.customized?` <span class="record-custom">· ${T('recordCustom')}</span>`:''}</div>
+   <div class="record-stats"><div><strong>${secsLabel(stats.totalMs)}</strong><span>${T('recordTotal')}</span></div><div><strong>${session.rounds} × ${session.ids.length}</strong><span>${T('roundMany')} × ${T('exerciseMany')}</span></div></div>
+   <div class="record-intervals"><span>${T('recordIntervals')}</span><strong>${escapeHtml(workRest)}</strong></div>
+   <div class="record-exercises"><h2>${T('recordExercises')}</h2><ol>${names}</ol></div>
+   <div class="record-bottom"><span>${T('recordFinalRest')}: ${T(session.includeFinalRest?'recordYes':'recordNo')}</span><span>Flow5 · by Lorenzo D'Angelo</span></div>
+  </section>
+  <p class="record-hint">${T('recordHint')}</p>
+  <div class="record-actions"><button class="primary-btn" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></div>
+ </main></div>`;
 }
 function updateClock(){
  if(!engine||view!=='workout')return;
@@ -219,8 +248,10 @@ function updateWakeIndicator(){
 function beginWorkout(){
  try{
   // Der erste Ton wird synchron beim Start-Tipp abgespielt.
-  workoutCount=currentIds().length;
-  engine=new IntervalEngine(currentPlan(),{
+  const ids=[...currentIds()];
+  workoutCount=ids.length;
+  workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:prefs.includeFinalRest,customized:!!prefs.custom[currentCustomKey()]};
+  engine=new IntervalEngine(buildPlan(ids,currentConfig()),{
    onPhase:(phase,previous)=>{
     if(previous)phaseSound(phase);
     if(view==='workout')renderWorkout();
@@ -233,7 +264,7 @@ function beginWorkout(){
   window.scrollTo({top:0,behavior:'instant'});
  }catch(err){window.alert(T('startError')+err.message);}
 }
-function exitWorkout(){stopTicking();cueAudio.stop();releaseWake();engine=null;pendingExit=false;view='setup';render();}
+function exitWorkout(){stopTicking();cueAudio.stop();releaseWake();engine=null;workoutSession=null;pendingExit=false;view='setup';render();}
 function showHelp(){window.alert(T('helpMessage'));}
 app.addEventListener('click',event=>{
  const button=event.target.closest('[data-action]');if(!button)return;
@@ -271,7 +302,7 @@ app.addEventListener('click',event=>{
   if(window.confirm(T('exitConfirm')))exitWorkout();
  }
  else if(action==='restart'){beginWorkout();}
- else if(action==='setup'){engine=null;view='setup';render();}
+ else if(action==='setup'){engine=null;workoutSession=null;view='setup';render();}
  else if(action==='help'){showHelp();}
 });
 app.addEventListener('change',event=>{
