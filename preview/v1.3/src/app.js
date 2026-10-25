@@ -133,12 +133,13 @@ function renderSwapDialog(){
  return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(raw=>{const e=exerciseText(raw,prefs.lang);return `<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${illustration(e.pose,e.name,prefs.lang)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`;}).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
 }
 function nextWork(index){if(!engine)return null;return engine.phases.slice(index+1).find(p=>p.kind==='work')||null;}
-const STUDY_IMAGE={squat:'squat-master.webp',pushup:'pushup-master.webp',plank:'plank-master.webp',lunge:'lunge-master.webp',mountain:'mountain-master.webp',bridge:'bridge-master.webp',recovery:'recovery-hydration-master.webp'};
-function studyPicture(pose,name,lang){
+const STUDY_IMAGE={squat:'squat-master.webp',pushup:'pushup-master.webp',plank:'plank-master.webp',lunge:'lunge-master.webp',mountain:'mountain-master.webp',bridge:'bridge-master.webp',march:'march-master.webp',bicycle:'bicycle-master.webp',sideplank:'sideplank-master.webp',recovery:'recovery-hydration-master.webp'};
+function studyPicture(pose,name,lang,exerciseId=''){
  const file=STUDY_IMAGE[pose];
  if(!file)return illustration13(pose,name,lang);
  const dimensions='width="1440" height="960"';
- return `<img class="v13-study-image" src="./artwork/${file}" data-pose="${escapeHtml(pose)}" ${dimensions} alt="${escapeHtml(name)}" decoding="async" fetchpriority="high"/>`;
+ const mirrored=pose==='sideplank'&&exerciseId==='sidePlankL';
+ return `<img class="v13-study-image" src="./artwork/${file}" data-pose="${escapeHtml(pose)}" ${mirrored?'style="transform:scaleX(-1)"':''} ${dimensions} alt="${escapeHtml(name)}" decoding="async" fetchpriority="high"/>`;
 }
 function renderWorkout(){
  if(!engine)return;
@@ -165,7 +166,7 @@ function renderWorkout(){
   <div class="whole-track v13-progress" role="progressbar" aria-label="${T('remaining')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(snap.overallProgress*100)}"><div id="whole-progress" style="width:${snap.overallProgress*100}%"></div></div>
   <section class="v13-art ${finalRest?'v13-final-rest':''}" aria-label="${escapeHtml(displayName)}">
     <div class="v13-art-heading"><span class="v13-art-index">${finalRest?'':String(shownPosition).padStart(2,'0')+' / '+String(workoutCount).padStart(2,'0')}</span><h1>${escapeHtml(displayName)}</h1>${actionLabel?`<span class="v13-motion-label">${actionLabel}</span>`:''}</div>
-    <div class="v13-drawing">${studyPicture(finalRest?'recovery':present.pose,displayName,prefs.lang)}</div>
+    <div class="v13-drawing">${studyPicture(finalRest?'recovery':present.pose,displayName,prefs.lang,present.id)}</div>
     <p class="v13-art-cue">${escapeHtml(cue)}</p>
   </section>
   <div class="v13-next"><span>${after}</span>${prefs.sound? `<span class="v13-audio-mark" aria-label="${T('sounds')}">${icon('sound')}</span>`:''}</div>
