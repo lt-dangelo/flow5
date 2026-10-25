@@ -72,3 +72,9 @@ The corrected Shoulder Tap illustration was rebalanced to match the lighter crea
 
 ### v1.3.15 – Clean Dead Bug and Shoulder Tap illustrations
 The two 1440 × 960 WebP studies have been reconstructed using full-body anatomical drawings rather than blended fragments. The Shoulder Tap no longer shows vertical smears near the head or the planted hand; Dead Bug now shows distinct hands and full limb extensions. The near hand stays planted and the far hand crosses toward the near shoulder. The new filenames are versioned to avoid stale iOS artwork. All other illustrations and production Flow5 remain unchanged.
+
+### v1.3.16 – Wall Push-ups anatomical illustration
+- Replaces the schematic wall-push-up placeholder (pose key `wall`) with a standalone 1440 × 960 WebP drawing.
+- Two side-view positions, with hands supported on vertical walls, feet fully on the floor and body aligned: straight elbows then flexed elbows and a controlled return.
+- Full figures with safe margins, Renaissance-style sepia contours and warm cream parchment. No embedded text or cropped/stitched anatomy.
+- Published only in the v1.3 preview, cached offline under a new service-worker revision.
