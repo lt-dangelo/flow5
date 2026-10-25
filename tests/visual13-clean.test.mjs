@@ -20,14 +20,14 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.ok(sw.includes('flow5-v1.3-preview-11'));
+assert.ok(sw.includes('flow5-v1.3-preview-12'));
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
 
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(html.includes('styles.css?build=1.3.11'));
-assert.ok(html.includes('src/app.js?build=1.3.11'));
+assert.ok(html.includes('styles.css?build=1.3.12'));
+assert.ok(html.includes('src/app.js?build=1.3.12'));
 assert.match(sw,/cache:'no-store'/);
 assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
 assert.match(app,/finalRest\?T\('recoveryCue'\)/);
@@ -70,3 +70,14 @@ for(const name of ['march','bicycle','sideplank']){
 assert.match(app,/exerciseId==='sidePlankL'/);
 assert.match(app,/transform:scaleX\(-1\)/);
 assert.match(app,/displayName,prefs.lang,present.id/);
+
+// v1.3.12: four new illustration assets, no accidental reuse for Snow Angels.
+for(const name of ['shouldertap','birddog','deadbug','superman']){
+ const content=readFileSync(new URL('../artwork/'+name+'-master.webp',import.meta.url));
+ assert.ok(content.byteLength>100000,name+' illustration should contain high quality WebP data');
+ assert.equal(content.subarray(0,4).toString('ascii'),'RIFF');
+ assert.ok(app.includes(name+':\''+name+'-master.webp\''),name+' must be in image registry');
+ assert.ok(sw.includes('artwork/'+name+'-master.webp'),name+' must be available offline');
+}
+assert.match(app,/pose==='superman'&&exerciseId==='snowAngel'/);
+assert.match(app,/return illustration13\(pose,name,lang\)/);
