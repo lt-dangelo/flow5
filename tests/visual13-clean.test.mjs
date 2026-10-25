@@ -20,14 +20,14 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.ok(sw.includes('flow5-v1.3-preview-21'));
+assert.ok(sw.includes('flow5-v1.3-preview-22'));
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
 
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(html.includes('styles.css?build=1.3.21'));
-assert.ok(html.includes('src/app.js?build=1.3.21'));
+assert.ok(html.includes('styles.css?build=1.3.22'));
+assert.ok(html.includes('src/app.js?build=1.3.22'));
 assert.match(sw,/cache:'no-store'/);
 assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
 assert.match(app,/finalRest\?T\('recoveryCue'\)/);
@@ -80,7 +80,7 @@ for(const name of ['birddog','superman']){
  assert.ok(app.includes(name+':\''+name+'-master.webp\''),name+' must be in image registry');
  assert.ok(sw.includes('artwork/'+name+'-master.webp'),name+' must be available offline');
 }
-assert.match(app,/pose==='superman'&&exerciseId==='snowAngel'/);
+assert.match(app,/exerciseId==='snowAngel'\?STUDY_IMAGE\.snowangel/);
 assert.match(app,/return illustration13\(pose,name,lang\)/);
 
 // v1.3.13: verify correction assets, localized Dead Bug follow-through, and offline caching.
@@ -138,10 +138,10 @@ assert.equal(matchedWallAsset.readUInt16LE(28)&0x3fff,960);
 assert.ok(matchedWallAsset.length>100000);
 assert.ok(app.includes("wall:'wallpushup-master-v1317.webp'"));
 assert.ok(!app.includes("wall:'wallpushup-master-v1316.webp'"));
-assert.ok(sw.includes('flow5-v1.3-preview-21'));
+assert.ok(sw.includes('flow5-v1.3-preview-22'));
 assert.ok(sw.includes('./artwork/wallpushup-master-v1317.webp'));
 const updatedHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(updatedHTML.includes('build=1.3.21'));
+assert.ok(updatedHTML.includes('build=1.3.22'));
 
 // v1.3.18 Pike Push-ups: asset is a real Retina-sized two-pose WebP, not a placeholder.
 const pikeAsset=readFileSync(new URL('../artwork/pikepushup-master-v1318.webp',import.meta.url));
@@ -164,8 +164,8 @@ for (const [pose,file] of [ ['wallsit','wallsit-master-v1319.webp'], ['jumping',
  assert.ok(app.includes(pose+":'"+file+"'"));
  assert.ok(sw.includes('./artwork/'+file));
 }
-assert.ok(sw.includes('flow5-v1.3-preview-21'));
-assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.21'));
+assert.ok(sw.includes('flow5-v1.3-preview-22'));
+assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.22'));
 
 // v1.3.21: calf raises (flat feet vs lifted heels), verified WebP file and offline mapping.
 const calf=readFileSync(new URL('../artwork/calfraise-master-v1321.webp',import.meta.url));
@@ -176,5 +176,21 @@ assert.equal(calf.readUInt16LE(26)&0x3fff,1440);
 assert.equal(calf.readUInt16LE(28)&0x3fff,960);
 assert.ok(app.includes("calf:'calfraise-master-v1321.webp'"));
 assert.ok(sw.includes('./artwork/calfraise-master-v1321.webp'));
-assert.ok(sw.includes('flow5-v1.3-preview-21'));
-assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.21'));
+assert.ok(sw.includes('flow5-v1.3-preview-22'));
+assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.22'));
+
+// v1.3.22 – Final three placeholders replaced with reviewed 1440 x 960 WebP artwork.
+for(const [pose,file] of [['bear','bear-master-v1322.webp'],['heeltouch','heeltouch-master-v1322.webp'],['snowangel','snowangel-master-v1322.webp']]){
+ const asset=readFileSync(new URL('../artwork/'+file,import.meta.url));
+ assert.ok(asset.length>90000,pose+' must contain complete anatomical artwork');
+ assert.equal(asset.subarray(0,4).toString('ascii'),'RIFF');
+ assert.equal(asset.subarray(12,16).toString('ascii'),'VP8 ');
+ assert.equal(asset.readUInt16LE(26)&0x3fff,1440);
+ assert.equal(asset.readUInt16LE(28)&0x3fff,960);
+ assert.ok(app.includes(pose+":'"+file+"'"));
+ assert.ok(sw.includes('./artwork/'+file));
+}
+assert.ok(app.includes("exerciseId==='snowAngel'?STUDY_IMAGE.snowangel"));
+assert.ok(app.includes("superman:'superman-master.webp'"));
+assert.ok(sw.includes('flow5-v1.3-preview-22'));
+assert.ok(html.includes('src/app.js?build=1.3.22'));

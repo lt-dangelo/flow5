@@ -97,3 +97,12 @@ The Wall Push-ups illustration now uses a color-matched 1440 × 960 WebP master 
 - Exercise form checked against ACE Fitness and Heart & Stroke Foundation instructions.
 - Warm parchment hue normalized against the approved exercise library; figures retain safe margins.
 - `calf` maps to `calfraise-master-v1321.webp` and is precached for offline use. Production remains unchanged.
+
+### v1.3.22 – Complete illustration coverage (22/22)
+- Three original exercise illustration assets, each 1440 × 960 WebP with safe margins and lighter parchment matched to the Bird Dog reference:
+  - `bear-master-v1322.webp`: a neutral quadruped with hands and toes supporting weight, knees hovering above the ground; static hold.
+  - `heeltouch-master-v1322.webp`: supine with bent knees and feet on the floor, alternating same-side reaching of hands toward heels.
+  - `snowangel-master-v1322.webp`: prone with legs kept resting and straight arms sweeping from the sides toward overhead.
+- Exercise-specific reference checks: ACE Fitness describes reverse snow angels; Ohio University/UCLA Health detail bear hold; heel-touch form follows documented oblique heel touches. Heart & Stroke Foundation provides general strength-training guidance, not validated exercise-specific cues for all three.
+- The legacy Snow Angel pose key `superman` is now overridden by exercise ID so Superman Hold and Reverse Snow Angels receive different images.
+- New images are precached; HTML, JS and CSS are versioned to 1.3.22 for iOS refresh. Production v1.2 is unchanged.
