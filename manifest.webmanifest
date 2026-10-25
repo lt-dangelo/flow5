@@ -1,8 +1,8 @@
 {
   "id": "./?v13preview=1",
-  "name": "Flow5 – v1.3 Preview",
-  "short_name": "Flow5 Preview",
-  "description": "Concept preview of anatomical exercise studies and compact workout timer.",
+  "name": "Pick5Go – v1.3 Preview",
+  "short_name": "Pick5Go Preview",
+  "description": "Pick five exercises, set your pace, and start. Fitness, simplified.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

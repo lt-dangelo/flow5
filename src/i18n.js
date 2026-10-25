@@ -37,8 +37,8 @@ legs:['Legs & glutes','Strength from the ground up','']
 const STRINGS={
 en:{
 switchLanguage:'Switch to German',help:'Installation help',
-heroEyebrow:'YOUR WORKOUT. YOUR RHYTHM.',heroFirst:'Five exercises.',heroSecond:'One flow.',
-heroDesc:'Build your calisthenics workout. Start, move, and let the timer guide you.',
+heroEyebrow:'FITNESS, SIMPLIFIED.',heroFirst:'pick five',heroSecond:'go',
+heroDesc:'Choose your exercises, set your pace, and let the timer guide you.',
 healthNotice:'Train only if you are fit for strength exercise. If you have health concerns or are unsure, seek medical advice first.',
 workoutRecord:'YOUR WORKOUT',recordHint:'Save or share this workout with a screenshot.',recordExercises:'Exercise order',recordIntervals:'Intervals',recordTotal:'Planned duration',recordDate:'Date',recordFinalRest:'Final rest',recordYes:'Included',recordNo:'Not included',recordCustom:'Customized',
 flexible:'Flexible interval timer',awake:'Keep screen awake*',
@@ -48,7 +48,7 @@ finalRest:'Rest after the last exercise',finalRestOn:'On: continuous intervals f
 sounds:'Sound cues',soundsDesc:'Play a tone when switching between work and rest.',
 plan:'YOUR WORKOUT PLAN',duration:'Total duration',workBreakdown:'Work',restBreakdown:'Rest',roundOne:'round',roundMany:'rounds',exerciseOne:'exercise',exerciseMany:'exercises',start:'Start workout',
 footnote:'* On supported devices while the app remains visible, subject to iOS limitations.',
-footer:'FLOW5 v1.3 PREVIEW · Your workout stays on this device. No account, no tracking.',
+footer:'PICK5GO v1.3 PREVIEW · Your workout stays on this device. No account, no tracking.',
 swapEyebrow:'SWAP EXERCISE',addEyebrow:'ADD EXERCISE',swapTitle:'Choose a replacement',addTitle:'Choose an exercise',
 close:'Close',search:'Search exercise or muscle group…',searchAria:'Search exercises',noMatches:'No matching exercises found.',
 easy:'Beginner',medium:'Intermediate',advanced:'Advanced',levelHeading:'Training level',levelHint:'Changes the five exercises in each focus. You can still swap any exercise.',bandRequired:'Resistance band or long towel',placeholder:'Illustration coming soon',
@@ -62,12 +62,12 @@ checkingWake:'Checking screen wake lock…',awakeOn:'Keeping screen awake where 
 resume:'Resume',pause:'Pause',skip:'Next',exit:'Exit',audioWarn:'Sound cues may not be available on this device.',
 complete:'WORKOUT COMPLETE',wellDone:'Well done.',doneMessage:'Workout complete. Drink some water and take a moment to recover.',planned:'Planned duration',exercisesDone:'Exercises',repeat:'Repeat workout',backToPlan:'Back to workout plan',
 exitConfirm:'End this workout? Your progress will be lost.',startError:'Could not start workout: ',
-helpMessage:'INSTALL FLOW5 ON IPHONE\n\n1. Open this HTTPS website in Safari.\n2. Tap Share.\n3. Choose Add to Home Screen.\n\nWorkout mode works in Safari as well. For offline use, reopen the installed app once while online.\n\nKeep the app visible for screen wake lock. iOS may disable it in Low Power Mode.'
+helpMessage:'INSTALL PICK5GO ON IPHONE\n\n1. Open this HTTPS website in Safari.\n2. Tap Share.\n3. Choose Add to Home Screen.\n\nWorkout mode works in Safari as well. For offline use, reopen the installed app once while online.\n\nKeep the app visible for screen wake lock. iOS may disable it in Low Power Mode.'
 },
 de:{
 switchLanguage:'Zu Englisch wechseln',help:'Installationshilfe',
-heroEyebrow:'DEIN WORKOUT. DEIN RHYTHMUS.',heroFirst:'Fünf Übungen.',heroSecond:'Ein Flow.',
-heroDesc:'Stell dir dein Calisthenics-Training zusammen. Starten, mitmachen, automatisch durchwechseln.',
+heroEyebrow:'FITNESS, GANZ EINFACH.',heroFirst:'pick five',heroSecond:'go',
+heroDesc:'Wähle deine Übungen, bestimme dein Tempo und lass dich vom Timer begleiten.',
 healthNotice:'Trainiere nur, wenn du gesundheitlich für Krafttraining geeignet bist. Bei Beschwerden oder Unsicherheit hole vorher ärztlichen Rat ein.',
 workoutRecord:'DEIN TRAINING',recordHint:'Speichere oder teile dein Training per Screenshot.',recordExercises:'Übungsreihenfolge',recordIntervals:'Intervalle',recordTotal:'Geplante Dauer',recordDate:'Datum',recordFinalRest:'Letzte Pause',recordYes:'Enthalten',recordNo:'Entfällt',recordCustom:'Angepasst',
 flexible:'Flexibler Intervalltimer',awake:'Display bleibt aktiv*',
@@ -77,7 +77,7 @@ finalRest:'Erholung nach der letzten Übung',finalRestOn:'Ein: genau {time} bei 
 sounds:'Akustische Signale',soundsDesc:'Töne beim Wechsel zwischen Belastung und Erholung.',
 plan:'DEIN TRAININGSPLAN',duration:'Gesamtdauer',workBreakdown:'Belastung',restBreakdown:'Erholung',roundOne:'Runde',roundMany:'Runden',exerciseOne:'Übung',exerciseMany:'Übungen',start:'Training starten',
 footnote:'* Auf unterstützten Geräten, solange die App sichtbar ist und iOS die Funktion zulässt.',
-footer:'FLOW5 v1.3 PREVIEW · Dein Training bleibt auf diesem Gerät. Keine Anmeldung, kein Tracking.',
+footer:'PICK5GO v1.3 PREVIEW · Dein Training bleibt auf diesem Gerät. Keine Anmeldung, kein Tracking.',
 swapEyebrow:'ÜBUNG AUSTAUSCHEN',addEyebrow:'ÜBUNG HINZUFÜGEN',swapTitle:'Neue Übung wählen',addTitle:'Übung auswählen',
 close:'Schließen',search:'Übung oder Muskelgruppe suchen …',searchAria:'Übungen durchsuchen',noMatches:'Keine weiteren passenden Übungen gefunden.',
 easy:'Einsteiger',medium:'Mittelstufe',advanced:'Fortgeschritten',levelHeading:'Trainingsniveau',levelHint:'Passt die fünf Übungen je Schwerpunkt an. Jede Übung kann frei getauscht werden.',bandRequired:'Widerstandsband oder langes Handtuch',placeholder:'Illustration folgt',

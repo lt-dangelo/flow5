@@ -137,3 +137,11 @@ Replaced Knee Push-ups and Resistance-band Row artwork with male anatomical stud
 
 ### v1.3.29 — Anatomical illustration library complete
 Added verified 1440×960 sepia-parchment WebP artwork for Single-leg Glute Bridge (one supporting foot; controlled hip lift) and Assisted Single-leg Squat (one planted foot, free leg raised, hand holding a stable chair behind the body). ACE exercise guidance plus NHS physiotherapy material used for movement validation. Bridge and squat illustrations color-matched to the established Bird Dog parchment. Both mapped into studyPicture() and precached by the scoped preview service worker. 27/27 exercise entries now have individual artwork (Reverse Snow Angels deliberately uses its dedicated image). No production files changed. PWA cache v1.3.29.
+
+
+### Pick5Go brand refresh — v1.3.30
+- Preview-only rebrand to Pick5Go: standalone motion-5 mark in setup, active timer and workout record; updated app icons and metadata.
+- Hero headline is deliberately **pick five / go** in both English and German.
+- Eyebrow, description, difficulty picker and other interface copy remain localized (German: **FITNESS, GANZ EINFACH.**).
+- No extra hero button; the training-level selector immediately follows the introduction.
+- Versioned CSS/JS and preview-specific service worker cache force the refreshed branding to load without changing the production app.
