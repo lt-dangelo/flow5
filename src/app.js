@@ -141,7 +141,7 @@ function renderSetup(){
  <label class="toggle-line"><div><strong>${T('sounds')}</strong><small>${T('soundsDesc')}</small></div><input type="checkbox" data-config="sound" ${prefs.sound?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
  </section>
  <aside class="summary-panel"><div class="summary-head"><span>${T('plan')}</span>${icon('spark')}</div><div class="total-time">${secsLabel(stats.totalMs)}</div><span class="summary-note">${T('duration')}</span><div class="meter"><div class="meter-work" style="width:${stats.workMs/stats.totalMs*100}%"></div></div><div class="summary-breakdown"><span><i class="dot work-dot"></i> ${T('workBreakdown')} <b>${secsLabel(stats.workMs)}</b></span><span><i class="dot rest-dot"></i> ${T('restBreakdown')} <b>${secsLabel(stats.restMs)}</b></span></div><div class="summary-desc">${summaryLabel()}</div><button type="button" data-action="start" class="primary-btn">${T('start')} ${icon('arrow')}</button></aside>
- </main><footer class="footer"><span>${T('footer')}</span><span class="author-credit">by Lorenzo D'Angelo</span></footer>
+ </main><footer class="footer"><span>${T('footer')}</span></footer>
  </div>${swapIndex!==null?renderSwapDialog():''}`;
 }
 function updateSettingsSummary(){
@@ -226,7 +226,7 @@ function renderDone(){
    <div class="record-stats"><div><strong>${secsLabel(stats.totalMs)}</strong><span>${T('recordTotal')}</span></div><div><strong>${session.rounds} × ${session.ids.length}</strong><span>${T('roundMany')} × ${T('exerciseMany')}</span></div></div>
    <div class="record-intervals"><span>${T('recordIntervals')}</span><strong>${escapeHtml(workRest)}</strong></div>
    <div class="record-exercises"><h2>${T('recordExercises')}</h2><ol>${names}</ol></div>
-   <div class="record-bottom"><span>Pick5Go · by Lorenzo D'Angelo</span></div>
+   <div class="record-bottom"><span>Pick5Go</span></div>
   </section>
   <p class="record-hint">${T('recordHint')}</p>
   <div class="record-actions"><button class="primary-btn" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></div>
@@ -325,7 +325,7 @@ app.addEventListener('click',event=>{
 app.addEventListener('change',event=>{
  if(event.target.matches('[data-language]')){
   prefs.lang=normalizeLang(event.target.value);
-  document.documentElement.lang=prefs.lang;save();render();return;
+  document.documentElement.lang=prefs.lang;save();render();window.dispatchEvent(new CustomEvent('pick5go:languagechange',{detail:{language:prefs.lang}}));return;
  }
  const field=event.target.dataset.config;if(!field)return;
  if(field==='sound'){prefs.sound=event.target.checked;if(!prefs.sound)cueAudio.stop();}
