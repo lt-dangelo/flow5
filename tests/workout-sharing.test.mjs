@@ -49,7 +49,7 @@ assert.ok((app.match(/data-action="share"/g)||[]).length>=2,'share before and af
 assert.ok(app.includes('navigator.share'),'native share option');
 assert.ok(app.includes('navigator.clipboard?.writeText'),'copy fallback');
 assert.ok(sw.includes('./src/share.js'),'offline import');
-assert.ok(sw.includes("pick5go-v1.3-preview-46"),'cache version bumped');
+assert.ok(sw.includes("pick5go-v1.3-preview-47"),'cache version bumped');
 assert.ok(consent.includes("if(onGuide())return 'en'"),'guide language correct with stored preferences');
 assert.ok(guide.includes('src="../src/consent.js?build=1.3.41"'),'guide uses same consent script');
 assert.ok(guide.includes('id="analytics-settings"'),'guide can change analytics consent');
