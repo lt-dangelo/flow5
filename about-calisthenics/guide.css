@@ -44,3 +44,9 @@
 .analytics-consent-actions button:last-child{background:#243f32;color:white}
 .analytics-consent-actions button:focus-visible{outline:3px solid #a6bb81;outline-offset:2px}
 @media(max-width:520px){.analytics-consent{bottom:8px;width:calc(100% - 16px)}.analytics-consent-actions{width:100%}.analytics-consent-actions button{flex:1}}
+
+/* Small footer language switch: discoverable, without adding app header navigation. */
+.guide-languages{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.guide-languages a{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;padding:6px 8px;border:1px solid transparent;border-radius:7px;text-decoration:none;color:#a7bbc5}
+.guide-languages a:hover,.guide-languages a:focus-visible{border-color:#54785b;color:var(--lime)}
+.guide-languages a[aria-current="page"]{color:var(--lime);border-color:#476948;background:#183021}
