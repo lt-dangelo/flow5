@@ -31,7 +31,7 @@ for(const lang of codes){
 }
 for(const lang of ['it','fr','es']){
  assert.equal(Object.keys(EXERCISE_EXTRA[lang]).length,27);
- assert.equal(Object.keys(UI_EXTRA[lang]).length,100);
+ assert.ok(Object.keys(UI_EXTRA[lang]).length>=105,'localized UI includes sharing controls');
 }
 assert.equal(t('en','footer'),'Your exercise choices stay on your device. No registration, no setup, no personal workout history');
 const app=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
