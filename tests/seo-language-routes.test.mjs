@@ -9,7 +9,10 @@ const alternates=['en','de','it','fr','es','x-default'];
 const sitemap=read('sitemap.xml');
 assert.deepEqual(SEO_LANGUAGES,['en','de','it','fr','es']);
 const foundUrls=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match=>match[1]);
-assert.deepEqual(foundUrls,SEO_LANGUAGES.map(l=>origin+(l==='en'?'':l+'/')));
+assert.deepEqual(foundUrls,[
+ ...SEO_LANGUAGES.map(l=>origin+(l==='en'?'':l+'/')),
+ ...SEO_LANGUAGES.map(l=>origin+(l==='en'?'':l+'/')+'about-calisthenics/')
+]);
 for(const lang of SEO_LANGUAGES){
  const path=lang==='en'?'index.html':lang+'/index.html';
  const html=read(path);
