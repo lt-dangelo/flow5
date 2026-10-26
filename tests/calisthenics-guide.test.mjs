@@ -48,7 +48,7 @@ const readNames=(html)=>[...html.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(match=>m
 const names=readNames(routines[0][1]);
 assert.deepEqual(names,['Squats','Knee push-ups','Hip hinge','Bird dog','Standing knee raises'],'match the actual beginner full-body exercise set');
 assert.deepEqual(readNames(routines[1][1]),['Slow squats','Wall push-ups','Hip hinge','Bird dog','Standing knee raises'],'quiet hotel exercises');
-assert.ok(guide.includes('3 rounds'),'15-minute routine rounds');
+assert.ok(guide.includes('<b>3</b> rounds'),'15-minute routine rounds');
 assert.ok(guide.includes('2 rounds · 40 seconds per exercise + 20 seconds rest'),'10-minute hotel routine');
 assert.equal(5*(40+20)*3,900,'home circuit lasts 15 minutes');
 assert.equal(5*(40+20)*2,600,'hotel circuit lasts 10 minutes');
