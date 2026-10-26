@@ -47,7 +47,7 @@ assert.ok(js.includes("const STORAGE_KEY='pick5go-prefs-v13'"),'preserve install
 assert.ok(js.includes('window.location.assign(target)'),'selector changes locale URL');
 assert.ok(js.includes('location.replace(languageUrl(appRoot.href,prefs.lang))'),'existing visitor language persisted');
 assert.ok(consent.includes('location.pathname.match'),'consent uses URL locale');
-assert.ok(sw.includes("pick5go-v1.3-production-3"),'cache update');
+assert.ok(sw.includes("pick5go-v1.3-production-4"),'cache update');
 assert.ok(sw.includes("url.pathname.startsWith(root+'preview/')"),'root service worker excludes preview');
 for(const lang of ['de','it','fr','es'])assert.ok(sw.includes("'./"+lang+"/'"),'offline page '+lang);
 assert.ok(sw.includes('./src/seo-languages.js'),'locale router offline');
