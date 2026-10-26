@@ -21,14 +21,17 @@ for(const s of sections){
 }
 assert.ok(guide.includes('href="#top"'),'page back to top');
 assert.ok(guide.includes('href="../"'),'return to existing builder');
-assert.ok(!guide.includes('data-action="preset"')&&!guide.includes('?workout=')&&!guide.includes('?preset='),'no preconfigured workout links');
+assert.ok(guide.includes('data-umami-event="guide_workout_opened"'),'guide links expose consent-gated click events');
+assert.equal((guide.match(/data-umami-event="guide_workout_opened"/g)||[]).length,6,'two examples and four focused workouts');
+assert.ok(guide.includes('src="../src/consent.js?build=1.3.41"'),'guide loads consent controller');
+assert.ok(guide.includes('id="analytics-settings"'),'guide provides privacy settings');
 for(const term of ['World Health Organization','American College of Sports Medicine','CDC','NHS']){
  assert.ok(guide.includes(term),'missing authoritative source '+term);
 }
 assert.ok(!/<script\s+src=/.test(guide),'readable without app JavaScript');
 assert.ok(css.includes('@media(max-width:650px)'),'responsive layout');
 assert.ok(css.includes('prefers-reduced-motion'),'accessible motion preferences');
-assert.ok(sw.includes("pick5go-v1.3-preview-45"),'new offline cache');
+assert.ok(sw.includes("pick5go-v1.3-preview-46"),'new offline cache');
 for(const path of ['./about-calisthenics/','./about-calisthenics/index.html','./about-calisthenics/guide.css']){
  assert.ok(sw.includes(path),'offline precache '+path);
 }
