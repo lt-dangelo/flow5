@@ -14,8 +14,11 @@
     fr:{intro:'Avec votre accord, Pick5Go utilise Umami pour mesurer les visites et l’utilisation des entraînements. Aucun script d’analyse sans consentement.',accept:'Autoriser',decline:'Refuser',settings:'Préférences de confidentialité',privacy:'Politique de confidentialité',imprint:'Mentions légales'},
     es:{intro:'Con tu consentimiento, Pick5Go usa Umami para medir visitas y uso de entrenamientos. No se carga ningún script de análisis sin consentimiento.',accept:'Permitir estadísticas',decline:'Rechazar',settings:'Preferencias de privacidad',privacy:'Política de privacidad',imprint:'Aviso legal'}
   };
-  // The in-app language selector takes precedence over browser locale.
+  // The English-only guide deliberately uses English for legal labels.
+  const onGuide=()=>/\/about-calisthenics\/(?:index\.html)?$/.test(location.pathname);
+  const legalRoot=()=>onGuide()?'../':'./';
   const currentLang=()=>{
+    if(onGuide())return 'en';
     // Language URLs take precedence over saved settings when opening a translated page.
     const route=location.pathname.match(/\/(de|it|fr|es)\/(?:index\.html)?$/);
     if(route)return route[1];
@@ -33,8 +36,8 @@
     const imprint=document.querySelector('#pick5go-legal [data-legal="imprint"]');
     const privacy=document.querySelector('#pick5go-legal [data-legal="privacy"]');
     const settings=document.getElementById('analytics-settings');
-    if(imprint){imprint.textContent=t.imprint;imprint.href='./imprint.html?lang='+lang;}
-    if(privacy){privacy.textContent=t.privacy;privacy.href='./privacy.html?lang='+lang;}
+    if(imprint){imprint.textContent=t.imprint;imprint.href=legalRoot()+'imprint.html?lang='+lang;}
+    if(privacy){privacy.textContent=t.privacy;privacy.href=legalRoot()+'privacy.html?lang='+lang;}
     if(settings)settings.textContent=t.settings;
   };
   const read=()=>{try{return localStorage.getItem(KEY)}catch{return null}};
@@ -73,7 +76,7 @@
     const desc=document.createElement('p');
     desc.textContent=t.intro+' ';
     const privacy=document.createElement('a');
-    privacy.href='./privacy.html?lang='+currentLang();
+    privacy.href=legalRoot()+'privacy.html?lang='+currentLang();
     privacy.textContent=t.privacy;
     desc.append(privacy);
     const buttons=document.createElement('div');
