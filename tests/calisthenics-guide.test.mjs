@@ -39,9 +39,9 @@ assert.ok(guide.includes('<h1 id="guide-title">About <em>calisthenics.</em></h1>
 for(const term of ['15-minute bodyweight workout','hotel room','work out at home without equipment','beginners start and progress']){
  assert.ok(guide.toLowerCase().includes(term.toLowerCase()),'search topic missing: '+term);
 }
-const routines=[...guide.matchAll(/<ol class="guide-routine-list">([\\s\\S]*?)<\\/ol>/g)];
+const routines=[...guide.matchAll(/<ol class="guide-routine-list">([\s\S]*?)<\/ol>/g)];
 assert.equal(routines.length,2,'one home and one hotel workout');
-const readNames=(html)=>[...html.matchAll(/<li>([\\s\\S]*?)<\\/li>/g)].map(match=>match[1].replace(/<span>.*?<\\/span>/g,'').replace(/<[^>]+>/g,'').trim());
+const readNames=(html)=>[...html.matchAll(/<li>([\s\S]*?)<\/li>/g)].map(match=>match[1].replace(/<span>.*?<\/span>/g,'').replace(/<[^>]+>/g,'').trim());
 const names=readNames(routines[0][1]);
 assert.deepEqual(names,['Squats','Knee push-ups','Hip hinge','Bird dog','Standing knee raises'],'match the actual beginner full-body exercise set');
 assert.deepEqual(readNames(routines[1][1]),['Slow squats','Wall push-ups','Hip hinge','Bird dog','Standing knee raises'],'quiet hotel exercises');
