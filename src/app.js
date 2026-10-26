@@ -9,6 +9,7 @@ import {CueAudio} from './audio.js';
 import {t,exerciseText,presetText,LANGUAGES,normalizeLang,localeFor} from './i18n.js';
 import {validSelection,removeExercise,chooseExercise,pickerChoices} from './selection.js';
 import {languageForPath,languageUrl} from './seo-languages.js';
+import {decodeSharedWorkout,sharedWorkoutUrl} from './share.js';
 
 const STORAGE_KEY='pick5go-prefs-v13';
 const PRIOR_KEYS=['flow5-prefs-v13-preview','flow5-prefs-v1'];
@@ -48,14 +49,21 @@ function loadPreferences(){
  } catch {return {...DEFAULTS};}
 }
 let prefs=loadPreferences();
+const initialSharedWorkout=decodeSharedWorkout(location.search);
 const appRoot=new URL('./',document.baseURI);
 const routeLanguage=languageForPath(location.pathname,appRoot.pathname);
 // Keep a returning user's saved language when visiting the original homepage.
-if(routeLanguage==='en'&&location.pathname===appRoot.pathname&&prefs.lang!=='en'){
+if(routeLanguage==='en'&&location.pathname===appRoot.pathname&&prefs.lang!=='en'&&!initialSharedWorkout){
  window.location.replace(languageUrl(appRoot.href,prefs.lang));
 }else if(prefs.lang!==routeLanguage){
  prefs.lang=routeLanguage;
  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(prefs));}catch{/* private browsing */}
+}
+if(initialSharedWorkout){
+ const {presetId,difficulty,ids,workSec,restSec,rounds}=initialSharedWorkout;
+ Object.assign(prefs,{presetId,difficulty,workSec,restSec,rounds,includeFinalRest:true});
+ prefs.custom[presetId+':'+difficulty]=[...ids];
+ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(prefs));}catch{/* Private browsing */}
 }
 document.documentElement.lang=prefs.lang;
 let view='setup';
@@ -174,7 +182,7 @@ function renderSetup(){
  <div class="config-grid">${stepper('workSec',T('work'),T('sec'))}${stepper('restSec',T('rest'),T('sec'))}${stepper('rounds',T('rounds'),'× '+count)}</div>
  <label class="toggle-line"><div><strong>${T('sounds')}</strong><small>${T('soundsDesc')}</small></div><input type="checkbox" data-config="sound" ${prefs.sound?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
  </section>
- <aside class="summary-panel"><div class="summary-head"><span>${T('plan')}</span>${icon('spark')}</div><div class="total-time">${secsLabel(stats.totalMs)}</div><span class="summary-note">${T('duration')}</span><div class="meter"><div class="meter-work" style="width:${stats.workMs/stats.totalMs*100}%"></div></div><div class="summary-breakdown"><span><i class="dot work-dot"></i> ${T('workBreakdown')} <b>${secsLabel(stats.workMs)}</b></span><span><i class="dot rest-dot"></i> ${T('restBreakdown')} <b>${secsLabel(stats.restMs)}</b></span></div><div class="summary-desc">${summaryLabel()}</div><button type="button" data-action="start" class="primary-btn">${T('start')} ${icon('arrow')}</button></aside>
+ <aside class="summary-panel"><div class="summary-head"><span>${T('plan')}</span>${icon('spark')}</div><div class="total-time">${secsLabel(stats.totalMs)}</div><span class="summary-note">${T('duration')}</span><div class="meter"><div class="meter-work" style="width:${stats.workMs/stats.totalMs*100}%"></div></div><div class="summary-breakdown"><span><i class="dot work-dot"></i> ${T('workBreakdown')} <b>${secsLabel(stats.workMs)}</b></span><span><i class="dot rest-dot"></i> ${T('restBreakdown')} <b>${secsLabel(stats.restMs)}</b></span></div><div class="summary-desc">${summaryLabel()}</div><button type="button" data-action="start" class="primary-btn">${T('start')} ${icon('arrow')}</button><button type="button" data-action="share" class="workout-share-btn">${T('shareWorkout')} ${icon('arrow')}</button><p class="share-status" data-share-status role="status" aria-live="polite"></p></aside>
  </main><footer class="footer"><span>${T('footer')}</span></footer>
  </div>${swapIndex!==null?renderSwapDialog():''}`;
 }
@@ -263,7 +271,7 @@ function renderDone(){
    <div class="record-bottom"><span>Pick5Go</span></div>
   </section>
   <p class="record-hint">${T('recordHint')}</p>
-  <div class="record-actions"><button class="primary-btn" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></div>
+  <div class="record-actions"><button class="primary-btn" data-action="share">${T('shareWorkout')} ${icon('arrow')}</button><p class="share-status" data-share-status role="status" aria-live="polite"></p><button class="secondary-btn record-repeat" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></div>
  </main></div>`;
 }
 function updateClock(){
@@ -319,6 +327,29 @@ function beginWorkout(restarted=false){
 }
 function exitWorkout(){trackWorkoutEvent('workout_abandoned',workoutSession);stopTicking();cueAudio.stop();releaseWake();engine=null;workoutSession=null;pendingExit=false;view='setup';render();}
 function showHelp(){window.alert(T('helpMessage'));}
+// Share the selected plan on setup, and the actual frozen session after training.
+async function shareCurrentWorkout(){
+ const session=view==='done'&&workoutSession?workoutSession:{
+  ids:[...currentIds()],presetId:prefs.presetId,difficulty:prefs.difficulty,
+  workSec:prefs.workSec,restSec:prefs.restSec,rounds:prefs.rounds
+ };
+ const url=sharedWorkoutUrl(appRoot.href,prefs.lang,session);
+ const status=document.querySelector('[data-share-status]');
+ const notify=message=>{if(status)status.textContent=message;};
+ if(!url){notify(T('shareFailed'));return;}
+ if(typeof navigator.share==='function'){
+  try{await navigator.share({title:'Pick5Go',text:T('shareMessage'),url});return;}
+  catch(error){if(error?.name==='AbortError')return;}
+ }
+ try{
+  if(typeof navigator.clipboard?.writeText!=='function')throw Error('Clipboard unavailable');
+  await navigator.clipboard.writeText(url);
+  notify(T('shareCopied'));
+ }catch{
+  // Even without native sharing or clipboard, expose a selectable URL.
+  window.prompt(T('sharePrompt'),url);
+ }
+}
 app.addEventListener('click',event=>{
  const button=event.target.closest('[data-action]');if(!button)return;
  const action=button.dataset.action;
@@ -343,6 +374,7 @@ app.addEventListener('click',event=>{
  else if(action==='close-swap'){swapIndex=null;swapQuery='';render();}
  else if(action==='dismiss-swap' && event.target===button){swapIndex=null;swapQuery='';render();}
  else if(action==='start'){beginWorkout();}
+ else if(action==='share'){void shareCurrentWorkout();}
  else if(action==='adjust'){const field=button.dataset.field;if(!['workSec','restSec','rounds'].includes(field))return;prefs[field]=stepSetting(field,prefs[field],Number(button.dataset.direction));save();updatePicker(field);updateSettingsSummary();}
  else if(action==='pause'&&engine){
   if(engine.status==='running'){engine.pause();releaseWake();}

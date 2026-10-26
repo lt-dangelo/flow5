@@ -37,7 +37,7 @@ assert.ok(app.includes('next.includeFinalRest=true'));
 assert.ok(app.includes('includeFinalRest:true};}'));
 assert.ok(!app.includes('data-config="includeFinalRest"'));
 assert.ok(!app.includes('class="intro-stats"'));
-assert.ok(sw.includes("pick5go-v1.3-production-3"));
+assert.ok(sw.includes("pick5go-v1.3-production-4"));
 assert.ok(sw.includes("key==='flow5-v1.2.0'"),'evict old worker cache');
 assert.ok(sw.includes("key.startsWith('pick5go-v1.3-production-')"));
 assert.ok(!sw.includes("key.startsWith('pick5go-v1.3-preview-')"));
@@ -60,4 +60,13 @@ for(const l of LANGUAGES){for(const e of EXERCISES){const t=exerciseText(e,l.cod
 assert.equal(t('en','footer'),'Your exercise choices stay on your device. No registration, no setup, no personal workout history');
 const phases=buildPlan(['squat','pushup'],{workSec:40,restSec:20,rounds:3,includeFinalRest:true});
 assert.equal(phases.at(-1).kind,'rest');
+for(const language of ['en','de','it','fr','es']){
+ const url='https://pick5go.com/'+(language==='en'?'':language+'/')+'about-calisthenics/';
+ assert.ok(read('sitemap.xml').includes('<loc>'+url+'</loc>'),'sitemap guide '+language);
+ const guide=read((language==='en'?'':language+'/')+'about-calisthenics/index.html');
+ assert.ok(!guide.includes('content="noindex,follow"'),'production guide '+language+' must index');
+ assert.ok(guide.includes('<link rel="canonical" href="'+url+'"/>'),'guide canonical '+language);
+}
+assert.ok(sw.includes('./src/share.js'),'workout sharing must work offline');
+assert.ok(app.includes('decodeSharedWorkout')&&app.includes('shareCurrentWorkout'),'link sharing available');
 console.log('OK: Pick5Go production identity, migration, offline scoping, 27 exercise catalogue, five languages');

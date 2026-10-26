@@ -9,7 +9,10 @@ const alternates=['en','de','it','fr','es','x-default'];
 const sitemap=read('sitemap.xml');
 assert.deepEqual(SEO_LANGUAGES,['en','de','it','fr','es']);
 const foundUrls=[...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match=>match[1]);
-assert.deepEqual(foundUrls,SEO_LANGUAGES.map(l=>origin+(l==='en'?'':l+'/')));
+assert.deepEqual(foundUrls,[
+ ...SEO_LANGUAGES.map(l=>origin+(l==='en'?'':l+'/')),
+ ...SEO_LANGUAGES.map(l=>origin+(l==='en'?'':l+'/')+'about-calisthenics/')
+]);
 for(const lang of SEO_LANGUAGES){
  const path=lang==='en'?'index.html':lang+'/index.html';
  const html=read(path);
@@ -47,7 +50,7 @@ assert.ok(js.includes("const STORAGE_KEY='pick5go-prefs-v13'"),'preserve install
 assert.ok(js.includes('window.location.assign(target)'),'selector changes locale URL');
 assert.ok(js.includes('location.replace(languageUrl(appRoot.href,prefs.lang))'),'existing visitor language persisted');
 assert.ok(consent.includes('location.pathname.match'),'consent uses URL locale');
-assert.ok(sw.includes("pick5go-v1.3-production-3"),'cache update');
+assert.ok(sw.includes("pick5go-v1.3-production-4"),'cache update');
 assert.ok(sw.includes("url.pathname.startsWith(root+'preview/')"),'root service worker excludes preview');
 for(const lang of ['de','it','fr','es'])assert.ok(sw.includes("'./"+lang+"/'"),'offline page '+lang);
 assert.ok(sw.includes('./src/seo-languages.js'),'locale router offline');
