@@ -1,9 +1,13 @@
 // Scoped preview service worker: network-first for app updates, offline fallback.
-const CACHE='pick5go-v1.3-preview-46';
+const CACHE='pick5go-v1.3-preview-47';
 const CORE=[
  './',
  './index.html',
  './about-calisthenics/','./about-calisthenics/index.html','./about-calisthenics/guide.css',
+ './de/about-calisthenics/','./de/about-calisthenics/index.html',
+ './it/about-calisthenics/','./it/about-calisthenics/index.html',
+ './fr/about-calisthenics/','./fr/about-calisthenics/index.html',
+ './es/about-calisthenics/','./es/about-calisthenics/index.html',
  './de/','./de/index.html','./it/','./it/index.html','./fr/','./fr/index.html','./es/','./es/index.html',
  './styles.css?build=1.3.41',
  './src/app.js?build=1.3.41',
