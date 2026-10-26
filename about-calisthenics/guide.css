@@ -3,3 +3,25 @@
 @media(max-width:850px){.guide-hero{grid-template-columns:1fr;gap:28px;padding:55px 0}.guide-hero-aside{display:grid;grid-template-columns:repeat(3,1fr);gap:0;padding:15px 22px}.guide-hero-aside div{border-bottom:0;border-right:1px solid #3b5247;padding:10px 13px;align-items:start;flex-direction:column;gap:6px}.guide-hero-aside div:last-of-type{border-right:0}.guide-hero-aside p{grid-column:1/-1;border-top:1px solid #3b5247;margin-top:9px;padding:10px 13px 0}}
 @media(max-width:650px){.guide-shell{padding:0 18px}.guide-header{height:76px}.guide-brand span{font-size:17px}.guide-brand img{width:50px}.guide-header-back{padding:10px 11px;font-size:12px}.guide-hero{padding:40px 0}.guide-hero h1{font-size:clamp(42px,11vw,65px)}.guide-lead{font-size:15px}.guide-hero-aside{display:block}.guide-hero-aside div{border-right:0;border-bottom:1px solid #3b5247;display:flex;flex-direction:row;align-items:center}.guide-hero-aside div:last-of-type{border-bottom:0}.guide-hero-aside p{border-top:1px solid #3b5247}.guide-contents{padding:26px 23px}.guide-contents-list{grid-template-columns:1fr;gap:0}.guide-contents-list li:last-child{border-bottom:0}.guide-reading{margin:20px 0 50px}.guide-chapter{padding:45px 0 36px}.guide-chapter h2{font-size:clamp(28px,7.5vw,38px)}.guide-chapter p,.guide-chapter li{font-size:14px}.guide-chapter>p.guide-answer{font-size:16px}.guide-mini-grid,.guide-focus-list{grid-template-columns:1fr}.guide-sources{padding:27px 23px;margin-bottom:40px}.guide-final{flex-direction:column;align-items:stretch;padding:29px 25px}.guide-final .guide-primary-link{margin-top:0;flex:auto;align-self:flex-start}.guide-final h2{font-size:30px}.guide-footer{flex-direction:column;align-items:start}.guide-formula strong{font-size:24px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.guide-primary-link{transition:none}}
+
+/* SEO guide: real, readable example circuits without changing the workout app. */
+.guide-routine h3,.guide-hotel-routine h3{font-size:22px;letter-spacing:-.035em;line-height:1.25;margin:12px 0;color:#f2f8f4}
+.guide-routine>p:not(.guide-formula-title),.guide-hotel-routine>p:not(.guide-formula-title){color:#bfcebf;font-size:13px;line-height:1.7}
+.guide-routine-list{list-style:none;counter-reset:routine;padding:0;margin:20px 0}
+.guide-routine-list li{counter-increment:routine;display:flex;align-items:baseline;gap:14px;padding:10px 0;border-bottom:1px solid #50664c;color:#edf6ee;font-size:14px;font-weight:650;line-height:1.6}
+.guide-routine-list li:last-child{border-bottom:0}
+.guide-routine-list li:before{content:counter(routine, decimal-leading-zero);color:var(--lime);font-size:11px;font-weight:850;font-variant-numeric:tabular-nums}
+.guide-routine-list li span{margin-left:auto;color:#b6c8b5;font-size:12px;font-weight:500;text-align:right}
+.guide-routine-stats{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.guide-routine-stats>span{border:1px solid #4d694a;border-radius:8px;color:#dbead8;font-size:11px;padding:8px 10px}
+.guide-routine-stats b{font-size:13px;color:#fff}
+.guide-hotel-routine{margin:25px 0;background:#172630;border:1px solid #344b50;border-radius:15px;padding:24px 27px}
+.guide-hotel-routine .guide-routine-list li{border-color:#344c50}
+.guide-hotel-routine>p:last-child{border-top:1px solid #344c50;padding-top:15px;margin-top:12px}
+@media(max-width:650px){
+ .guide-routine h3,.guide-hotel-routine h3{font-size:19px}
+ .guide-hotel-routine{padding:20px}
+ .guide-routine-list li{gap:9px;font-size:13px;flex-wrap:wrap}
+ .guide-routine-list li span{margin-left:0}
+ .guide-routine-stats>span{font-size:10px}
+}
