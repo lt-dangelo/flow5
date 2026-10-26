@@ -20,7 +20,7 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.ok(sw.includes('pick5go-v1.3-production-2'));
+assert.ok(sw.includes('pick5go-v1.3-production-3'));
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
 
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
@@ -138,7 +138,7 @@ assert.equal(matchedWallAsset.readUInt16LE(28)&0x3fff,960);
 assert.ok(matchedWallAsset.length>100000);
 assert.ok(app.includes("wall:'wallpushup-master-v1317.webp'"));
 assert.ok(!app.includes("wall:'wallpushup-master-v1316.webp'"));
-assert.ok(sw.includes('pick5go-v1.3-production-2'));
+assert.ok(sw.includes('pick5go-v1.3-production-3'));
 assert.ok(sw.includes('./artwork/wallpushup-master-v1317.webp'));
 const updatedHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
 assert.ok(updatedHTML.includes('build=1.3.42'));
@@ -164,7 +164,7 @@ for (const [pose,file] of [ ['wallsit','wallsit-master-v1319.webp'], ['jumping',
  assert.ok(app.includes(pose+":'"+file+"'"));
  assert.ok(sw.includes('./artwork/'+file));
 }
-assert.ok(sw.includes('pick5go-v1.3-production-2'));
+assert.ok(sw.includes('pick5go-v1.3-production-3'));
 assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.42'));
 
 // v1.3.21: calf raises (flat feet vs lifted heels), verified WebP file and offline mapping.
@@ -176,7 +176,7 @@ assert.equal(calf.readUInt16LE(26)&0x3fff,1440);
 assert.equal(calf.readUInt16LE(28)&0x3fff,960);
 assert.ok(app.includes("calf:'calfraise-master-v1321.webp'"));
 assert.ok(sw.includes('./artwork/calfraise-master-v1321.webp'));
-assert.ok(sw.includes('pick5go-v1.3-production-2'));
+assert.ok(sw.includes('pick5go-v1.3-production-3'));
 assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.42'));
 
 // v1.3.22 – Final three placeholders replaced with reviewed 1440 x 960 WebP artwork.
@@ -192,7 +192,7 @@ for(const [pose,file] of [['bear','bear-master-v1322.webp'],['heeltouch','heelto
 }
 assert.ok(app.includes("exerciseId==='snowAngel'?STUDY_IMAGE.snowangel"));
 assert.ok(app.includes("superman:'superman-master.webp'"));
-assert.ok(sw.includes('pick5go-v1.3-production-2'));
+assert.ok(sw.includes('pick5go-v1.3-production-3'));
 assert.ok(html.includes('src/app.js?build=1.3.42'));
 
 

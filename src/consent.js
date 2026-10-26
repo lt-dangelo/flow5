@@ -16,6 +16,9 @@
   };
   // The in-app language selector takes precedence over browser locale.
   const currentLang=()=>{
+    // The explicit language URL overrides a different language saved earlier.
+    const route=location.pathname.match(/\/(de|it|fr|es)\/(?:index\.html)?$/);
+    if(route)return route[1];
     for(const key of ['pick5go-prefs-v13','flow5-prefs-v13-preview']){
       try{
         const value=localStorage.getItem(key);
