@@ -32,4 +32,22 @@ assert.ok(sw.includes("pick5go-v1.3-preview-45"),'new offline cache');
 for(const path of ['./about-calisthenics/','./about-calisthenics/index.html','./about-calisthenics/guide.css']){
  assert.ok(sw.includes(path),'offline precache '+path);
 }
+// Confirm SEO improvements stay grounded in the actual workout catalogue.
+assert.ok(guide.includes('<title>Calisthenics at Home: Beginner &amp; 15-Minute Workouts | Pick5Go</title>'));
+assert.ok(guide.includes('name="description" content="Explore calisthenics at home'));
+assert.ok(guide.includes('<h1 id="guide-title">About <em>calisthenics.</em></h1>'),'visual heading unchanged');
+for(const term of ['15-minute bodyweight workout','hotel room','work out at home without equipment','beginners start and progress']){
+ assert.ok(guide.toLowerCase().includes(term.toLowerCase()),'search topic missing: '+term);
+}
+const routines=[...guide.matchAll(/<ol class="guide-routine-list">([\\s\\S]*?)<\\/ol>/g)];
+assert.equal(routines.length,2,'one home and one hotel workout');
+const readNames=(html)=>[...html.matchAll(/<li>([\\s\\S]*?)<\\/li>/g)].map(match=>match[1].replace(/<span>.*?<\\/span>/g,'').replace(/<[^>]+>/g,'').trim());
+const names=readNames(routines[0][1]);
+assert.deepEqual(names,['Squats','Knee push-ups','Hip hinge','Bird dog','Standing knee raises'],'match the actual beginner full-body exercise set');
+assert.deepEqual(readNames(routines[1][1]),['Slow squats','Wall push-ups','Hip hinge','Bird dog','Standing knee raises'],'quiet hotel exercises');
+assert.ok(guide.includes('3 rounds'),'15-minute routine rounds');
+assert.ok(guide.includes('2 rounds · 40 seconds per exercise + 20 seconds rest'),'10-minute hotel routine');
+assert.equal(5*(40+20)*3,900,'home circuit lasts 15 minutes');
+assert.equal(5*(40+20)*2,600,'hotel circuit lasts 10 minutes');
+
 console.log('OK: guide, nine chapter anchors, footer link, references, responsive design, safe preview and offline support');
