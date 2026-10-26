@@ -1,5 +1,5 @@
 // Scoped preview service worker: network-first for app updates, offline fallback.
-const CACHE='pick5go-v1.3-preview-44';
+const CACHE='pick5go-v1.3-preview-45';
 const CORE=[
  './',
  './index.html',
