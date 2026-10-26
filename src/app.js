@@ -8,6 +8,7 @@ import {optionsFor,stepSetting} from './config.js';
 import {CueAudio} from './audio.js';
 import {t,exerciseText,presetText,LANGUAGES,normalizeLang,localeFor} from './i18n.js';
 import {validSelection,removeExercise,chooseExercise,pickerChoices} from './selection.js';
+import {languageForPath,languageUrl} from './seo-languages.js';
 
 const STORAGE_KEY='pick5go-prefs-v13';
 const PRIOR_KEYS=['flow5-prefs-v13-preview','flow5-prefs-v1'];
@@ -47,6 +48,15 @@ function loadPreferences(){
  } catch {return {...DEFAULTS};}
 }
 let prefs=loadPreferences();
+const appRoot=new URL('./',document.baseURI);
+const routeLanguage=languageForPath(location.pathname,appRoot.pathname);
+// Keep a returning user's saved language when visiting the original homepage.
+if(routeLanguage==='en'&&location.pathname===appRoot.pathname&&prefs.lang!=='en'){
+ window.location.replace(languageUrl(appRoot.href,prefs.lang));
+}else if(prefs.lang!==routeLanguage){
+ prefs.lang=routeLanguage;
+ try{localStorage.setItem(STORAGE_KEY,JSON.stringify(prefs));}catch{/* private browsing */}
+}
 document.documentElement.lang=prefs.lang;
 let view='setup';
 let swapIndex=null;
@@ -350,7 +360,12 @@ app.addEventListener('click',event=>{
 app.addEventListener('change',event=>{
  if(event.target.matches('[data-language]')){
   prefs.lang=normalizeLang(event.target.value);
-  document.documentElement.lang=prefs.lang;save();render();window.dispatchEvent(new CustomEvent('pick5go:languagechange',{detail:{language:prefs.lang}}));return;
+  document.documentElement.lang=prefs.lang;save();
+  window.dispatchEvent(new CustomEvent('pick5go:languagechange',{detail:{language:prefs.lang}}));
+  const target=languageUrl(appRoot.href,prefs.lang);
+  if(location.href!==target)window.location.assign(target);
+  else render();
+  return;
  }
  const field=event.target.dataset.config;if(!field)return;
  if(field==='sound'){prefs.sound=event.target.checked;if(!prefs.sound)cueAudio.stop();}
