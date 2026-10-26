@@ -25,3 +25,22 @@
  .guide-routine-list li span{margin-left:0}
  .guide-routine-stats>span{font-size:10px}
 }
+
+/* Workout links and shared, opt-in analytics controls on the informational guide. */
+.guide-prepared-link{display:flex;width:100%;justify-content:center;align-items:center;gap:12px;margin-top:20px;padding:13px 16px;border-radius:10px;background:var(--lime);color:#17291a;text-decoration:none;font-size:13px;font-weight:850;line-height:1.4;text-align:center}
+.guide-prepared-link:hover{filter:brightness(1.07)}
+.guide-focus-list>div>div{min-width:0;flex:1}
+.guide-focus-link{display:inline-flex;gap:9px;margin-top:14px;color:var(--lime);text-decoration:underline;text-underline-offset:4px;font-weight:750;font-size:12px;line-height:1.6}
+.guide-focus-link:hover{color:#e2ffc4}
+#pick5go-legal{display:flex;gap:15px;align-items:center;flex-wrap:wrap}
+#pick5go-legal button{font:inherit;color:inherit;border:0;background:transparent;padding:3px 0;text-decoration:underline;text-underline-offset:4px;cursor:pointer}
+#pick5go-legal a{text-decoration:underline;text-underline-offset:4px}
+#pick5go-legal button:focus-visible{outline:3px solid var(--lime);outline-offset:3px}
+.analytics-consent{position:fixed;z-index:9999;left:50%;bottom:12px;transform:translateX(-50%);width:calc(100% - 32px);max-width:720px;box-sizing:border-box;max-height:65vh;overflow:auto;display:flex;align-items:center;gap:15px;flex-wrap:wrap;background:#f5f1e7;color:#24312c;box-shadow:0 8px 34px #0005;border:1px solid #b8c3af;border-radius:14px;padding:16px;font:14px/1.5 system-ui,sans-serif}
+.analytics-consent p{margin:0;flex:1 1 290px;line-height:1.5}
+.analytics-consent a{color:#1c604e;text-decoration:underline}
+.analytics-consent-actions{display:flex;flex-wrap:wrap;gap:9px}
+.analytics-consent-actions button{font:700 13px system-ui,sans-serif;padding:11px 14px;min-height:44px;border-radius:10px;border:1px solid #445748;cursor:pointer;background:transparent;color:#24312c}
+.analytics-consent-actions button:last-child{background:#243f32;color:white}
+.analytics-consent-actions button:focus-visible{outline:3px solid #a6bb81;outline-offset:2px}
+@media(max-width:520px){.analytics-consent{bottom:8px;width:calc(100% - 16px)}.analytics-consent-actions{width:100%}.analytics-consent-actions button{flex:1}}
