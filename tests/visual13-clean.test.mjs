@@ -30,7 +30,9 @@ assert.ok(html.match(/styles\.css\?build=1\.3\.\d+/));
 assert.ok(html.match(/src\/app\.js\?build=1\.3\.\d+/));
 assert.match(sw,/cache:'no-store'/);
 assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
-assert.match(app,/finalRest\?T\('recoveryCue'\)/);
+assert.match(workout,/const scienceCue=C\(finalRest\?'restGuide'/);
+assert.ok(workout.includes("${isRest?'':`<p class=\"v13-art-cue\""),'active instruction only in artwork');
+assert.ok(workout.indexOf('coach-rest-tip')>workout.indexOf('</section>'),'rest coaching outside artwork panel');
 
 for(const name of ['squat','pushup','plank','recovery']){
  const image=readFileSync(new URL('../artwork/'+name+'-master.webp',import.meta.url));
