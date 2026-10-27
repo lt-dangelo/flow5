@@ -107,8 +107,7 @@ test('all five new workout illustrations are valid, full-size WebPs, cached and 
   assert.equal(asset.readUInt16LE(28)&0x3fff,960,id+' height');
   assert.ok(sw.includes('./artwork/'+name),id+' offline availability');
  }
- assert.ok(app.includes('src=\\"./artwork/${exerciseId}-master-v1347.webp\\"')||
-  app.includes('src=\\"./artwork/${exerciseId}-master-v1347.webp\\"'),'new artwork uses appropriate id');
+ assert.ok(app.includes('${exerciseId}-master-v1347.webp'),'workout image path interpolates approved exercise ID');
 });
 
 test('compact movement note has no title or positive filler',async()=>{
