@@ -70,3 +70,43 @@ test('recommendations never manufacture a missing variation or duplicate exercis
  assert.equal(new Set(result.session.ids).size,3);
  assert.equal(result.unchanged.length,3);
 });
+
+test('all five added exercises have reversible difficulty chains',()=>{
+ const progressions=[
+  ['wallPushup','inclinePushup','kneePushup','pushup'],
+  ['kneeForearmPlank','plank','shoulderTap'],
+  ['march','stepJack','jumpingJack'],
+  ['gluteBridge','gluteBridgeMarch','singleLegBridge'],
+  ['squat','supportedSplitSquat','reverseLunge','assistedSingleLegSquat']
+ ];
+ for(const chain of progressions){
+  for(let i=1;i<chain.length;i++){
+   assert.equal(PROGRESSIONS[chain[i-1]].harder,chain[i],'harder link '+chain[i-1]);
+   assert.equal(PROGRESSIONS[chain[i]].easier,chain[i-1],'easier link '+chain[i]);
+  }
+ }
+});
+test('new exercises are eligible, localized and usable in shared workouts',()=>{
+ const added=['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat'];
+ for(const id of added){assert.ok(idSet.has(id));assert.equal(allowedExercise(id,{equipment:'none',quiet:true}),true);}
+ const share=encodeSharedWorkout({presetId:'full',difficulty:'beginner',ids:added,workSec:40,restSec:20,rounds:3});
+ assert.ok(share);
+ assert.deepEqual(decodeSharedWorkout('?w='+encodeURIComponent(share)).ids,added);
+});
+test('no progression ratings cause duplication, including with new steps',()=>{
+ const available=['wallPushup','inclinePushup','kneePushup','pushup','kneeForearmPlank','plank','shoulderTap','march','stepJack','jumpingJack','gluteBridge','gluteBridgeMarch','singleLegBridge','squat','supportedSplitSquat','reverseLunge'];
+ const cases=[
+  available.slice(0,5),available.slice(4,9),available.slice(9,14),available.slice(11,16),
+  ['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat']
+ ];
+ for(const ids of cases){
+  for(let k=0;k<243;k++){
+   let n=k;const ratings={};for(const id of ids){ratings[id]=['easy','ok','hard'][n%3];n=Math.floor(n/3);}
+   const session={presetId:'full',difficulty:'intermediate',ids,workSec:40,restSec:20,rounds:3};
+   const result=recommendWorkout(session,ratings,{equipment:'none',quiet:true}).session.ids;
+   assert.equal(result.length,5);
+   assert.equal(new Set(result).size,5);
+   assert.ok(result.every(id=>allowedExercise(id,{equipment:'none',quiet:true})));
+  }
+ }
+});
