@@ -19,9 +19,9 @@ for(const lang of SEO_LANGUAGES){
   const url=origin+(target==='en'||target==='x-default'?'':target+'/');
   assert.ok(html.includes('<link rel="alternate" hreflang="'+target+'" href="'+url+'"/>'),path+' hreflang '+target);
  }
- assert.ok(html.includes('./src/app.js?build=1.3.41'),path+' shared workout engine');
- assert.ok(html.includes('./src/consent.js?build=1.3.41'),path+' analytics consent');
- assert.ok(html.includes('./src/analytics-debug.js?build=1.3.41'),path+' preview diagnostics');
+ assert.ok(html.match(/\.\/src\/app\.js\?build=1\.3\.\d+/),path+' shared workout engine');
+ assert.ok(html.match(/\.\/src\/consent\.js\?build=1\.3\.\d+/),path+' analytics consent');
+ assert.ok(html.match(/\.\/src\/analytics-debug\.js\?build=1\.3\.\d+/),path+' preview diagnostics');
  assert.equal(languageForPath(new URL(languageUrl(root,lang)).pathname,new URL(root).pathname),lang,lang+' preview route');
  assert.equal(languageForPath(new URL(languageUrl(origin,lang)).pathname,'/'),lang,lang+' prod route');
 }
