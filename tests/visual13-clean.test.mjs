@@ -321,9 +321,18 @@ assert.ok(completed.includes('class="record-exercise-thumb"'), 'Record renders e
 assert.ok(completed.includes('${exerciseThumbnail(e)}'), 'Record reuses anatomical thumbnails');
 assert.ok(css.includes('.record-exercises .record-exercise-thumb'), 'Record thumbnails are styled');
 
-// Preview progression expansion: each new exercise shows an honest placeholder instead of unrelated artwork.
+// Preview progression expansion: five new muscle-map WebPs accompany five still-pending training illustrations.
 for(const id of ['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat']){
  assert.ok(app.includes("'"+id+"'"),id+' registered for placeholder treatment');
 }
 assert.ok(app.includes('NEW_EXERCISE_IDS.has(exerciseId)'),'new workout illustrations are visibly placeholders');
-assert.ok(app.includes('NEW_EXERCISE_IDS.has(e.id)'),'new thumbnails are visibly placeholders');
+assert.ok(!app.includes('NEW_EXERCISE_IDS.has(e.id)'),'picker must show muscle maps, not placeholders');
+for(const id of ['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat']){
+ const path='../artwork/thumbs/'+id+'-muscles.webp';
+ const data=readFileSync(new URL(path,import.meta.url));
+ assert.ok(data.byteLength>3000,id+' meaningful muscle thumbnail');
+ assert.equal(data.subarray(0,4).toString('ascii'),'RIFF',id+' valid WebP container');
+ assert.equal(data.subarray(8,12).toString('ascii'),'WEBP',id+' valid WebP signature');
+ assert.ok(thumbnailMap.includes(id+":'"+id+'-muscles.webp'),id+' mapped');
+ assert.ok(sw.includes('./artwork/thumbs/'+id+'-muscles.webp'),id+' precached');
+}
