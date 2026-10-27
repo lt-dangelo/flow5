@@ -50,3 +50,23 @@ test('balance guidance does not pretend floor movements equal band rows',()=>{
  assert.ok(balanceWarnings(['squat','pushup','snowAngel','plank'],'full').includes('noPull'));
  assert.ok(!balanceWarnings(['squat','pushup','bandRow','plank'],'full').includes('noPull'));
 });
+
+
+test('simultaneous valid progression chain advances both exercises when collision-free',()=>{
+ const session={presetId:'upper',difficulty:'beginner',ids:['wallPushup','kneePushup','birdDog'],workSec:40,restSec:20,rounds:3};
+ const result=recommendWorkout(session,{wallPushup:'easy',kneePushup:'easy',birdDog:'ok'},{equipment:'none'});
+ assert.deepEqual(result.session.ids,['kneePushup','pushup','birdDog']);
+ assert.equal(result.changes.length,2);
+});
+test('about-right is neutral and implicit for every exercise',()=>{
+ const session={presetId:'full',difficulty:'beginner',ids:['squat','wallPushup','birdDog'],workSec:40,restSec:20,rounds:3};
+ assert.deepEqual(recommendWorkout(session,{},{}).session.ids,session.ids);
+ assert.equal(recommendWorkout(session,{squat:'ok'},{}).changes.length,0);
+});
+test('recommendations never manufacture a missing variation or duplicate exercises',()=>{
+ const session={presetId:'core',difficulty:'intermediate',ids:['plank','shoulderTap','deadBug'],workSec:40,restSec:20,rounds:3};
+ const result=recommendWorkout(session,{plank:'easy',shoulderTap:'hard',deadBug:'easy'},{equipment:'none'});
+ assert.deepEqual(result.session.ids,session.ids);
+ assert.equal(new Set(result.session.ids).size,3);
+ assert.equal(result.unchanged.length,3);
+});
