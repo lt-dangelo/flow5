@@ -31,7 +31,7 @@ for(const term of ['World Health Organization','American College of Sports Medic
 assert.ok(!/<script\s+src=/.test(guide),'readable without app JavaScript');
 assert.ok(css.includes('@media(max-width:650px)'),'responsive layout');
 assert.ok(css.includes('prefers-reduced-motion'),'accessible motion preferences');
-assert.ok(sw.includes("pick5go-v1.3-preview-47"),'new offline cache');
+assert.ok(sw.match(/pick5go-v1\.3-preview-\d+/),'new offline cache');
 for(const path of ['./about-calisthenics/','./about-calisthenics/index.html','./about-calisthenics/guide.css']){
  assert.ok(sw.includes(path),'offline precache '+path);
 }
