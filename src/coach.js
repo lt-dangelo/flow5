@@ -38,8 +38,8 @@ export function adaptWorkout(ids,options={},focus='full',difficulty='beginner'){
  return ids.map(id=>{
   if(allowedExercise(id,options))return id;
   const candidates=fallbacks.filter(other=>!taken.has(other)&&allowedExercise(other,options));
-  const suitable=candidates.find(other=>levelById[other]<=(difficulty==='beginner'?1:2))||
-                 candidates.find(other=>levelById[other]<=2)||candidates[0];
+  const suitable=candidates.find(other=>levelById[other]<=(difficulty==='beginner'?1:2));
+  // Do not silently turn a beginner workout into an intermediate/advanced one.
   if(suitable)taken.add(suitable);
   return suitable||null;
  }).filter(Boolean);
