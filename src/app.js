@@ -211,6 +211,8 @@ function renderSwapDialog(){
 function nextWork(index){if(!engine)return null;return engine.phases.slice(index+1).find(p=>p.kind==='work')||null;}
 const STUDY_IMAGE={singlelegbridge:'singlelegbridge-master-v1329.webp',assistedsquat:'assistedsquat-master-v1329.webp',hiphinge:'hiphinge-master-v1327.webp',kneepushup:'kneepushup-master-v1328.webp',bandrow:'bandrow-master-v1328.webp',bear:'bear-master-v1322.webp',heeltouch:'heeltouch-master-v1322.webp',snowangel:'snowangel-master-v1322.webp',calf:'calfraise-master-v1321.webp',wallsit:'wallsit-master-v1319.webp',jumping:'jumpingjacks-master-v1320.webp',pike:'pikepushup-master-v1318.webp',wall:'wallpushup-master-v1317.webp',squat:'squat-master.webp',pushup:'pushup-master.webp',plank:'plank-master.webp',lunge:'lunge-master.webp',mountain:'mountain-master.webp',bridge:'bridge-master.webp',march:'march-master.webp',bicycle:'bicycle-master.webp',sideplank:'sideplank-master.webp',recovery:'recovery-hydration-corrected.webp',shouldertap:'shouldertap-clean-v1315.webp',birddog:'birddog-master.webp',deadbug:'deadbug-clean-v1315.webp',superman:'superman-master.webp'};
 function studyPicture(pose,name,lang,exerciseId=''){
+ // Recovery artwork must always win, even when the last workout exercise is new.
+ if(pose==='recovery')exerciseId='';
  if(NEW_EXERCISE_IDS.has(exerciseId))return `<img class="v13-study-image" src="./artwork/${exerciseId}-master-v1347.webp" width="1440" height="960" alt="${escapeHtml(name)}" decoding="async" fetchpriority="high"/>`;
  // Reverse Snow Angels shares a legacy pose identifier with Superman Hold.
  // Resolve the exercise ID first so each receives the correct movement illustration.
@@ -246,7 +248,7 @@ function renderWorkout(){
   <div class="whole-track v13-progress" role="progressbar" aria-label="${T('remaining')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(snap.overallProgress*100)}"><div id="whole-progress" style="width:${snap.overallProgress*100}%"></div></div>
   <section class="v13-art ${finalRest?'v13-final-rest':''}" aria-label="${escapeHtml(displayName)}">
     <div class="v13-art-heading"><span class="v13-art-index">${finalRest?'':String(shownPosition).padStart(2,'0')+' / '+String(workoutCount).padStart(2,'0')}</span><h1>${escapeHtml(displayName)}</h1>${actionLabel?`<span class="v13-motion-label">${actionLabel}</span>`:''}</div>
-    <div class="v13-drawing">${studyPicture(finalRest?'recovery':present.pose,displayName,prefs.lang,present.id)}</div>
+    <div class="v13-drawing">${studyPicture(finalRest?'recovery':present.pose,displayName,prefs.lang,finalRest?'':present.id)}</div>
     ${isRest?'':`<p class="v13-art-cue">${escapeHtml(cue)}</p>`}
   </section>
   ${isRest&&!finalRest?`<p class="coach-rest-tip" role="note">${escapeHtml(scienceCue)}</p>`:''}
