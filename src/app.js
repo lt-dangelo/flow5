@@ -109,8 +109,10 @@ const MUSCLE_THUMBNAILS=Object.freeze({
  bearHold:'bearHold-muscles.webp',
  assistedSingleLegSquat:'assistedSingleLegSquat-muscles.webp'
 });
+const NEW_EXERCISE_IDS=new Set(['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat']);
 function exerciseThumbnail(e){
  const file=MUSCLE_THUMBNAILS[e.id];
+ if(NEW_EXERCISE_IDS.has(e.id))return `<div class="exercise-art-placeholder" role="img" aria-label="${escapeHtml(T('placeholder'))}: ${escapeHtml(e.name)}"><span aria-hidden="true">✧</span><small>${escapeHtml(T('placeholder'))}</small></div>`;
  return file
   ? `<img class="muscle-thumb" src="./artwork/thumbs/${file}" alt="" width="192" height="154" loading="lazy" decoding="async"/>`
   : illustration(e.pose,e.name,prefs.lang);
@@ -169,7 +171,7 @@ function renderSetup(){
  const cards=PRESETS.map(raw=>{const p=P(raw);return `<button class="preset-card ${p.id===prefs.presetId?'selected':''}" type="button" data-action="preset" data-value="${p.id}" aria-pressed="${p.id===prefs.presetId}"><div class="preset-icon">${p.icon}</div><strong>${escapeHtml(p.name)}</strong><small>${escapeHtml(p.subtitle)}</small></button>`;}).join('');
  const levelChoices=DIFFICULTIES.map((level,index)=>`<button class="difficulty-option ${prefs.difficulty===level?'selected':''}" type="button" data-action="difficulty" data-value="${level}" aria-pressed="${prefs.difficulty===level}">${T(index===0?'easy':'medium')}</button>`).join('');
  const warnings=balanceWarnings(ids,prefs.presetId);
- const rows=ids.map((id,i)=>{const e=E(id);return `<div class="exercise-row"><div class="thumb">${exerciseThumbnail(e)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} <span aria-hidden="true">·</span> ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small></div><div class="exercise-actions"><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${T('swap')}: ${escapeHtml(e.name)}">${icon('swap')}<span>${T('swap')}</span></button><button type="button" class="remove-btn" data-action="remove" data-index="${i}" aria-label="${T('remove')}: ${escapeHtml(e.name)}" ${count===1?'disabled':''}>${icon('close')}<span>${T('remove')}</span></button></div></div>`;}).join('');
+ const rows=ids.map((id,i)=>{const e=E(id);return `<div class="exercise-row"><div class="thumb">${exerciseThumbnail(e)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} <span aria-hidden="true">·</span> ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:e.equipment==='support'?` · ${escapeHtml(C('stableSupport'))}`:''}</small></div><div class="exercise-actions"><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${T('swap')}: ${escapeHtml(e.name)}">${icon('swap')}<span>${T('swap')}</span></button><button type="button" class="remove-btn" data-action="remove" data-index="${i}" aria-label="${T('remove')}: ${escapeHtml(e.name)}" ${count===1?'disabled':''}>${icon('close')}<span>${T('remove')}</span></button></div></div>`;}).join('');
  app.innerHTML=`<div class="site-shell">
  <header class="topbar">${brand()}<div class="topbar-actions"><select class="language-select" data-language aria-label="${T('switchLanguage')}" title="${T('switchLanguage')}">${languageChoices}</select><button class="icon-button help-button" type="button" data-action="help" aria-label="${T('help')}">${icon('info')}</button></div></header>
  <p class="health-notice" role="note">${icon('info')}<span>${escapeHtml(T('healthNotice'))}</span></p>
@@ -201,11 +203,12 @@ function renderSwapDialog(){
  const filtered=pickerChoices(localized,currentIds(),swapQuery,prefs.lang).filter(e=>allowedExercise(e.id,{equipment:prefs.equipment,quiet:prefs.quiet}));
  const sourceId=swapIndex>=0?currentIds()[swapIndex]:null;
  const quick=Object.entries(sourceId?PROGRESSIONS[sourceId]||{}:{}).filter(([,id])=>id&&!currentIds().includes(id)&&allowedExercise(id,{equipment:prefs.equipment,quiet:prefs.quiet})).map(([direction,id])=>`<button class="coach-progress-choice" type="button" data-action="choose" data-value="${id}">${escapeHtml(C(direction))}: ${escapeHtml(E(id).name)}</button>`).join('');
- return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div>${quick?`<div class="coach-progress-row">${quick}</div>`:''}<input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(e=>`<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${exerciseThumbnail(e)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
+ return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div>${quick?`<div class="coach-progress-row">${quick}</div>`:''}<input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(e=>`<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${exerciseThumbnail(e)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:e.equipment==='support'?` · ${escapeHtml(C('stableSupport'))}`:''}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
 }
 function nextWork(index){if(!engine)return null;return engine.phases.slice(index+1).find(p=>p.kind==='work')||null;}
 const STUDY_IMAGE={singlelegbridge:'singlelegbridge-master-v1329.webp',assistedsquat:'assistedsquat-master-v1329.webp',hiphinge:'hiphinge-master-v1327.webp',kneepushup:'kneepushup-master-v1328.webp',bandrow:'bandrow-master-v1328.webp',bear:'bear-master-v1322.webp',heeltouch:'heeltouch-master-v1322.webp',snowangel:'snowangel-master-v1322.webp',calf:'calfraise-master-v1321.webp',wallsit:'wallsit-master-v1319.webp',jumping:'jumpingjacks-master-v1320.webp',pike:'pikepushup-master-v1318.webp',wall:'wallpushup-master-v1317.webp',squat:'squat-master.webp',pushup:'pushup-master.webp',plank:'plank-master.webp',lunge:'lunge-master.webp',mountain:'mountain-master.webp',bridge:'bridge-master.webp',march:'march-master.webp',bicycle:'bicycle-master.webp',sideplank:'sideplank-master.webp',recovery:'recovery-hydration-corrected.webp',shouldertap:'shouldertap-clean-v1315.webp',birddog:'birddog-master.webp',deadbug:'deadbug-clean-v1315.webp',superman:'superman-master.webp'};
 function studyPicture(pose,name,lang,exerciseId=''){
+ if(NEW_EXERCISE_IDS.has(exerciseId))return `<div class="v13-art-placeholder v13-new-placeholder" role="img" aria-label="${escapeHtml(T('placeholder'))}: ${escapeHtml(name)}"><span aria-hidden="true">✧</span><small>${escapeHtml(T('placeholder'))}</small></div>`;
  // Reverse Snow Angels shares a legacy pose identifier with Superman Hold.
  // Resolve the exercise ID first so each receives the correct movement illustration.
  const file=exerciseId==='snowAngel'?STUDY_IMAGE.snowangel:STUDY_IMAGE[pose];
@@ -225,7 +228,8 @@ function renderWorkout(){
  const shownRound=(isRest&&next)?next.round:p.round;
  const group=T(isRest?'restCaps':'workCaps');
  const displayName=finalRest?T('lastRest'):present.name;
- const cue=finalRest?T('recoveryCue'):present.cue;
+ const cue=present.cue;
+ const scienceCue=C(finalRest?'restGuide':snap.index%3===0?'restForm':snap.index%3===1?'restEffort':'restGuide');
  const studyLabels={en:['HOLD','START → END'],de:['HALTEN','START → ENDE'],it:['TIENI','INIZIO → FINE'],fr:['TENIR','DÉBUT → FIN'],es:['MANTÉN','INICIO → FIN']};
  const actionLabel=finalRest?'':isRest?T('readySoon'):(isStudy(present.pose)?studyLabels[prefs.lang][present.pose==='plank'?0:1]:'');
  lastPhaseKey=String(snap.index);
@@ -240,8 +244,9 @@ function renderWorkout(){
   <section class="v13-art ${finalRest?'v13-final-rest':''}" aria-label="${escapeHtml(displayName)}">
     <div class="v13-art-heading"><span class="v13-art-index">${finalRest?'':String(shownPosition).padStart(2,'0')+' / '+String(workoutCount).padStart(2,'0')}</span><h1>${escapeHtml(displayName)}</h1>${actionLabel?`<span class="v13-motion-label">${actionLabel}</span>`:''}</div>
     <div class="v13-drawing">${studyPicture(finalRest?'recovery':present.pose,displayName,prefs.lang,present.id)}</div>
-    <p class="v13-art-cue">${escapeHtml(cue)}</p>${isRest?`<p class="coach-rest-tip">${escapeHtml(C(finalRest?'restGuide':snap.index%3===0?'restForm':snap.index%3===1?'restEffort':'restGuide'))}</p>`:''}
+    ${isRest?'':`<p class="v13-art-cue">${escapeHtml(cue)}</p>`}
   </section>
+  ${isRest?`<p class="coach-rest-tip" role="note">${escapeHtml(scienceCue)}</p>`:''}
  </main>
  <footer class="training-controls v13-controls"><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div><div id="wake-indicator" class="wake-indicator visually-hidden" aria-live="polite">${T('checkingWake')}</div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
  <div class="visually-hidden" id="phase-announcement" aria-live="polite">${group}: ${displayName}</div></div>`;
