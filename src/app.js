@@ -260,11 +260,12 @@ function renderDone(){
 
  const advice=recommendWorkout(session,workoutRatings,{equipment:prefs.equipment,quiet:prefs.quiet});
  const ratingRows=session.ids.map(id=>{
-  const e=E(id),value=workoutRatings[id];
-  return `<div class="coach-rating-row"><span>${escapeHtml(e.name)}</span><div class="coach-rating-choices" role="group" aria-label="${escapeHtml(e.name)}">${[['easy','easy'],['ok','ok'],['hard','hard']].map(([v,key])=>`<button type="button" class="${value===v?'active':''}" data-action="rate" data-id="${id}" data-value="${v}" aria-pressed="${value===v}">${escapeHtml(C(key))}</button>`).join('')}</div></div>`;
+  const e=E(id),value=workoutRatings[id]||'ok';
+  const number=value==='easy'?-1:value==='hard'?1:0;
+  return `<div class="coach-rating-row"><label for="rate-${id}">${escapeHtml(e.name)}</label><div class="coach-rating-slider"><input id="rate-${id}" type="range" min="-1" max="1" step="1" value="${number}" data-coach-rating="${id}" aria-label="${escapeHtml(e.name)}" aria-valuetext="${escapeHtml(C(value))}"/><div class="coach-rating-labels"><span>${escapeHtml(C('easy'))}</span><strong class="coach-rating-current">${escapeHtml(C(value))}</strong><span>${escapeHtml(C('hard'))}</span></div></div></div>`;
  }).join('');
  const changeDetails=advice.changes.map(change=>`<li>${escapeHtml(E(change.from).name)} → ${escapeHtml(E(change.to).name)}</li>`).join('');
- const feedbackPanel=`<section class="coach-feedback"><h2>${escapeHtml(C('rateTitle'))}</h2><p>${escapeHtml(C('rateLead'))}</p><div class="coach-rating-list">${ratingRows}</div>${advice.rated?`<div class="coach-next"><h3>${escapeHtml(C('nextTitle'))}</h3><p>${escapeHtml(C('nextHelp'))}</p>${changeDetails?`<ul>${changeDetails}</ul>`:`<p>${escapeHtml(C('noChange'))}</p>`}${advice.unchanged.length?`<p>${escapeHtml(C('unchanged'))}</p>`:''}<button type="button" class="secondary-btn" data-action="share-next">${escapeHtml(C('shareNext'))} →</button><p class="share-status" data-share-status role="status" aria-live="polite"></p></div>`:`<p class="coach-muted">${escapeHtml(C('more'))}</p>`}</section>`;
+ const feedbackPanel=`<section class="coach-feedback"><h2>${escapeHtml(C('rateTitle'))}</h2><p>${escapeHtml(C('ratingIntro'))}</p><div class="coach-rating-list">${ratingRows}</div>${advice.rated?`<div class="coach-next"><h3>${escapeHtml(C('nextTitle'))}</h3><p>${escapeHtml(C('nextHelp'))}</p><p class="coach-caution">${escapeHtml(C('suggestionCaution'))}</p>${changeDetails?`<ul>${changeDetails}</ul>`:`<p>${escapeHtml(C('noChange'))}</p>`}${advice.unchanged.length?`<p>${escapeHtml(C('unchanged'))}</p>`:''}<button type="button" class="secondary-btn" data-action="share-next">${escapeHtml(C('shareNext'))} →</button><p class="share-status" data-share-status role="status" aria-live="polite"></p></div>`:`<p class="coach-muted">${escapeHtml(C('more'))}</p>`}</section>`;
 
  view='done';
  app.innerHTML=`<div class="done-page done-record-page">
