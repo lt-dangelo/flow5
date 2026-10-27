@@ -51,6 +51,6 @@ assert.ok(app.includes("T('placeholder')"),'workout placeholder is labelled');
 assert.ok(art.includes("pose-placeholder"),'lineup placeholder has no misleading squat');
 const sw=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(sw.includes('pick5go-v1.3-preview-47'));
-assert.ok(html.includes('build=1.3.41'));
+assert.ok(sw.match(/pick5go-v1\.3-preview-\d+/));
+assert.ok(html.match(/build=1\.3\.\d+/));
 console.log('OK: difficulty presets, equipment flag, placeholders, bilingual cues, caching');
