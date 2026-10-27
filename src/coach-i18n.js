@@ -1,0 +1,85 @@
+// Short training guidance strings; separate from the existing core UI translations.
+const messages={
+ en:{
+  options:'Workout preferences (optional)',equipment:'Equipment',none:'Bodyweight only',band:'Resistance band available',
+  quiet:'Quiet workout (no jumping)',noPull:'This workout does not include resisted pulling. A band row can improve upper-body balance; floor movements are not equivalent.',
+  noPush:'This selection has no pressing movement.',noLegs:'This selection has no lower-body strength movement.',
+  balanced:'Movement check',explore:'Browse ready-made workouts',easier:'Easier',harder:'Harder',
+  restGuide:'Use the break to prepare your next movement. Quality matters more than speed.',
+  restEffort:'Choose a variation that feels challenging while you can still maintain control.',
+  restForm:'Move through a comfortable range. Stop or adjust if an exercise causes pain.',
+  rateTitle:'Make your next workout better',rateLead:'Optional: how did each exercise feel? Your answers stay on this screen; no history is stored.',
+  easy:'Too easy',ok:'About right',hard:'Too hard',nextTitle:'Suggested next workout',
+  nextHelp:'We change only exercises with a suitable easier or harder variation. Check each suggestion before training.',
+  changed:'suggested changes',unchanged:'No verified alternative for some ratings; keep those exercises and adjust pace or technique.',
+  shareNext:'Share suggested next workout',more:'Rate an exercise to see suggestions',noChange:'No exercise changes suggested.',
+  bandHint:'Resistance-band row uses a secure band around the feet; a towel hold is only an isometric alternative.',
+  fineCue:'Controlled repetitions and a comfortable range matter more than speed.'
+ },
+ de:{
+  options:'Training anpassen (optional)',equipment:'Ausrüstung',none:'Nur Körpergewicht',band:'Widerstandsband vorhanden',
+  quiet:'Leises Training (ohne Springen)',noPull:'Dieses Training enthält keine Zugübung mit Widerstand. Rudern mit Band kann die Oberkörperbalance verbessern; Bodenübungen sind kein gleichwertiger Ersatz.',
+  noPush:'In dieser Auswahl fehlt eine Druckübung.',noLegs:'In dieser Auswahl fehlt eine Kraftübung für die Beine.',
+  balanced:'Bewegungscheck',explore:'Beispieltrainings entdecken',easier:'Leichter',harder:'Schwerer',
+  restGuide:'Bereite dich in der Pause auf die nächste Bewegung vor. Qualität ist wichtiger als Tempo.',
+  restEffort:'Wähle eine Variante, die fordert, aber saubere Ausführung ermöglicht.',
+  restForm:'Bewege dich kontrolliert im angenehmen Bewegungsbereich. Bei Schmerzen anpassen oder abbrechen.',
+  rateTitle:'Das nächste Training verbessern',rateLead:'Optional: Wie fühlte sich jede Übung an? Antworten bleiben nur hier; kein Verlauf wird gespeichert.',
+  easy:'Zu leicht',ok:'Genau richtig',hard:'Zu schwer',nextTitle:'Vorschlag für das nächste Training',
+  nextHelp:'Wir ändern nur Übungen mit geeigneter leichterer oder schwererer Variante. Vorschläge vor dem Training prüfen.',
+  changed:'vorgeschlagene Änderungen',unchanged:'Für einige Bewertungen gibt es keine geprüfte Alternative. Übung beibehalten und Tempo oder Technik anpassen.',
+  shareNext:'Nächstes Training teilen',more:'Bewerte eine Übung für einen Vorschlag',noChange:'Keine Änderungen an den Übungen vorgeschlagen.',
+  bandHint:'Für Bandrudern das Band sicher um die Füße legen; das Halten eines Handtuchs ist nur eine isometrische Alternative.',
+  fineCue:'Kontrollierte Wiederholungen sind wichtiger als Geschwindigkeit.'
+ },
+ it:{
+  options:'Preferenze allenamento (facoltative)',equipment:'Attrezzatura',none:'Solo corpo libero',band:'Ho una fascia elastica',
+  quiet:'Allenamento silenzioso (senza salti)',noPull:'Questo allenamento non include una trazione con resistenza. Il rematore con elastico aiuta a bilanciare la parte superiore; gli esercizi a terra non lo sostituiscono.',
+  noPush:'Manca un esercizio di spinta.',noLegs:'Manca un esercizio di forza per le gambe.',
+  balanced:'Controllo dei movimenti',explore:'Scopri gli allenamenti pronti',easier:'Più facile',harder:'Più difficile',
+  restGuide:'Usa la pausa per prepararti al movimento successivo. La qualità conta più della velocità.',
+  restEffort:'Scegli una variante impegnativa, ma sempre controllabile.',
+  restForm:'Muoviti con controllo e senza dolore; modifica o interrompi se necessario.',
+  rateTitle:'Migliora il prossimo allenamento',rateLead:'Facoltativo: come è andato ogni esercizio? Le risposte restano su questa schermata; nessuno storico viene salvato.',
+  easy:'Troppo facile',ok:'Adeguato',hard:'Troppo difficile',nextTitle:'Allenamento consigliato',
+  nextHelp:'Cambiamo solo gli esercizi con una variante adatta. Controlla i suggerimenti prima di allenarti.',
+  changed:'modifiche suggerite',unchanged:'Per alcune risposte non esiste una variante verificata; mantieni gli esercizi e adatta ritmo o tecnica.',
+  shareNext:'Condividi il prossimo allenamento',more:'Valuta un esercizio per ricevere suggerimenti',noChange:'Nessuna modifica suggerita.',
+  bandHint:'Fissa bene la fascia ai piedi; tenere un asciugamano in tensione è solo un’alternativa isometrica.',
+  fineCue:'Le ripetizioni controllate contano più della velocità.'
+ },
+ fr:{
+  options:'Préférences (facultatif)',equipment:'Équipement',none:'Poids du corps uniquement',band:'Bande élastique disponible',
+  quiet:'Séance silencieuse (sans sauts)',noPull:'Cette séance ne comprend pas de tirage avec résistance. Un rowing avec élastique améliore l’équilibre du haut du corps; les exercices au sol ne le remplacent pas.',
+  noPush:'Aucun mouvement de poussée sélectionné.',noLegs:'Aucun exercice de renforcement des jambes sélectionné.',
+  balanced:'Équilibre des mouvements',explore:'Voir les séances prêtes à démarrer',easier:'Plus facile',harder:'Plus difficile',
+  restGuide:'Profitez de la pause pour préparer le prochain mouvement. La qualité prime sur la vitesse.',
+  restEffort:'Choisissez une variante exigeante, tout en gardant le contrôle.',
+  restForm:'Restez dans une amplitude confortable. Adaptez ou arrêtez en cas de douleur.',
+  rateTitle:'Améliorez votre prochaine séance',rateLead:'Facultatif : comment avez-vous vécu chaque exercice ? Réponses temporaires, aucun historique enregistré.',
+  easy:'Trop facile',ok:'Bien adapté',hard:'Trop difficile',nextTitle:'Prochaine séance suggérée',
+  nextHelp:'Seuls les exercices disposant d’une variante adaptée sont modifiés. Vérifiez les propositions avant de commencer.',
+  changed:'changements proposés',unchanged:'Aucune variante validée pour certaines réponses : conservez ces exercices et adaptez rythme ou technique.',
+  shareNext:'Partager la prochaine séance',more:'Évaluez un exercice pour voir les conseils',noChange:'Aucun changement proposé.',
+  bandHint:'Fixez solidement la bande autour des pieds; tenir une serviette tendue n’est qu’une alternative isométrique.',
+  fineCue:'Des répétitions contrôlées valent mieux que la vitesse.'
+ },
+ es:{
+  options:'Preferencias (opcional)',equipment:'Equipo',none:'Solo peso corporal',band:'Tengo banda elástica',
+  quiet:'Entrenamiento silencioso (sin saltos)',noPull:'Este entrenamiento no incluye tracción con resistencia. El remo con banda puede equilibrar el tren superior; los ejercicios en el suelo no son equivalentes.',
+  noPush:'Falta un ejercicio de empuje.',noLegs:'Falta un ejercicio de fuerza de piernas.',
+  balanced:'Equilibrio de movimientos',explore:'Explorar entrenamientos preparados',easier:'Más fácil',harder:'Más difícil',
+  restGuide:'Aprovecha el descanso para prepararte. La calidad importa más que la velocidad.',
+  restEffort:'Elige una variante exigente sin perder el control del movimiento.',
+  restForm:'Muévete con control y sin dolor; adapta o detén el ejercicio si es necesario.',
+  rateTitle:'Mejora tu próximo entrenamiento',rateLead:'Opcional: ¿cómo fue cada ejercicio? Las respuestas solo quedan en esta pantalla; no se guarda historial.',
+  easy:'Demasiado fácil',ok:'Adecuado',hard:'Demasiado difícil',nextTitle:'Próximo entrenamiento sugerido',
+  nextHelp:'Solo cambiamos ejercicios con alternativas adecuadas. Revisa cada sugerencia antes de empezar.',
+  changed:'cambios sugeridos',unchanged:'Algunas valoraciones no tienen una alternativa verificada; mantén esos ejercicios y ajusta ritmo o técnica.',
+  shareNext:'Compartir próximo entrenamiento',more:'Valora un ejercicio para obtener sugerencias',noChange:'Sin cambios sugeridos.',
+  bandHint:'Sujeta bien la banda alrededor de los pies; tensar una toalla es solo una alternativa isométrica.',
+  fineCue:'Las repeticiones controladas importan más que la velocidad.'
+ }
+};
+export function coachText(language,key){return (messages[language]||messages.en)[key]||messages.en[key]||key;}
+export const coachingLanguages=Object.keys(messages);
