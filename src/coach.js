@@ -7,22 +7,27 @@ export const MOVEMENTS=Object.freeze({
  bicycle:'core',sidePlankL:'core',sidePlankR:'core',pikePushup:'push',shoulderTap:'push',
  snowAngel:'mobility',calfRaise:'squat',wallSit:'squat',jumpingJack:'cardio',
  superman:'core',heelTouch:'core',bearHold:'core',hipHinge:'hinge',bandRow:'pull',
- kneePushup:'push',singleLegBridge:'hinge',assistedSingleLegSquat:'squat'
+ kneePushup:'push',singleLegBridge:'hinge',assistedSingleLegSquat:'squat',
+ inclinePushup:'push',kneeForearmPlank:'core',stepJack:'cardio',gluteBridgeMarch:'hinge',supportedSplitSquat:'squat'
 });
 export const PROGRESSIONS=Object.freeze({
- wallPushup:{harder:'kneePushup'},kneePushup:{easier:'wallPushup',harder:'pushup'},
- pushup:{easier:'kneePushup'},squat:{harder:'reverseLunge'},
- reverseLunge:{easier:'squat',harder:'assistedSingleLegSquat'},
+ wallPushup:{harder:'inclinePushup'},
+ inclinePushup:{easier:'wallPushup',harder:'kneePushup'},
+ kneePushup:{easier:'inclinePushup',harder:'pushup'},
+ pushup:{easier:'kneePushup'},squat:{harder:'supportedSplitSquat'},
+ supportedSplitSquat:{easier:'squat',harder:'reverseLunge'},
+ reverseLunge:{easier:'supportedSplitSquat',harder:'assistedSingleLegSquat'},
  assistedSingleLegSquat:{easier:'reverseLunge'},
- gluteBridge:{harder:'singleLegBridge'},singleLegBridge:{easier:'gluteBridge'},
- march:{harder:'jumpingJack'},jumpingJack:{easier:'march'},
- plank:{harder:'shoulderTap'},shoulderTap:{easier:'plank'}
+ gluteBridge:{harder:'gluteBridgeMarch'},
+ gluteBridgeMarch:{easier:'gluteBridge',harder:'singleLegBridge'},singleLegBridge:{easier:'gluteBridgeMarch'},
+ march:{harder:'stepJack'},stepJack:{easier:'march',harder:'jumpingJack'},jumpingJack:{easier:'stepJack'},
+ kneeForearmPlank:{harder:'plank'},plank:{easier:'kneeForearmPlank',harder:'shoulderTap'},shoulderTap:{easier:'plank'}
 });
 const FALLBACKS={
- full:['snowAngel','birdDog','plank','gluteBridge','wallSit','calfRaise','deadBug','bearHold'],
- upper:['plank','bearHold','superman','shoulderTap','snowAngel','wallPushup','pikePushup'],
- core:['deadBug','birdDog','plank','bearHold','heelTouch','superman'],
- legs:['squat','gluteBridge','calfRaise','wallSit','hipHinge','reverseLunge']
+ full:['stepJack','inclinePushup','kneeForearmPlank','gluteBridgeMarch','supportedSplitSquat','snowAngel','birdDog','plank','gluteBridge','wallSit','calfRaise','deadBug','bearHold'],
+ upper:['inclinePushup','kneeForearmPlank','plank','bearHold','superman','shoulderTap','snowAngel','wallPushup','pikePushup'],
+ core:['kneeForearmPlank','gluteBridgeMarch','deadBug','birdDog','plank','bearHold','heelTouch','superman'],
+ legs:['supportedSplitSquat','gluteBridgeMarch','squat','gluteBridge','calfRaise','wallSit','hipHinge','reverseLunge']
 };
 const levelById=Object.fromEntries(EXERCISES.map(e=>[e.id,e.level]));
 export function allowedExercise(id,{equipment='none',quiet=false}={}){
