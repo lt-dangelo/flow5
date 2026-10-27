@@ -257,6 +257,15 @@ function renderDone(){
  const date=new Intl.DateTimeFormat(localeFor(prefs.lang),{day:'numeric',month:'short',year:'numeric'}).format(new Date());
  const names=session.ids.map((id,i)=>{const e=E(id);return `<li><span class="record-number">${String(i+1).padStart(2,'0')}</span><span class="record-exercise-thumb" aria-hidden="true">${exerciseThumbnail(e)}</span><span class="record-exercise-name">${escapeHtml(e.name)}</span></li>`;}).join('');
  const workRest=`${session.workSec} ${T('sec')} ${T('work')} · ${session.restSec} ${T('sec')} ${T('rest')}`;
+
+ const advice=recommendWorkout(session,workoutRatings,{equipment:prefs.equipment,quiet:prefs.quiet});
+ const ratingRows=session.ids.map(id=>{
+  const e=E(id),value=workoutRatings[id];
+  return `<div class="coach-rating-row"><span>${escapeHtml(e.name)}</span><div class="coach-rating-choices" role="group" aria-label="${escapeHtml(e.name)}">${[['easy','easy'],['ok','ok'],['hard','hard']].map(([v,key])=>`<button type="button" class="${value===v?'active':''}" data-action="rate" data-id="${id}" data-value="${v}" aria-pressed="${value===v}">${escapeHtml(C(key))}</button>`).join('')}</div></div>`;
+ }).join('');
+ const changeDetails=advice.changes.map(change=>`<li>${escapeHtml(E(change.from).name)} → ${escapeHtml(E(change.to).name)}</li>`).join('');
+ const feedbackPanel=`<section class="coach-feedback"><h2>${escapeHtml(C('rateTitle'))}</h2><p>${escapeHtml(C('rateLead'))}</p><div class="coach-rating-list">${ratingRows}</div>${advice.rated?`<div class="coach-next"><h3>${escapeHtml(C('nextTitle'))}</h3><p>${escapeHtml(C('nextHelp'))}</p>${changeDetails?`<ul>${changeDetails}</ul>`:`<p>${escapeHtml(C('noChange'))}</p>`}${advice.unchanged.length?`<p>${escapeHtml(C('unchanged'))}</p>`:''}<button type="button" class="secondary-btn" data-action="share-next">${escapeHtml(C('shareNext'))} →</button><p class="share-status" data-share-status role="status" aria-live="polite"></p></div>`:`<p class="coach-muted">${escapeHtml(C('more'))}</p>`}</section>`;
+
  view='done';
  app.innerHTML=`<div class="done-page done-record-page">
  <header class="done-topbar"><img class="brand-logo" src="./icons/pick5go-mark.svg" alt="Pick5Go" width="72" height="50"/></header>
@@ -269,6 +278,7 @@ function renderDone(){
    <div class="record-exercises"><h2>${T('recordExercises')}</h2><ol>${names}</ol></div>
    <div class="record-bottom"><span>Pick5Go</span></div>
   </section>
+  ${feedbackPanel}
   <p class="record-hint">${T('recordHint')}</p>
   <div class="record-actions"><button class="primary-btn" data-action="share">${T('shareWorkout')} ${icon('arrow')}</button><p class="share-status" data-share-status role="status" aria-live="polite"></p><button class="secondary-btn record-repeat" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></div>
  </main></div>`;
@@ -328,11 +338,11 @@ function beginWorkout(restarted=false){
 function exitWorkout(){trackWorkoutEvent('workout_abandoned',workoutSession);stopTicking();cueAudio.stop();releaseWake();engine=null;workoutSession=null;pendingExit=false;view='setup';render();}
 function showHelp(){window.alert(T('helpMessage'));}
 // Share the selected plan on setup, and the actual frozen session after training.
-async function shareCurrentWorkout(){
- const session=view==='done'&&workoutSession?workoutSession:{
+async function shareCurrentWorkout(override=null){
+ const session=override||(view==='done'&&workoutSession?workoutSession:{
   ids:[...currentIds()],presetId:prefs.presetId,difficulty:prefs.difficulty,
   workSec:prefs.workSec,restSec:prefs.restSec,rounds:prefs.rounds
- };
+ });
  const url=sharedWorkoutUrl(appRoot.href,prefs.lang,session);
  const status=document.querySelector('[data-share-status]');
  const notify=message=>{if(status)status.textContent=message;};
@@ -373,6 +383,10 @@ app.addEventListener('click',event=>{
  }
  else if(action==='close-swap'){swapIndex=null;swapQuery='';render();}
  else if(action==='dismiss-swap' && event.target===button){swapIndex=null;swapQuery='';render();}
+ else if(action==='rate'&&view==='done'&&workoutSession&&workoutSession.ids.includes(button.dataset.id)&&['easy','ok','hard'].includes(button.dataset.value)){
+  workoutRatings[button.dataset.id]=button.dataset.value;renderDone();
+ }
+ else if(action==='share-next'&&view==='done'&&workoutSession){void shareCurrentWorkout(recommendWorkout(workoutSession,workoutRatings,{equipment:prefs.equipment,quiet:prefs.quiet}).session);}
  else if(action==='start'){beginWorkout();}
  else if(action==='share'){void shareCurrentWorkout();}
  else if(action==='adjust'){const field=button.dataset.field;if(!['workSec','restSec','rounds'].includes(field))return;prefs[field]=stepSetting(field,prefs[field],Number(button.dataset.direction));save();updatePicker(field);updateSettingsSummary();}
