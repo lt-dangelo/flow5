@@ -10,9 +10,11 @@ import {t,exerciseText,presetText,LANGUAGES,normalizeLang,localeFor} from './i18
 import {validSelection,removeExercise,chooseExercise,pickerChoices} from './selection.js';
 import {languageForPath,languageUrl} from './seo-languages.js';
 import {decodeSharedWorkout,sharedWorkoutUrl} from './share.js';
+import {allowedExercise,adaptWorkout,balanceWarnings,PROGRESSIONS,recommendWorkout} from './coach.js';
+import {coachText} from './coach-i18n.js';
 
 const STORAGE_KEY='flow5-prefs-v13-preview';
-const DEFAULTS={presetId:'full',difficulty:'beginner', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en'};
+const DEFAULTS={presetId:'full',difficulty:'beginner', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en',equipment:'none',quiet:false};
 const app=document.getElementById('app');
 
 function loadPreferences(){
@@ -27,6 +29,8 @@ function loadPreferences(){
   next.includeFinalRest=true; // fixed: always include rest after the last exercise
   next.sound=!!next.sound;
   next.lang=normalizeLang(next.lang);
+  if(!['none','band'].includes(next.equipment))next.equipment='none';
+  next.quiet=!!next.quiet;
   if(!next.custom||typeof next.custom!=='object')next.custom={};
   const knownIds=new Set(EXERCISES.map(e=>e.id));
   for(const [key,value] of Object.entries(next.custom)){
@@ -51,6 +55,8 @@ if(initialSharedWorkout){
  const {presetId,difficulty,ids,workSec,restSec,rounds}=initialSharedWorkout;
  Object.assign(prefs,{presetId,difficulty,workSec,restSec,rounds,includeFinalRest:true});
  prefs.custom[presetId+':'+difficulty]=[...ids];
+ if(ids.includes('bandRow'))prefs.equipment='band';
+ if(ids.some(id=>['jumpingJack','mountainClimber'].includes(id)))prefs.quiet=false;
  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(prefs));}catch{/* private browsing */}
 }
 document.documentElement.lang=prefs.lang;
@@ -67,10 +73,12 @@ let lastPhaseKey='';
 let pendingExit=false;
 let workoutCount=5;
 let workoutSession=null;
+let workoutRatings=Object.create(null);
 const knownIds=new Set(EXERCISES.map(e=>e.id));
 const T=(key,params)=>t(prefs.lang,key,params);
 const E=id=>exerciseText(EXERCISE_BY_ID[id],prefs.lang);
 const P=p=>presetText(p,prefs.lang);
+const C=key=>coachText(prefs.lang,key);
 const MUSCLE_THUMBNAILS=Object.freeze({
  squat:'squat-muscles.webp',
  kneePushup:'kneePushup-muscles.webp',
@@ -111,7 +119,7 @@ const summaryLabel=()=>`${prefs.rounds} ${T(prefs.rounds===1?'roundOne':'roundMa
 
 function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(prefs));}catch{/* Privater Modus möglich */}}
 function currentCustomKey(){return `${prefs.presetId}:${prefs.difficulty}`;}
-function currentIds(){return prefs.custom[currentCustomKey()]||presetIds(prefs.presetId,prefs.difficulty);}
+function currentIds(){const ids=prefs.custom[currentCustomKey()]||presetIds(prefs.presetId,prefs.difficulty);return adaptWorkout(ids,{equipment:prefs.equipment,quiet:prefs.quiet},prefs.presetId,prefs.difficulty);}
 function currentConfig(){return {workSec:prefs.workSec,restSec:prefs.restSec,rounds:prefs.rounds,includeFinalRest:true};}
 function currentPlan(){return buildPlan(currentIds(),currentConfig());}
 function secsLabel(ms){const sec=Math.ceil(Math.max(0,ms)/1000);return `${String(Math.floor(sec/60)).padStart(2,'0')}:${String(sec%60).padStart(2,'0')}`;}
@@ -159,13 +167,14 @@ function renderSetup(){
  const languageChoices=LANGUAGES.map(l=>`<option value="${l.code}" ${l.code===prefs.lang?'selected':''}>${l.label}</option>`).join('');
  const cards=PRESETS.map(raw=>{const p=P(raw);return `<button class="preset-card ${p.id===prefs.presetId?'selected':''}" type="button" data-action="preset" data-value="${p.id}" aria-pressed="${p.id===prefs.presetId}"><div class="preset-icon">${p.icon}</div><strong>${escapeHtml(p.name)}</strong><small>${escapeHtml(p.subtitle)}</small></button>`;}).join('');
  const levelChoices=DIFFICULTIES.map((level,index)=>`<button class="difficulty-option ${prefs.difficulty===level?'selected':''}" type="button" data-action="difficulty" data-value="${level}" aria-pressed="${prefs.difficulty===level}">${T(index===0?'easy':'medium')}</button>`).join('');
+ const warnings=balanceWarnings(ids,prefs.presetId);
  const rows=ids.map((id,i)=>{const e=E(id);return `<div class="exercise-row"><div class="thumb">${exerciseThumbnail(e)}</div><span class="exercise-index">${String(i+1).padStart(2,'0')}</span><div class="exercise-info"><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} <span aria-hidden="true">·</span> ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small></div><div class="exercise-actions"><button type="button" class="swap-btn" data-action="swap" data-index="${i}" aria-label="${T('swap')}: ${escapeHtml(e.name)}">${icon('swap')}<span>${T('swap')}</span></button><button type="button" class="remove-btn" data-action="remove" data-index="${i}" aria-label="${T('remove')}: ${escapeHtml(e.name)}" ${count===1?'disabled':''}>${icon('close')}<span>${T('remove')}</span></button></div></div>`;}).join('');
  app.innerHTML=`<div class="site-shell">
  <header class="topbar">${brand()}<div class="topbar-actions"><select class="language-select" data-language aria-label="${T('switchLanguage')}" title="${T('switchLanguage')}">${languageChoices}</select><button class="icon-button help-button" type="button" data-action="help" aria-label="${T('help')}">${icon('info')}</button></div></header>
  <p class="health-notice" role="note">${icon('info')}<span>${escapeHtml(T('healthNotice'))}</span></p>
- <main class="layout"><section class="intro"><div class="eyebrow"><span class="live-dot"></span> ${T('heroEyebrow')}</div><h1>${T('heroFirst')}<br/><em>${T('heroSecond')}</em></h1><p>${T('heroDesc')}</p></section>
- <section class="panel preset-panel"><div class="difficulty-selector"><div class="difficulty-head"><strong>${T('levelHeading')}</strong><small>${T('levelHint')}</small></div><div class="difficulty-options" role="group" aria-label="${T('levelHeading')}">${levelChoices}</div></div><div class="section-heading"><div><span class="step-label">01 / ${T('focus').toUpperCase()}</span><h2>${T('focus')}</h2></div><span class="subtle">${PRESETS.length} ${T('programs')}</span></div><div class="preset-list">${cards}</div></section>
- <section class="panel lineup-panel"><div class="section-heading"><div><span class="step-label">02 / ${T('exercisesTitle').toUpperCase()}</span><h2>${T('exercisesTitle')} <span class="exercise-count">${count}/5</span></h2></div>${prefs.custom[currentCustomKey()]?`<button class="reset-btn" type="button" data-action="reset">${T('reset')}</button>`:`<span class="subtle">${escapeHtml(preset.name)}</span>`}</div><div class="exercise-list">${rows}</div>${ids.some(id=>EXERCISE_BY_ID[id].equipment==='band')?`<p class="band-note">${icon('info')} ${T('bandRequired')}</p>`:''}${count<5?`<button type="button" class="add-exercise-btn" data-action="add"><strong>＋</strong> ${T('add')} <span>${count}/5</span></button>`:''}<p class="hint">${icon('swap')} ${T('removeHint')}</p></section>
+ <main class="layout"><section class="intro"><div class="eyebrow"><span class="live-dot"></span> ${T('heroEyebrow')}</div><h1>${T('heroFirst')}<br/><em>${T('heroSecond')}</em></h1><p>${T('heroDesc')}</p><a class="coach-gallery-link" href="./workouts/?lang=${prefs.lang}">${escapeHtml(C('explore'))} →</a></section>
+ <section class="panel preset-panel"><div class="difficulty-selector"><div class="difficulty-head"><strong>${T('levelHeading')}</strong><small>${T('levelHint')}</small></div><div class="difficulty-options" role="group" aria-label="${T('levelHeading')}">${levelChoices}</div></div><div class="section-heading"><div><span class="step-label">01 / ${T('focus').toUpperCase()}</span><h2>${T('focus')}</h2></div><span class="subtle">${PRESETS.length} ${T('programs')}</span></div><div class="preset-list">${cards}</div><details class="coach-filters"><summary>${escapeHtml(C('options'))}</summary><div class="coach-filter-grid"><label>${escapeHtml(C('equipment'))}<select data-coach-setting="equipment"><option value="none" ${prefs.equipment==='none'?'selected':''}>${escapeHtml(C('none'))}</option><option value="band" ${prefs.equipment==='band'?'selected':''}>${escapeHtml(C('band'))}</option></select></label><label class="coach-check"><input type="checkbox" data-coach-setting="quiet" ${prefs.quiet?'checked':''}/> ${escapeHtml(C('quiet'))}</label></div></details></section>
+ <section class="panel lineup-panel"><div class="section-heading"><div><span class="step-label">02 / ${T('exercisesTitle').toUpperCase()}</span><h2>${T('exercisesTitle')} <span class="exercise-count">${count}/5</span></h2></div>${prefs.custom[currentCustomKey()]?`<button class="reset-btn" type="button" data-action="reset">${T('reset')}</button>`:`<span class="subtle">${escapeHtml(preset.name)}</span>`}</div><div class="exercise-list">${rows}</div><div class="coach-balance" role="note"><strong>${escapeHtml(C('balanced'))}</strong><span>${warnings.length?warnings.map(key=>escapeHtml(C(key))).join(' '):escapeHtml(C('fineCue'))}</span></div>${ids.some(id=>EXERCISE_BY_ID[id].equipment==='band')?`<p class="band-note">${icon('info')} ${T('bandRequired')}</p>`:''}${count<5?`<button type="button" class="add-exercise-btn" data-action="add"><strong>＋</strong> ${T('add')} <span>${count}/5</span></button>`:''}<p class="hint">${icon('swap')} ${T('removeHint')}</p></section>
  <section class="panel config-panel"><div class="section-heading"><div><span class="step-label">03 / ${T('timing').toUpperCase()}</span><h2>${T('timing')}</h2></div></div>
  <div class="config-grid">${stepper('workSec',T('work'),T('sec'))}${stepper('restSec',T('rest'),T('sec'))}${stepper('rounds',T('rounds'),'× '+count)}</div>
  <label class="toggle-line"><div><strong>${T('sounds')}</strong><small>${T('soundsDesc')}</small></div><input type="checkbox" data-config="sound" ${prefs.sound?'checked':''}/><span class="toggle" aria-hidden="true"></span></label>
@@ -188,8 +197,10 @@ function renderSwapDialog(){
  const isAdd=swapIndex===-1;
  const localized=EXERCISES.map(raw=>exerciseText(raw,prefs.lang));
  // Already selected exercises, including the currently edited slot, cannot be picked twice.
- const filtered=pickerChoices(localized,currentIds(),swapQuery,prefs.lang);
- return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div><input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(e=>`<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${exerciseThumbnail(e)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
+ const filtered=pickerChoices(localized,currentIds(),swapQuery,prefs.lang).filter(e=>allowedExercise(e.id,{equipment:prefs.equipment,quiet:prefs.quiet}));
+ const sourceId=swapIndex>=0?currentIds()[swapIndex]:null;
+ const quick=Object.entries(sourceId?PROGRESSIONS[sourceId]||{}:{}).filter(([,id])=>id&&!currentIds().includes(id)&&allowedExercise(id,{equipment:prefs.equipment,quiet:prefs.quiet})).map(([direction,id])=>`<button class="coach-progress-choice" type="button" data-action="choose" data-value="${id}">${escapeHtml(C(direction))}: ${escapeHtml(E(id).name)}</button>`).join('');
+ return `<div class="modal-backdrop" data-action="dismiss-swap"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="swap-title"><div class="modal-head"><div><span class="step-label">${T(isAdd?'addEyebrow':'swapEyebrow')}</span><h2 id="swap-title">${T(isAdd?'addTitle':'swapTitle')}</h2></div><button type="button" class="icon-button" data-action="close-swap" aria-label="${T('close')}">${icon('close')}</button></div>${quick?`<div class="coach-progress-row">${quick}</div>`:''}<input class="search-input" data-search placeholder="${T('search')}" aria-label="${T('searchAria')}" value="${escapeHtml(swapQuery)}"/><div class="swap-choices">${filtered.map(e=>`<button class="choice-row" type="button" data-action="choose" data-value="${e.id}"><span class="thumb">${exerciseThumbnail(e)}</span><span><strong>${escapeHtml(e.name)}</strong><small>${escapeHtml(e.group)} · ${T(['','easy','medium','advanced'][e.level])}${e.equipment==='band'?` · ${T('bandRequired')}`:''}</small><span class="choice-cue">${escapeHtml(e.cue)}</span></span>${icon('arrow')}</button>`).join('')||`<p class="empty">${T('noMatches')}</p>`}</div></div></div>`;
 }
 function nextWork(index){if(!engine)return null;return engine.phases.slice(index+1).find(p=>p.kind==='work')||null;}
 const STUDY_IMAGE={singlelegbridge:'singlelegbridge-master-v1329.webp',assistedsquat:'assistedsquat-master-v1329.webp',hiphinge:'hiphinge-master-v1327.webp',kneepushup:'kneepushup-master-v1328.webp',bandrow:'bandrow-master-v1328.webp',bear:'bear-master-v1322.webp',heeltouch:'heeltouch-master-v1322.webp',snowangel:'snowangel-master-v1322.webp',calf:'calfraise-master-v1321.webp',wallsit:'wallsit-master-v1319.webp',jumping:'jumpingjacks-master-v1320.webp',pike:'pikepushup-master-v1318.webp',wall:'wallpushup-master-v1317.webp',squat:'squat-master.webp',pushup:'pushup-master.webp',plank:'plank-master.webp',lunge:'lunge-master.webp',mountain:'mountain-master.webp',bridge:'bridge-master.webp',march:'march-master.webp',bicycle:'bicycle-master.webp',sideplank:'sideplank-master.webp',recovery:'recovery-hydration-corrected.webp',shouldertap:'shouldertap-clean-v1315.webp',birddog:'birddog-master.webp',deadbug:'deadbug-clean-v1315.webp',superman:'superman-master.webp'};
@@ -228,7 +239,7 @@ function renderWorkout(){
   <section class="v13-art ${finalRest?'v13-final-rest':''}" aria-label="${escapeHtml(displayName)}">
     <div class="v13-art-heading"><span class="v13-art-index">${finalRest?'':String(shownPosition).padStart(2,'0')+' / '+String(workoutCount).padStart(2,'0')}</span><h1>${escapeHtml(displayName)}</h1>${actionLabel?`<span class="v13-motion-label">${actionLabel}</span>`:''}</div>
     <div class="v13-drawing">${studyPicture(finalRest?'recovery':present.pose,displayName,prefs.lang,present.id)}</div>
-    <p class="v13-art-cue">${escapeHtml(cue)}</p>
+    <p class="v13-art-cue">${escapeHtml(cue)}</p>${isRest?`<p class="coach-rest-tip">${escapeHtml(C(finalRest?'restGuide':snap.index%3===0?'restForm':snap.index%3===1?'restEffort':'restGuide'))}</p>`:''}
   </section>
  </main>
  <footer class="training-controls v13-controls"><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div><div id="wake-indicator" class="wake-indicator visually-hidden" aria-live="polite">${T('checkingWake')}</div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
@@ -297,6 +308,7 @@ function beginWorkout(restarted=false){
  try{
   // Der erste Ton wird synchron beim Start-Tipp abgespielt.
   const ids=[...currentIds()];
+  workoutRatings=Object.create(null);
   workoutCount=ids.length;
   workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()],skippedPhases:0};
   engine=new IntervalEngine(buildPlan(ids,currentConfig()),{
@@ -356,7 +368,7 @@ app.addEventListener('click',event=>{
   const id=button.dataset.value,ids=[...currentIds()];
   if(swapIndex===null)return;
   const chosen=chooseExercise(ids,swapIndex,id,knownIds);
-  if(!chosen)return;
+  if(!chosen||!allowedExercise(id,{equipment:prefs.equipment,quiet:prefs.quiet}))return;
   prefs.custom[currentCustomKey()]=chosen;swapIndex=null;swapQuery='';save();render();
  }
  else if(action==='close-swap'){swapIndex=null;swapQuery='';render();}
@@ -388,6 +400,9 @@ app.addEventListener('change',event=>{
   else render();
   return;
  }
+ const coachSetting=event.target.dataset.coachSetting;
+ if(coachSetting==='equipment'&&['none','band'].includes(event.target.value)){prefs.equipment=event.target.value;save();render();return;}
+ if(coachSetting==='quiet'){prefs.quiet=event.target.checked;save();render();return;}
  const field=event.target.dataset.config;if(!field)return;
  if(field==='sound'){prefs.sound=event.target.checked;if(!prefs.sound)cueAudio.stop();}
  else if(['workSec','restSec','rounds'].includes(field)){const value=Number(event.target.value);if(optionsFor(field,prefs[field]).includes(value))prefs[field]=value;updatePicker(field);}
