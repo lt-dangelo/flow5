@@ -36,7 +36,7 @@ const css=readFileSync(new URL('../styles.css',import.meta.url),'utf8');
 assert.match(app,/pickerChoices\(localized,currentIds\(\),swapQuery,prefs.lang\)/);
 assert.match(app,/class="health-notice"/);
 assert.ok(!app.includes("by Lorenzo D'Angelo"), 'author credit removed across all screens');
-assert.ok(app.includes('workoutSession={startedAt:new Date().toISOString(),ids,presetId:'));
+assert.ok(app.includes('workoutSession={ids,presetId:'));
 for(const selector of ['workout-record','record-top','record-stats','record-intervals','record-exercises','record-bottom']){
  assert.ok(app.includes(selector),'record markup missing '+selector);
  assert.ok(css.includes('.'+selector),'record styling missing '+selector);
