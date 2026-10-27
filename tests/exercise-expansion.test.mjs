@@ -47,7 +47,8 @@ test('new presets and guide workout links stay aligned across languages',()=>{
 test('curated gallery surfaces all five new exercises and has static, usable links',()=>{
  const gallery=read('workouts/index.html'),source=read('src/gallery.js');
  for(const id of newIds){assert.ok(gallery.includes(id),'gallery '+id);assert.ok(source.includes(id),'gallery JS '+id);}
- const cards=[...gallery.matchAll(/<article class="gallery-card">[\s\S]*?<\/article>/g)];
+ const markup=gallery.slice(0,gallery.indexOf('<script>'));
+ const cards=[...markup.matchAll(/<article class="gallery-card">[\s\S]*?<\/article>/g)];
  assert.ok(cards.length>=14,'static cards must render without JavaScript');
  for(const card of cards){
   const href=card[0].match(/href="([^\"]*\?w=[^\"]*)"/)?.[1];
