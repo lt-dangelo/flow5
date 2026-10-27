@@ -403,3 +403,53 @@
 
 .coach-health-instructions{display:inline-block;color:var(--lime);font-size:13px;font-weight:750;text-decoration:underline;text-underline-offset:4px;margin:0 0 12px}
 .coach-health-instructions:hover{color:#e6ffcb}
+
+
+/* Preview: separate primary exercise instructions from secondary rest-phase coaching. */
+.v13-clean .v13-art-cue{
+ color:#43372e;
+ font:750 clamp(15px,1.7vw,18px)/1.48 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ letter-spacing:0;
+ padding:11px 8px 3px;
+ text-align:center;
+}
+.v13-clean.rest-mode .v13-art{flex:1;min-height:0}
+.v13-clean .coach-rest-tip{
+ flex:none;
+ width:100%;
+ max-width:650px;
+ margin:0 auto;
+ padding:5px 14px 8px;
+ border:none;
+ border-radius:0;
+ background:transparent;
+ box-shadow:none;
+ color:#d8e5dc;
+ font:500 clamp(13px,1.5vw,15px)/1.48 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+ letter-spacing:0;
+ text-align:center;
+}
+.v13-clean .v13-new-placeholder{
+ min-height:0;
+ flex:1;
+ background:transparent;
+ border:1px dashed #ae9981;
+ box-shadow:none;
+}
+.v13-new-placeholder small{color:#655346;font-size:14px;font-weight:700}
+.exercise-art-placeholder{
+ width:100%;height:100%;min-height:48px;display:flex;flex-direction:column;gap:3px;
+ align-items:center;justify-content:center;border:1px dashed #a48c70;border-radius:9px;
+ color:#654c34;background:#efe3ce;text-align:center;
+}
+.exercise-art-placeholder>span{font-size:24px;line-height:1}
+.exercise-art-placeholder small{font:700 9px/1.15 system-ui,sans-serif;padding:0 3px}
+.record-exercise-thumb .exercise-art-placeholder{min-height:36px}
+@media(max-width:760px){
+ .v13-clean .v13-art-cue{font-size:clamp(14px,3.8vw,17px);line-height:1.4;padding:8px 3px 2px}
+ .v13-clean .coach-rest-tip{font-size:13px;line-height:1.38;padding:2px 5px 5px}
+}
+@media(max-height:680px){
+ .v13-clean .coach-rest-tip{font-size:12px;line-height:1.3;padding:0 4px 2px}
+ .v13-clean .v13-art-cue{font-size:14px;line-height:1.32;padding:5px 2px 1px}
+}
