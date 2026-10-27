@@ -53,6 +53,16 @@ export const EXERCISES = [
    cue:'Rückenlage, ein Bein anheben, Hüfte mit dem Standbein heben und senken.',tip:'Becken gerade halten; nach der Hälfte die Seite wechseln.'},
   {id:'assistedSingleLegSquat', name:'Gestützte einbeinige Kniebeuge', group:'Beine', level:2, pose:'assistedsquat',
    cue:'An einer stabilen Stütze festhalten, auf einem Bein langsam beugen und aufrichten.',tip:'Nur so tief wie kontrollierbar; nach der Hälfte Seite wechseln.'},
+  {id:'inclinePushup', name:'Schräge Liegestütze', group:'Oberkörper', level:1, pose:'inclinepushup', equipment:'support',
+   cue:'Stütze die Hände auf einer festen erhöhten Fläche ab. Körper gerade halten, Brust zur Stütze senken und wegdrücken.',tip:'Die Fläche muss rutschfest und stabil sein. Je tiefer sie ist, desto anspruchsvoller.'},
+  {id:'kneeForearmPlank', name:'Unterarmstütz auf Knien', group:'Core', level:1, pose:'kneeforearmplank',
+   cue:'Unterarme und Knie am Boden. Bauch anspannen, Hüfte ausrichten und eine gerade Linie von Kopf bis Knie halten.',tip:'Ellbogen unter den Schultern. Rücken nicht durchhängen lassen.'},
+  {id:'stepJack', name:'Step Jacks ohne Sprung', group:'Cardio', level:1, pose:'stepjack',
+   cue:'Einen Fuß seitlich ausstellen und die Arme heben, zurück zur Mitte; dann die andere Seite.',tip:'Ohne Sprünge auftreten, Tempo kontrollieren und weich abrollen.'},
+  {id:'gluteBridgeMarch', name:'Glute Bridge March', group:'Beine', level:2, pose:'bridgemarch',
+   cue:'In der Glute Bridge das Becken stabil halten und abwechselnd einen Fuß wenige Zentimeter vom Boden lösen.',tip:'Hüfte nicht kippen lassen. Bei Instabilität beide Füße am Boden lassen.'},
+  {id:'supportedSplitSquat', name:'Gestützte Split Squats', group:'Beine', level:1, pose:'supportedsplit', equipment:'support',
+   cue:'Mit einem Fuß vorn und einem hinten an einer stabilen Stütze festhalten. Beide Knie beugen und aufrichten.',tip:'Oberkörper aufrecht, Gewicht gleichmäßig verteilen; nach der Hälfte die Seite wechseln.'},
 ];
 
 export const EXERCISE_BY_ID = Object.fromEntries(EXERCISES.map(e => [e.id,e]));
@@ -64,14 +74,14 @@ export const PRESETS = [
   ids:['squat','kneePushup','hipHinge','birdDog','march'],
   intermediateIds:['reverseLunge','pushup','singleLegBridge','bandRow','mountainClimber']},
  {id:'core',name:'Core & Stabilität',subtitle:'Rumpf und Haltung',icon:'◎',
-  ids:['deadBug','birdDog','gluteBridge','heelTouch','hipHinge'],
+  ids:['deadBug','birdDog','gluteBridge','heelTouch','kneeForearmPlank'],
   intermediateIds:['plank','bicycle','sidePlankL','sidePlankR','bearHold']},
  {id:'upper',name:'Oberkörper',subtitle:'Drücken & stabilisieren',icon:'↗',
-  ids:['wallPushup','kneePushup','snowAngel','bandRow','birdDog'],
+  ids:['wallPushup','inclinePushup','kneePushup','snowAngel','birdDog'],
   intermediateIds:['pushup','kneePushup','bandRow','snowAngel','shoulderTap']},
  {id:'legs',name:'Beine & Po',subtitle:'Kraft aus der Basis',icon:'⌁',
-  ids:['squat','hipHinge','gluteBridge','calfRaise','march'],
-  intermediateIds:['reverseLunge','assistedSingleLegSquat','hipHinge','singleLegBridge','calfRaise']}
+  ids:['squat','hipHinge','gluteBridge','calfRaise','supportedSplitSquat'],
+  intermediateIds:['reverseLunge','assistedSingleLegSquat','hipHinge','gluteBridgeMarch','calfRaise']}
 ];
 export const PRESET_BY_ID = Object.fromEntries(PRESETS.map(p=>[p.id,p]));
 export const DIFFICULTIES = ['beginner','intermediate'];
