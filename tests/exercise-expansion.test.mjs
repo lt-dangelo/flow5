@@ -8,7 +8,7 @@ import {decodeSharedWorkout,encodeSharedWorkout} from '../src/share.js';
 
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const newIds=['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat'];
-test('five exercises are fully localized, with dedicated muscle maps and honest workout placeholders',()=>{
+test('five exercises are fully localized, with dedicated muscle maps and full-size workout artwork',()=>{
  const app=read('src/app.js'),data=new Map(EXERCISES.map(e=>[e.id,e]));
  assert.equal(EXERCISES.length,32);
  for(const id of newIds){
@@ -27,7 +27,8 @@ test('five exercises are fully localized, with dedicated muscle maps and honest 
   const bytes=readFileSync(new URL('../artwork/thumbs/'+id+'-muscles.webp',import.meta.url));
   assert.equal(bytes.subarray(0,4).toString('ascii'),'RIFF');
  }
- assert.ok(app.includes('NEW_EXERCISE_IDS.has(exerciseId)'),'workout placeholder');
+ assert.ok(app.includes('NEW_EXERCISE_IDS.has(exerciseId)'),'new exercise artwork mapping');
+ assert.ok(app.includes('${exerciseId}-master-v1347.webp'),'uses exercise-specific full-resolution WebP');
 });
 test('new presets and guide workout links stay aligned across languages',()=>{
  const choices=new Map(PRESETS.map(x=>[x.id,x]));
@@ -90,4 +91,32 @@ test('completion is simplified and last rest has no misleading guidance',()=>{
  assert.ok(!sw.includes('./src/health-export.js'),'no health script cached');
  assert.ok(!sw.includes('./health-shortcut/'),'no Apple shortcut guide cached');
  assert.ok(app.includes("isRest&&!finalRest?"),'last recovery interval shows no unnecessary science guidance');
+});
+
+
+test('all five new workout illustrations are valid, full-size WebPs, cached and referenced',()=>{
+ const app=read('src/app.js'),sw=read('sw.js');
+ for(const id of newIds){
+  const name=id+'-master-v1347.webp';
+  const asset=readFileSync(new URL('../artwork/'+name,import.meta.url));
+  assert.ok(asset.length>50000,id+' source art must retain illustrative detail');
+  assert.equal(asset.subarray(0,4).toString('ascii'),'RIFF',id);
+  assert.equal(asset.subarray(8,12).toString('ascii'),'WEBP',id);
+  assert.equal(asset.subarray(12,16).toString('ascii'),'VP8 ',id);
+  assert.equal(asset.readUInt16LE(26)&0x3fff,1440,id+' width');
+  assert.equal(asset.readUInt16LE(28)&0x3fff,960,id+' height');
+  assert.ok(sw.includes('./artwork/'+name),id+' offline availability');
+ }
+ assert.ok(app.includes('src=\\"./artwork/${exerciseId}-master-v1347.webp\\"')||
+  app.includes('src=\\"./artwork/${exerciseId}-master-v1347.webp\\"'),'new artwork uses appropriate id');
+});
+
+test('compact movement note has no title or positive filler',async()=>{
+ const app=read('src/app.js');
+ assert.ok(app.includes("needsPullNotice=balanceWarnings(ids,prefs.presetId).includes('noPull')"));
+ assert.ok(app.includes('needsPullNotice?'),'notice only shown when pulling is missing');
+ assert.ok(!app.includes("C('balanced')"),'no movement-check title');
+ assert.ok(!app.includes("C('fineCue')"),'no default positive callout');
+ const {coachText}=await import('../src/coach-i18n.js');
+ assert.equal(coachText('en','noPull'),'This workout does not include resisted pulling. A band row can improve upper-body balance');
 });
