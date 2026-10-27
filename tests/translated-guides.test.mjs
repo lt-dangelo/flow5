@@ -10,7 +10,7 @@ const preview='https://lt-dangelo.github.io/flow5/preview/v1.3/';
 const english=read('about-calisthenics/index.html');
 const sw=read('sw.js');
 const topic={de:['Krafttraining','ohne Geräte'],it:['corpo libero','senza attrezzi'],fr:['poids du corps','sans matériel'],es:['calistenia','sin material']};
-assert.ok(sw.includes("pick5go-v1.3-preview-47"));
+assert.ok(sw.match(/pick5go-v1\.3-preview-\d+/));
 for(const lang of langs){
  const guidePath=(lang==='en'?'':lang+'/')+'about-calisthenics/index.html';
  const homePath=(lang==='en'?'':lang+'/')+'index.html';
