@@ -1,6 +1,7 @@
 // Short training guidance strings; separate from the existing core UI translations.
 const messages={
  en:{
+  healthInstructions:"iPhone setup instructions (English)",
   ratingIntro:"Move the slider only if an exercise felt too easy or too hard. About right is the default; no history is saved.",healthExport:"Export to Apple Health (Shortcut test)",healthHelp:"Requires a user-created iPhone Shortcut called Pick5Go Health. Sends start time and elapsed duration; does not measure activity or calories.",suggestionCaution:"Suggestions follow your ratings, not measured performance. Check each change for technique and comfort.",
   options:'Workout preferences (optional)',equipment:'Equipment',none:'Bodyweight only',band:'Resistance band available',
   quiet:'Quiet workout (no jumping)',noPull:'This workout does not include resisted pulling. A band row can improve upper-body balance; floor movements are not equivalent.',
@@ -18,6 +19,7 @@ const messages={
   fineCue:'Controlled repetitions and a comfortable range matter more than speed.'
  },
  de:{
+  healthInstructions:"iPhone-Einrichtung (Englisch)",
   ratingIntro:"Verschiebe den Regler nur, wenn eine Übung zu leicht oder zu schwer war. Genau richtig ist voreingestellt; kein Trainingsverlauf wird gespeichert.",healthExport:"In Apple Health exportieren (Kurzbefehl-Test)",healthHelp:"Benötigt einen selbst erstellten iPhone-Kurzbefehl namens Pick5Go Health. Übergibt Startzeit und verstrichene Dauer; misst weder Aktivität noch Kalorien.",suggestionCaution:"Vorschläge basieren auf deinen Bewertungen, nicht auf gemessener Leistung. Prüfe Technik und Belastung.",
   options:'Training anpassen (optional)',equipment:'Ausrüstung',none:'Nur Körpergewicht',band:'Widerstandsband vorhanden',
   quiet:'Leises Training (ohne Springen)',noPull:'Dieses Training enthält keine Zugübung mit Widerstand. Rudern mit Band kann die Oberkörperbalance verbessern; Bodenübungen sind kein gleichwertiger Ersatz.',
@@ -35,6 +37,7 @@ const messages={
   fineCue:'Kontrollierte Wiederholungen sind wichtiger als Geschwindigkeit.'
  },
  it:{
+  healthInstructions:"Istruzioni iPhone (inglese)",
   ratingIntro:"Sposta il cursore solo se un esercizio era troppo facile o difficile. Adeguato è preimpostato; non si salva uno storico.",healthExport:"Esporta in Apple Health (test Comandi)",healthHelp:"Richiede un comando iPhone creato dall'utente chiamato Pick5Go Health. Passa inizio e durata trascorsa; non misura attività o calorie.",suggestionCaution:"Suggerimenti basati sulle tue valutazioni, non sulle prestazioni misurate. Controlla tecnica e comfort.",
   options:'Preferenze allenamento (facoltative)',equipment:'Attrezzatura',none:'Solo corpo libero',band:'Ho una fascia elastica',
   quiet:'Allenamento silenzioso (senza salti)',noPull:'Questo allenamento non include una trazione con resistenza. Il rematore con elastico aiuta a bilanciare la parte superiore; gli esercizi a terra non lo sostituiscono.',
@@ -52,6 +55,7 @@ const messages={
   fineCue:'Le ripetizioni controllate contano più della velocità.'
  },
  fr:{
+  healthInstructions:"Instructions iPhone (anglais)",
   ratingIntro:"Déplacez le curseur uniquement si un exercice était trop facile ou difficile. Bien adapté est sélectionné par défaut; aucun historique conservé.",healthExport:"Exporter vers Apple Santé (test Raccourcis)",healthHelp:"Nécessite un raccourci iPhone créé par vous nommé Pick5Go Health. Transmet l'heure de début et la durée écoulée, pas l'activité ni les calories mesurées.",suggestionCaution:"Suggestions basées sur votre ressenti et non des mesures. Vérifiez la technique et le confort.",
   options:'Préférences (facultatif)',equipment:'Équipement',none:'Poids du corps uniquement',band:'Bande élastique disponible',
   quiet:'Séance silencieuse (sans sauts)',noPull:'Cette séance ne comprend pas de tirage avec résistance. Un rowing avec élastique améliore l’équilibre du haut du corps; les exercices au sol ne le remplacent pas.',
@@ -69,6 +73,7 @@ const messages={
   fineCue:'Des répétitions contrôlées valent mieux que la vitesse.'
  },
  es:{
+  healthInstructions:"Instrucciones iPhone (inglés)",
   ratingIntro:"Mueve el control solo si un ejercicio fue demasiado fácil o difícil. Adecuado es la opción predeterminada; no se guarda historial.",healthExport:"Exportar a Apple Salud (prueba Atajos)",healthHelp:"Necesitas crear un atajo de iPhone llamado Pick5Go Health. Envía inicio y duración transcurrida, no mide actividad ni calorías.",suggestionCaution:"Sugerencias basadas en tus valoraciones, no en rendimiento medido. Revisa técnica y comodidad.",
   options:'Preferencias (opcional)',equipment:'Equipo',none:'Solo peso corporal',band:'Tengo banda elástica',
   quiet:'Entrenamiento silencioso (sin saltos)',noPull:'Este entrenamiento no incluye tracción con resistencia. El remo con banda puede equilibrar el tren superior; los ejercicios en el suelo no son equivalentes.',
