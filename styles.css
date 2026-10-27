@@ -341,8 +341,7 @@
 .coach-filter-grid select{color:var(--text);background:var(--panel);border:1px solid var(--outline);border-radius:9px;min-height:40px;padding:8px}
 .coach-filter-grid .coach-check{flex-direction:row;align-items:center;color:var(--text);cursor:pointer}
 .coach-filter-grid input[type=checkbox]{width:18px;height:18px;accent-color:var(--lime)}
-.coach-balance{margin-top:14px;display:flex;align-items:flex-start;gap:9px;border:1px solid #435b52;border-radius:12px;background:#182c29;color:#c9d7ce;font-size:11px;line-height:1.55;padding:11px 13px}
-.coach-balance strong{color:var(--lime);white-space:nowrap}
+.coach-balance{margin-top:10px;display:block;border:1px solid #435b52;border-radius:10px;background:#182c29;color:#dce9df;font-size:12px;line-height:1.4;padding:9px 12px}
 .coach-progress-row{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 14px}
 .coach-progress-choice{padding:9px 12px;border:1px solid #648468;border-radius:10px;background:#1f3929;color:#e8f6e5;font-size:12px;font-weight:700}
 .coach-progress-choice:hover{border-color:var(--lime)}
@@ -368,7 +367,6 @@
  .coach-rating-choices{justify-content:stretch}
  .coach-rating-choices button{flex:1 1 30%;padding:9px 5px}
  .coach-feedback{padding:17px 15px;margin:14px auto}
- .coach-balance{flex-direction:column;gap:4px}
  .coach-filter-grid{flex-direction:column;align-items:stretch}
 }
 
