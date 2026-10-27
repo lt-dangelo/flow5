@@ -54,17 +54,30 @@ export function balanceWarnings(ids,focus='full'){
 }
 // Ratings are only held in memory for the end screen. The existing URL codec saves the suggested plan.
 export function recommendWorkout(session,ratings={},options={}){
- const original=[...session.ids],next=[...original],changes=[],unchanged=[];
- const taken=new Set(original);
- for(let i=0;i<original.length;i++){
-  const id=original[i],rating=ratings[id];
-  if(rating!=='easy'&&rating!=='hard')continue;
-  const candidate=PROGRESSIONS[id]?.[rating==='easy'?'harder':'easier'];
-  if(!candidate||!allowedExercise(candidate,options)||taken.has(candidate)){
-   unchanged.push(id);continue;
+ const original=[...session.ids],next=[...original];
+ const requests=original.map(id=>{
+  const rating=ratings[id]||'ok';
+  if(rating!=='easy'&&rating!=='hard')return null;
+  const target=PROGRESSIONS[id]?.[rating==='easy'?'harder':'easier']||null;
+  return target&&allowedExercise(target,options)?target:null;
+ });
+ // Accept only collision-free substitutions. Iteration supports progression
+ // chains (A -> B, B -> C) if C is not already selected. No duplicates,
+ // silent removals, or jumping over intermediate progression steps.
+ let changed=true;
+ while(changed){
+  changed=false;
+  for(let i=original.length-1;i>=0;i--){
+   const candidate=requests[i];
+   if(!candidate||next[i]!==original[i]||next.includes(candidate))continue;
+   next[i]=candidate;changed=true;
   }
-  taken.delete(id);taken.add(candidate);next[i]=candidate;
-  changes.push({from:id,to:candidate,reason:rating});
  }
- return {session:{...session,ids:next},changes,unchanged,rated:original.filter(id=>['easy','ok','hard'].includes(ratings[id])).length};
+ const changes=[],unchanged=[];
+ for(let i=0;i<original.length;i++){
+  const id=original[i],rating=ratings[id]||'ok';
+  if(next[i]!==id)changes.push({from:id,to:next[i],reason:rating});
+  else if(rating==='easy'||rating==='hard')unchanged.push(id);
+ }
+ return {session:{...session,ids:next},changes,unchanged,rated:original.length};
 }
