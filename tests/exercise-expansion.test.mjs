@@ -8,7 +8,7 @@ import {decodeSharedWorkout,encodeSharedWorkout} from '../src/share.js';
 
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
 const newIds=['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat'];
-test('five exercises are fully localized and kept as visible placeholders',()=>{
+test('five exercises are fully localized, with dedicated muscle maps and honest workout placeholders',()=>{
  const app=read('src/app.js'),data=new Map(EXERCISES.map(e=>[e.id,e]));
  assert.equal(EXERCISES.length,32);
  for(const id of newIds){
@@ -20,7 +20,13 @@ test('five exercises are fully localized and kept as visible placeholders',()=>{
    assert.ok(localized.cue.length<=175,id+' overly long '+lang);
   }
  }
- assert.ok(app.includes('NEW_EXERCISE_IDS.has(e.id)'),'picker thumbnail placeholder');
+ assert.ok(!app.includes('NEW_EXERCISE_IDS.has(e.id)'),'picker thumbnails no longer placeholders');
+ for(const id of newIds){
+  const thumb=read('src/app.js');
+  assert.ok(thumb.includes(id+":'"+id+'-muscles.webp'),id+' new muscle map');
+  const bytes=readFileSync(new URL('../artwork/thumbs/'+id+'-muscles.webp',import.meta.url));
+  assert.equal(bytes.subarray(0,4).toString('ascii'),'RIFF');
+ }
  assert.ok(app.includes('NEW_EXERCISE_IDS.has(exerciseId)'),'workout placeholder');
 });
 test('new presets and guide workout links stay aligned across languages',()=>{
@@ -72,4 +78,16 @@ test('work and rest UI keep instructions and science advice in separate blocks',
  assert.ok(workout.includes("isRest?'':`<p class=\"v13-art-cue\""),'no active exercise cue during rest');
  const css=read('styles.css');
  assert.match(css,/\.v13-clean \.coach-rest-tip\{[\s\S]*?background:transparent/);
+});
+
+test('completion is simplified and last rest has no misleading guidance',()=>{
+ const app=read('src/app.js'),sw=read('sw.js');
+ assert.match(app,/data-action="setup">\$\{escapeHtml\(C\('backToStart'\)\)\}/);
+ assert.ok(!app.includes('data-action="restart"'),'repeat button removed');
+ assert.ok(!app.includes("T('backToPlan')"),'bottom back to plan removed');
+ assert.ok(!app.includes('health-export'),'no Apple health UI action');
+ assert.ok(!app.includes('healthWorkoutPayload'),'no Apple health logic');
+ assert.ok(!sw.includes('./src/health-export.js'),'no health script cached');
+ assert.ok(!sw.includes('./health-shortcut/'),'no Apple shortcut guide cached');
+ assert.ok(app.includes("isRest&&!finalRest?"),'last recovery interval shows no unnecessary science guidance');
 });
