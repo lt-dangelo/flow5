@@ -119,3 +119,26 @@ test('compact movement note has no title or positive filler',async()=>{
  const {coachText}=await import('../src/coach-i18n.js');
  assert.equal(coachText('en','noPull'),'This workout does not include resisted pulling. A band row can improve upper-body balance');
 });
+
+test('final rest always shows the original hydration illustration after any new exercise',()=>{
+ const app=read('src/app.js');
+ const start=app.indexOf('function studyPicture(');
+ const end=app.indexOf('\nfunction renderWorkout(){',start);
+ assert.ok(start>=0&&end>start,'image renderer function present');
+ const source=app.slice(start,end);
+ const render=new Function('NEW_EXERCISE_IDS','STUDY_IMAGE','escapeHtml','T',
+   source+'\nreturn studyPicture;')(
+   new Set(newIds),
+   {recovery:'recovery-hydration-corrected.webp'},
+   value=>value,
+   ()=> 'Illustration pending'
+ );
+ for(const id of newIds){
+  const rest=render('recovery','Final rest','en',id);
+  assert.ok(rest.includes('recovery-hydration-corrected.webp'),id+' should use recovery artwork');
+  assert.ok(!rest.includes(id+'-master-v1347.webp'),id+' must not override recovery art');
+  const exercise=render('new-pose','Exercise','en',id);
+  assert.ok(exercise.includes(id+'-master-v1347.webp'),id+' still uses new exercise art while active');
+ }
+ assert.ok(app.includes("finalRest?'':present.id"),'final-rest call must ignore last exercise id');
+});
