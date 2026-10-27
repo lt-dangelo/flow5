@@ -73,7 +73,7 @@ for(const name of ['march','bicycle','sideplank']){
 }
 assert.match(app,/exerciseId==='sidePlankL'/);
 assert.match(app,/transform:scaleX\(-1\)/);
-assert.match(app,/displayName,prefs.lang,present.id/);
+assert.ok(app.includes("displayName,prefs.lang,finalRest?'':present.id"),'final rest must not reuse preceding exercise image ID');
 
 // v1.3.12: four new illustration assets, no accidental reuse for Snow Angels.
 for(const name of ['birddog','superman']){
