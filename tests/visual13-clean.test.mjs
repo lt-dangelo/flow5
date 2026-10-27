@@ -253,7 +253,7 @@ assert.ok(exerciseTextEN(EXERCISES_DE.find(e=>e.id==='bandRow'),'en').cue.includ
 
 
 // v1.3.30: final two anatomy images; both have exact dimensions, valid WebP,
-// distinct mappings; the five new exercise variations deliberately use labeled placeholders.
+// distinct mappings; all 32 exercise muscle thumbnails now have full-size workout illustrations.
 for(const [pose,file] of [['singlelegbridge','singlelegbridge-master-v1329.webp'],['assistedsquat','assistedsquat-master-v1329.webp']]){
  const bytes=readFileSync(new URL('../artwork/'+file,import.meta.url));
  assert.ok(bytes.byteLength>100000,'Detailed anatomical artwork required: '+pose);
@@ -303,7 +303,7 @@ for(const id of ["pushup","wallPushup","bandRow","snowAngel","plank","deadBug","
 }
 
 // Regression guard: all 27 existing illustrated exercises retain dedicated anatomical WebP.
-// The 5 new exercises deliberately display labeled placeholders until artwork is approved.
+// The 5 additional exercises also have reviewed 1440x960 WebP workout artwork.
 const thumbnailMap=app.slice(app.indexOf('const MUSCLE_THUMBNAILS='),app.indexOf('function exerciseThumbnail('));
 assert.equal(EXERCISES_DE.length,32);
 for(const exercise of EXERCISES_DE.filter(e=>!['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat'].includes(e.id))){
@@ -322,11 +322,12 @@ assert.ok(completed.includes('class="record-exercise-thumb"'), 'Record renders e
 assert.ok(completed.includes('${exerciseThumbnail(e)}'), 'Record reuses anatomical thumbnails');
 assert.ok(css.includes('.record-exercises .record-exercise-thumb'), 'Record thumbnails are styled');
 
-// Preview progression expansion: five new muscle-map WebPs accompany five still-pending training illustrations.
+// Preview progression expansion: five muscle maps and five new full-size illustrations are both mapped.
 for(const id of ['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat']){
- assert.ok(app.includes("'"+id+"'"),id+' registered for placeholder treatment');
+ assert.ok(app.includes("'"+id+"'"),id+' registered for custom exercise artwork');
 }
-assert.ok(app.includes('NEW_EXERCISE_IDS.has(exerciseId)'),'new workout illustrations are visibly placeholders');
+assert.ok(app.includes('NEW_EXERCISE_IDS.has(exerciseId)'),'new workout illustrations use their dedicated WebP assets');
+assert.ok(app.includes('${exerciseId}-master-v1347.webp'),'image asset names derived from known five exercise IDs');
 assert.ok(!app.includes('NEW_EXERCISE_IDS.has(e.id)'),'picker must show muscle maps, not placeholders');
 for(const id of ['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat']){
  const path='../artwork/thumbs/'+id+'-muscles.webp';
