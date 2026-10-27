@@ -371,3 +371,32 @@
  .coach-balance{flex-direction:column;gap:4px}
  .coach-filter-grid{flex-direction:column;align-items:stretch}
 }
+
+
+/* Completion: readable neutral-default effort sliders and optional export. */
+.coach-rating-row{align-items:center;gap:16px}
+.coach-rating-row>label{font-size:14px;font-weight:700;line-height:1.45;color:#f5f9f4;flex:1 1 33%}
+.coach-rating-slider{width:min(100%,365px);flex:1 1 60%;padding:8px 1px}
+.coach-rating-slider input[type=range]{width:100%;height:28px;cursor:pointer;accent-color:var(--lime)}
+.coach-rating-slider input[type=range]:focus-visible{outline:3px solid var(--lime);outline-offset:3px;border-radius:10px}
+.coach-rating-labels{display:flex;justify-content:space-between;align-items:center;gap:7px;line-height:1.4;margin-top:2px}
+.coach-rating-labels span{font-size:12px;color:#dfebdd;flex:1 1 30%}
+.coach-rating-labels span:last-child{text-align:right}
+.coach-rating-current{font-size:13px;color:#c9ff9d;text-align:center;flex:1 1 38%;font-weight:800}
+.coach-feedback>p{font-size:14px;line-height:1.65;color:#e1ede1}
+.coach-next .coach-caution{margin:8px 0;color:#e0ede0;font-size:13px;line-height:1.6}
+.coach-rest-tip{background:#0b211f;color:#f6fff7;font-size:15px;line-height:1.5;font-weight:650;max-width:min(680px,100%);border:1px solid #537c64;border-radius:12px;padding:12px 16px;margin:12px auto 0;text-align:center;text-wrap:pretty}
+.coach-health-pilot{max-width:690px;margin:8px auto 0;padding:12px 17px;border:1px solid #3d5144;border-radius:13px;color:#e4ece3}
+.coach-health-pilot summary{cursor:pointer;color:#d9ead8;font-weight:700;font-size:13px;line-height:1.5}
+.coach-health-pilot p{color:#d2e0d0;margin:10px 0 12px;font-size:13px;line-height:1.6}
+.coach-health-pilot .secondary-btn{display:block;width:100%;min-height:44px;font-size:13px;font-weight:700;border:1px solid #71937e}
+.coach-back{text-align:center;margin:14px auto 0}
+.coach-back .text-btn{font-size:14px;min-height:40px;padding:9px 15px}
+@media(max-width:540px){
+ .coach-rating-row{flex-direction:column;align-items:stretch;gap:2px}
+ .coach-rating-row>label{flex:auto}
+ .coach-rating-slider{width:100%;flex:auto}
+ .coach-rating-labels span{font-size:11px}
+ .coach-rating-current{font-size:12px}
+ .coach-rest-tip{font-size:14px;line-height:1.5;padding:11px 13px}
+}
