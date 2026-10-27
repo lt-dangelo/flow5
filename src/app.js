@@ -12,6 +12,7 @@ import {languageForPath,languageUrl} from './seo-languages.js';
 import {decodeSharedWorkout,sharedWorkoutUrl} from './share.js';
 import {allowedExercise,adaptWorkout,balanceWarnings,PROGRESSIONS,recommendWorkout} from './coach.js';
 import {coachText} from './coach-i18n.js';
+import {appleShortcutUrl,healthWorkoutPayload} from './health-export.js';
 
 const STORAGE_KEY='flow5-prefs-v13-preview';
 const DEFAULTS={presetId:'full',difficulty:'beginner', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en',equipment:'none',quiet:false};
@@ -323,14 +324,14 @@ function beginWorkout(restarted=false){
   const ids=[...currentIds()];
   workoutRatings=Object.create(null);
   workoutCount=ids.length;
-  workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()],skippedPhases:0};
+  workoutSession={startedAt:new Date().toISOString(),ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()],skippedPhases:0};
   engine=new IntervalEngine(buildPlan(ids,currentConfig()),{
    onPhase:(phase,previous)=>{
     if(previous)phaseSound(phase);
     if(view==='workout')renderWorkout();
    },
    onExerciseComplete:phase=>{trackExerciseCompleted(phase.exerciseId);},
-   onComplete:()=>{trackWorkoutEvent('workout_completed',workoutSession);if(prefs.sound)cueAudio.play('done');stopTicking();releaseWake();view='done';renderDone();},
+   onComplete:()=>{workoutSession.endedAt=new Date().toISOString();trackWorkoutEvent('workout_completed',workoutSession);if(prefs.sound)cueAudio.play('done');stopTicking();releaseWake();view='done';renderDone();},
    onChange:()=>{if(view==='workout')renderWorkout();}
   });
   view='workout';engine.start();trackWorkoutEvent('workout_started',workoutSession);if(restarted)trackWorkoutEvent('workout_restarted',workoutSession);phaseSound(engine.phases[0]);
@@ -386,10 +387,8 @@ app.addEventListener('click',event=>{
  }
  else if(action==='close-swap'){swapIndex=null;swapQuery='';render();}
  else if(action==='dismiss-swap' && event.target===button){swapIndex=null;swapQuery='';render();}
- else if(action==='rate'&&view==='done'&&workoutSession&&workoutSession.ids.includes(button.dataset.id)&&['easy','ok','hard'].includes(button.dataset.value)){
-  workoutRatings[button.dataset.id]=button.dataset.value;renderDone();
- }
  else if(action==='share-next'&&view==='done'&&workoutSession){void shareCurrentWorkout(recommendWorkout(workoutSession,workoutRatings,{equipment:prefs.equipment,quiet:prefs.quiet}).session);}
+ else if(action==='health-export'&&view==='done'&&workoutSession){const url=appleShortcutUrl(workoutSession);if(url)window.location.href=url;}
  else if(action==='start'){beginWorkout();}
  else if(action==='share'){void shareCurrentWorkout();}
  else if(action==='adjust'){const field=button.dataset.field;if(!['workSec','restSec','rounds'].includes(field))return;prefs[field]=stepSetting(field,prefs[field],Number(button.dataset.direction));save();updatePicker(field);updateSettingsSummary();}
@@ -417,6 +416,10 @@ app.addEventListener('change',event=>{
   else render();
   return;
  }
+ const ratingId=event.target.dataset.coachRating;
+ if(ratingId&&view==='done'&&workoutSession&&workoutSession.ids.includes(ratingId)&&['-1','0','1'].includes(event.target.value)){
+  workoutRatings[ratingId]=({'-1':'easy','0':'ok','1':'hard'})[event.target.value];renderDone();return;
+ }
  const coachSetting=event.target.dataset.coachSetting;
  if(coachSetting==='equipment'&&['none','band'].includes(event.target.value)){prefs.equipment=event.target.value;save();render();return;}
  if(coachSetting==='quiet'){prefs.quiet=event.target.checked;save();render();return;}
@@ -427,6 +430,15 @@ app.addEventListener('change',event=>{
  save();updateSettingsSummary();
 });
 app.addEventListener('input',event=>{
+ if(event.target.matches('[data-coach-rating]')){
+  const id=event.target.dataset.coachRating, rating=({'-1':'easy','0':'ok','1':'hard'})[event.target.value];
+  if(workoutSession?.ids.includes(id)&&rating){
+   const label=event.target.closest('.coach-rating-row')?.querySelector('.coach-rating-current');
+   if(label)label.textContent=C(rating);
+   event.target.setAttribute('aria-valuetext',C(rating));
+  }
+  return;
+ }
  if(!event.target.matches('[data-search]'))return;
  swapQuery=event.target.value;
  const pos=event.target.selectionStart;
