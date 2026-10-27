@@ -12,7 +12,6 @@ import {languageForPath,languageUrl} from './seo-languages.js';
 import {decodeSharedWorkout,sharedWorkoutUrl} from './share.js';
 import {allowedExercise,adaptWorkout,balanceWarnings,PROGRESSIONS,recommendWorkout} from './coach.js';
 import {coachText} from './coach-i18n.js';
-import {appleShortcutUrl,healthWorkoutPayload} from './health-export.js';
 
 const STORAGE_KEY='flow5-prefs-v13-preview';
 const DEFAULTS={presetId:'full',difficulty:'beginner', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en',equipment:'none',quiet:false};
@@ -107,12 +106,16 @@ const MUSCLE_THUMBNAILS=Object.freeze({
  wallSit:'wallSit-muscles.webp',
  heelTouch:'heelTouch-muscles.webp',
  bearHold:'bearHold-muscles.webp',
- assistedSingleLegSquat:'assistedSingleLegSquat-muscles.webp'
+ assistedSingleLegSquat:'assistedSingleLegSquat-muscles.webp',
+ inclinePushup:'inclinePushup-muscles.webp',
+ kneeForearmPlank:'kneeForearmPlank-muscles.webp',
+ stepJack:'stepJack-muscles.webp',
+ gluteBridgeMarch:'gluteBridgeMarch-muscles.webp',
+ supportedSplitSquat:'supportedSplitSquat-muscles.webp'
 });
 const NEW_EXERCISE_IDS=new Set(['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat']);
 function exerciseThumbnail(e){
  const file=MUSCLE_THUMBNAILS[e.id];
- if(NEW_EXERCISE_IDS.has(e.id))return `<div class="exercise-art-placeholder" role="img" aria-label="${escapeHtml(T('placeholder'))}: ${escapeHtml(e.name)}"><span aria-hidden="true">✧</span><small>${escapeHtml(T('placeholder'))}</small></div>`;
  return file
   ? `<img class="muscle-thumb" src="./artwork/thumbs/${file}" alt="" width="192" height="154" loading="lazy" decoding="async"/>`
   : illustration(e.pose,e.name,prefs.lang);
@@ -229,7 +232,7 @@ function renderWorkout(){
  const group=T(isRest?'restCaps':'workCaps');
  const displayName=finalRest?T('lastRest'):present.name;
  const cue=present.cue;
- const scienceCue=C(finalRest?'restGuide':snap.index%3===0?'restForm':snap.index%3===1?'restEffort':'restGuide');
+ const scienceCue=C(snap.index%3===0?'restForm':snap.index%3===1?'restEffort':'restGuide');
  const studyLabels={en:['HOLD','START → END'],de:['HALTEN','START → ENDE'],it:['TIENI','INIZIO → FINE'],fr:['TENIR','DÉBUT → FIN'],es:['MANTÉN','INICIO → FIN']};
  const actionLabel=finalRest?'':isRest?T('readySoon'):(isStudy(present.pose)?studyLabels[prefs.lang][present.pose==='plank'?0:1]:'');
  lastPhaseKey=String(snap.index);
@@ -246,7 +249,7 @@ function renderWorkout(){
     <div class="v13-drawing">${studyPicture(finalRest?'recovery':present.pose,displayName,prefs.lang,present.id)}</div>
     ${isRest?'':`<p class="v13-art-cue">${escapeHtml(cue)}</p>`}
   </section>
-  ${isRest?`<p class="coach-rest-tip" role="note">${escapeHtml(scienceCue)}</p>`:''}
+  ${isRest&&!finalRest?`<p class="coach-rest-tip" role="note">${escapeHtml(scienceCue)}</p>`:''}
  </main>
  <footer class="training-controls v13-controls"><div class="controls-row"><button type="button" class="primary-btn control-primary" data-action="pause">${icon(snap.status==='paused'?'play':'pause')} <span>${T(snap.status==='paused'?'resume':'pause')}</span></button><button type="button" class="secondary-btn" data-action="skip">${icon('skip')} <span>${T('skip')}</span></button></div><div id="wake-indicator" class="wake-indicator visually-hidden" aria-live="polite">${T('checkingWake')}</div>${audioWarning?`<p class="warning">${T('audioWarn')}</p>`:''}</footer>
  <div class="visually-hidden" id="phase-announcement" aria-live="polite">${group}: ${displayName}</div></div>`;
@@ -286,10 +289,8 @@ function renderDone(){
    <div class="record-bottom"><span>Pick5Go</span></div>
   </section>
   <p class="record-hint">${T('recordHint')}</p>
-  <div class="record-actions"><button class="primary-btn" data-action="share">${T('shareWorkout')} ${icon('arrow')}</button><p class="share-status" data-share-status role="status" aria-live="polite"></p><button class="secondary-btn record-repeat" data-action="restart">${T('repeat')} ${icon('rotate')}</button></div>
+  <div class="record-actions"><button class="primary-btn" data-action="share">${T('shareWorkout')} ${icon('arrow')}</button><p class="share-status" data-share-status role="status" aria-live="polite"></p><button class="secondary-btn record-repeat" data-action="setup">${escapeHtml(C('backToStart'))} ${icon('back')}</button></div>
   ${feedbackPanel}
-  ${healthWorkoutPayload(session)?`<details class="coach-health-pilot"><summary>${escapeHtml(C('healthExport'))}</summary><p>${escapeHtml(C('healthHelp'))}</p><a class="coach-health-instructions" href="./health-shortcut/">${escapeHtml(C('healthInstructions'))} →</a><button class="secondary-btn" type="button" data-action="health-export">${escapeHtml(C('healthExport'))} →</button></details>`:''}
-  <div class="coach-back"><button class="text-btn" data-action="setup">${T('backToPlan')}</button></div>
  </main></div>`;
 }
 function updateClock(){
@@ -329,14 +330,14 @@ function beginWorkout(restarted=false){
   const ids=[...currentIds()];
   workoutRatings=Object.create(null);
   workoutCount=ids.length;
-  workoutSession={startedAt:new Date().toISOString(),ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()],skippedPhases:0};
+  workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()],skippedPhases:0};
   engine=new IntervalEngine(buildPlan(ids,currentConfig()),{
    onPhase:(phase,previous)=>{
     if(previous)phaseSound(phase);
     if(view==='workout')renderWorkout();
    },
    onExerciseComplete:phase=>{trackExerciseCompleted(phase.exerciseId);},
-   onComplete:()=>{workoutSession.endedAt=new Date().toISOString();trackWorkoutEvent('workout_completed',workoutSession);if(prefs.sound)cueAudio.play('done');stopTicking();releaseWake();view='done';renderDone();},
+   onComplete:()=>{trackWorkoutEvent('workout_completed',workoutSession);if(prefs.sound)cueAudio.play('done');stopTicking();releaseWake();view='done';renderDone();},
    onChange:()=>{if(view==='workout')renderWorkout();}
   });
   view='workout';engine.start();trackWorkoutEvent('workout_started',workoutSession);if(restarted)trackWorkoutEvent('workout_restarted',workoutSession);phaseSound(engine.phases[0]);
@@ -393,7 +394,6 @@ app.addEventListener('click',event=>{
  else if(action==='close-swap'){swapIndex=null;swapQuery='';render();}
  else if(action==='dismiss-swap' && event.target===button){swapIndex=null;swapQuery='';render();}
  else if(action==='share-next'&&view==='done'&&workoutSession){void shareCurrentWorkout(recommendWorkout(workoutSession,workoutRatings,{equipment:prefs.equipment,quiet:prefs.quiet}).session);}
- else if(action==='health-export'&&view==='done'&&workoutSession){const url=appleShortcutUrl(workoutSession);if(url)window.location.href=url;}
  else if(action==='start'){beginWorkout();}
  else if(action==='share'){void shareCurrentWorkout();}
  else if(action==='adjust'){const field=button.dataset.field;if(!['workSec','restSec','rounds'].includes(field))return;prefs[field]=stepSetting(field,prefs[field],Number(button.dataset.direction));save();updatePicker(field);updateSettingsSummary();}
@@ -407,7 +407,7 @@ app.addEventListener('click',event=>{
   if(window.confirm(T('exitConfirm')))exitWorkout();
  }
  else if(action==='restart'){beginWorkout(true);}
- else if(action==='setup'){engine=null;workoutSession=null;view='setup';render();}
+ else if(action==='setup'){stopTicking();releaseWake();engine=null;workoutSession=null;view='setup';render();window.scrollTo({top:0,behavior:'instant'});}
  else if(action==='help'){showHelp();}
 });
 app.addEventListener('change',event=>{
