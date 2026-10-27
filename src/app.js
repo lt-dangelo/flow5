@@ -279,9 +279,11 @@ function renderDone(){
    <div class="record-exercises"><h2>${T('recordExercises')}</h2><ol>${names}</ol></div>
    <div class="record-bottom"><span>Pick5Go</span></div>
   </section>
-  ${feedbackPanel}
   <p class="record-hint">${T('recordHint')}</p>
-  <div class="record-actions"><button class="primary-btn" data-action="share">${T('shareWorkout')} ${icon('arrow')}</button><p class="share-status" data-share-status role="status" aria-live="polite"></p><button class="secondary-btn record-repeat" data-action="restart">${T('repeat')} ${icon('rotate')}</button><button class="text-btn" data-action="setup">${T('backToPlan')}</button></div>
+  <div class="record-actions"><button class="primary-btn" data-action="share">${T('shareWorkout')} ${icon('arrow')}</button><p class="share-status" data-share-status role="status" aria-live="polite"></p><button class="secondary-btn record-repeat" data-action="restart">${T('repeat')} ${icon('rotate')}</button></div>
+  ${feedbackPanel}
+  ${healthWorkoutPayload(session)?`<details class="coach-health-pilot"><summary>${escapeHtml(C('healthExport'))}</summary><p>${escapeHtml(C('healthHelp'))}</p><button class="secondary-btn" type="button" data-action="health-export">${escapeHtml(C('healthExport'))} →</button></details>`:''}
+  <div class="coach-back"><button class="text-btn" data-action="setup">${T('backToPlan')}</button></div>
  </main></div>`;
 }
 function updateClock(){
