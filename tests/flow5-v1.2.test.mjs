@@ -6,7 +6,7 @@ import {buildPlan,planStats,IntervalEngine} from '../src/engine.js';
 
 const known=new Set(EXERCISES.map(e=>e.id));
 assert.equal(PRESETS.length,4);
-assert.equal(EXERCISES.length,27);
+assert.equal(EXERCISES.length,32);
 for(const lang of ['en','de']){
  assert.ok(t(lang,'start'));
  assert.ok(t(lang,'remove'));
@@ -65,4 +65,4 @@ assert.equal(engine.status,'paused');
 engine.resume();currentTime+=40000;engine.tick();
 assert.equal(engine.status,'completed');
 assert.equal(completions,1);
-console.log('OK: bilingual UI and 27 exercises; 1–5 workout blocks, duration, persistence helpers, timer');
+console.log('OK: bilingual UI and 32 exercises; 1–5 workout blocks, duration, persistence helpers, timer');
