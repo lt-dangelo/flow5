@@ -400,3 +400,6 @@
  .coach-rating-current{font-size:12px}
  .coach-rest-tip{font-size:14px;line-height:1.5;padding:11px 13px}
 }
+
+.coach-health-instructions{display:inline-block;color:var(--lime);font-size:13px;font-weight:750;text-decoration:underline;text-underline-offset:4px;margin:0 0 12px}
+.coach-health-instructions:hover{color:#e6ffcb}
