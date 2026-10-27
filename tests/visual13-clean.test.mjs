@@ -30,7 +30,8 @@ assert.ok(html.match(/styles\.css\?build=1\.3\.\d+/));
 assert.ok(html.match(/src\/app\.js\?build=1\.3\.\d+/));
 assert.match(sw,/cache:'no-store'/);
 assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
-assert.match(workout,/const scienceCue=C\(finalRest\?'restGuide'/);
+assert.match(workout,/const scienceCue=C\(snap\.index%3===0\?'restForm'/);
+assert.ok(workout.includes('isRest&&!finalRest?'),'last rest omits pre-exercise coaching');
 assert.ok(workout.includes("${isRest?'':`<p class=\"v13-art-cue\""),'active instruction only in artwork');
 assert.ok(workout.indexOf('coach-rest-tip')>workout.indexOf('</section>'),'rest coaching outside artwork panel');
 
