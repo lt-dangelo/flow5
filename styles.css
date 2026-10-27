@@ -328,3 +328,46 @@
 .share-status:empty{display:none}
 .record-actions .record-repeat{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;min-height:46px;border:1px solid #6e8477;background:transparent;color:#eff6ef;border-radius:12px;font-weight:700;padding:12px 16px}
 .record-actions .record-repeat:hover{border-color:var(--lime);background:#2a4036}
+
+
+/* Preview coaching pilot: optional equipment/impact preferences and training guidance. */
+.coach-gallery-link{display:inline-flex;margin-top:15px;color:var(--lime);font-size:13px;font-weight:750;text-underline-offset:4px}
+.coach-gallery-link:hover{text-decoration:underline}
+.coach-filters{margin-top:16px;padding:12px 14px;border:1px solid var(--outline);border-radius:13px;background:var(--panel2)}
+.coach-filters summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--text);line-height:1.5}
+.coach-filters summary:focus-visible{outline:2px solid var(--lime);outline-offset:4px}
+.coach-filter-grid{display:flex;flex-wrap:wrap;align-items:center;gap:15px;margin-top:15px}
+.coach-filter-grid label{display:flex;flex-direction:column;gap:7px;font-size:12px;color:var(--muted);font-weight:600}
+.coach-filter-grid select{color:var(--text);background:var(--panel);border:1px solid var(--outline);border-radius:9px;min-height:40px;padding:8px}
+.coach-filter-grid .coach-check{flex-direction:row;align-items:center;color:var(--text);cursor:pointer}
+.coach-filter-grid input[type=checkbox]{width:18px;height:18px;accent-color:var(--lime)}
+.coach-balance{margin-top:14px;display:flex;align-items:flex-start;gap:9px;border:1px solid #435b52;border-radius:12px;background:#182c29;color:#c9d7ce;font-size:11px;line-height:1.55;padding:11px 13px}
+.coach-balance strong{color:var(--lime);white-space:nowrap}
+.coach-progress-row{display:flex;flex-wrap:wrap;gap:9px;margin:0 0 14px}
+.coach-progress-choice{padding:9px 12px;border:1px solid #648468;border-radius:10px;background:#1f3929;color:#e8f6e5;font-size:12px;font-weight:700}
+.coach-progress-choice:hover{border-color:var(--lime)}
+.coach-rest-tip{max-width:680px;margin:8px auto 0;color:#b7c7b5;font-size:12px;line-height:1.5;text-align:center}
+.coach-feedback{max-width:690px;margin:20px auto 15px;padding:22px;border:1px solid #465b50;background:#152820;color:#f1f7f0;border-radius:19px}
+.coach-feedback h2{font-size:20px;line-height:1.25;margin-bottom:8px}
+.coach-feedback>p{font-size:12px;color:#b7c7bc;line-height:1.5}
+.coach-rating-list{margin-top:15px;border-top:1px solid #385044}
+.coach-rating-row{padding:11px 0;border-bottom:1px solid #385044;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.coach-rating-row>span{font-size:13px;font-weight:650;flex:1 1 35%}
+.coach-rating-choices{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end}
+.coach-rating-choices button{border:1px solid #5d7567;border-radius:8px;background:transparent;color:#cbdacf;padding:9px 8px;min-height:38px;font-size:11px;cursor:pointer}
+.coach-rating-choices button.active{color:#132319;background:var(--lime);border-color:var(--lime);font-weight:750}
+.coach-rating-choices button:hover:not(.active){background:#2e4d3a}
+.coach-next{margin-top:17px;padding-top:12px}
+.coach-next h3{font-size:16px;margin-bottom:6px}
+.coach-next p,.coach-next li{font-size:12px;color:#c5d3c7;line-height:1.6}
+.coach-next ul{padding-left:20px;margin:10px 0}
+.coach-next .secondary-btn{margin-top:12px;min-height:44px;justify-content:center;width:100%;font-weight:750}
+.coach-muted{margin-top:15px!important}
+@media(max-width:540px){
+ .coach-rating-row{align-items:stretch;flex-direction:column;gap:8px}
+ .coach-rating-choices{justify-content:stretch}
+ .coach-rating-choices button{flex:1 1 30%;padding:9px 5px}
+ .coach-feedback{padding:17px 15px;margin:14px auto}
+ .coach-balance{flex-direction:column;gap:4px}
+ .coach-filter-grid{flex-direction:column;align-items:stretch}
+}
