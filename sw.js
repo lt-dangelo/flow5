@@ -1,5 +1,5 @@
-// Scoped preview service worker: network-first for app updates, offline fallback.
-const CACHE='pick5go-v1.3-production-4';
+// Scoped production service worker: network-first for app updates, offline fallback.
+const CACHE='pick5go-v1.3-production-5';
 const CORE=[
  './',
  './index.html',
@@ -9,22 +9,24 @@ const CORE=[
  './fr/about-calisthenics/','./fr/about-calisthenics/index.html',
  './es/about-calisthenics/','./es/about-calisthenics/index.html',
  './de/','./de/index.html','./it/','./it/index.html','./fr/','./fr/index.html','./es/','./es/index.html',
- './styles.css?build=1.3.42',
- './src/app.js?build=1.3.42',
- './manifest.webmanifest',
+ './styles.css?build=1.3.60',
+ './src/app.js?build=1.3.60',
+ './manifest.webmanifest?icons=cream1',
  './src/art13.js','./src/recovery13.js',
- './artwork/thumbs/squat-muscles.webp','./artwork/thumbs/kneePushup-muscles.webp','./artwork/thumbs/hipHinge-muscles.webp','./artwork/thumbs/birdDog-muscles.webp','./artwork/thumbs/march-muscles.webp','./artwork/thumbs/pushup-muscles.webp','./artwork/thumbs/wallPushup-muscles.webp','./artwork/thumbs/bandRow-muscles.webp','./artwork/thumbs/snowAngel-muscles.webp','./artwork/thumbs/plank-muscles.webp','./artwork/thumbs/deadBug-muscles.webp','./artwork/thumbs/gluteBridge-muscles.webp','./artwork/thumbs/singleLegBridge-muscles.webp','./artwork/thumbs/calfRaise-muscles.webp','./artwork/thumbs/jumpingJack-muscles.webp','./artwork/thumbs/reverseLunge-muscles.webp','./artwork/thumbs/mountainClimber-muscles.webp','./artwork/thumbs/bicycle-muscles.webp','./artwork/thumbs/pikePushup-muscles.webp','./artwork/thumbs/superman-muscles.webp','./artwork/thumbs/sidePlankL-muscles.webp','./artwork/thumbs/sidePlankR-muscles.webp','./artwork/thumbs/shoulderTap-muscles.webp','./artwork/thumbs/wallSit-muscles.webp','./artwork/thumbs/heelTouch-muscles.webp','./artwork/thumbs/bearHold-muscles.webp','./artwork/thumbs/assistedSingleLegSquat-muscles.webp','./artwork/singlelegbridge-master-v1329.webp','./artwork/assistedsquat-master-v1329.webp','./artwork/hiphinge-master-v1327.webp','./artwork/kneepushup-master-v1328.webp','./artwork/bandrow-master-v1328.webp','./artwork/bear-master-v1322.webp','./artwork/heeltouch-master-v1322.webp','./artwork/snowangel-master-v1322.webp','./artwork/calfraise-master-v1321.webp','./artwork/wallsit-master-v1319.webp','./artwork/jumpingjacks-master-v1320.webp','./artwork/pikepushup-master-v1318.webp','./artwork/wallpushup-master-v1317.webp','./artwork/squat-master.webp','./artwork/pushup-master.webp','./artwork/plank-master.webp','./artwork/recovery.webp','./artwork/lunge-master.webp','./artwork/mountain-master.webp','./artwork/bridge-master.webp','./artwork/recovery-hydration-corrected.webp','./artwork/march-master.webp','./artwork/bicycle-master.webp','./artwork/sideplank-master.webp','./artwork/shouldertap-clean-v1315.webp','./artwork/birddog-master.webp','./artwork/deadbug-clean-v1315.webp','./artwork/superman-master.webp','./src/config.js','./src/audio.js',
- './src/i18n.js','./src/seo-languages.js','./src/share.js','./src/locales-ui.js','./src/locales-exercises.js','./src/selection.js','./src/data.js',
- './src/art.js','./src/engine.js','./src/analytics.js','./src/consent.js?build=1.3.42','./imprint.html','./privacy.html','./src/legal-language.js',
+ './artwork/thumbs/squat-muscles.webp','./artwork/thumbs/kneePushup-muscles.webp','./artwork/thumbs/hipHinge-muscles.webp','./artwork/thumbs/birdDog-muscles.webp','./artwork/thumbs/march-muscles.webp','./artwork/thumbs/pushup-muscles.webp','./artwork/thumbs/wallPushup-muscles.webp','./artwork/thumbs/bandRow-muscles.webp','./artwork/thumbs/snowAngel-muscles.webp','./artwork/thumbs/plank-muscles.webp','./artwork/thumbs/deadBug-muscles.webp','./artwork/thumbs/gluteBridge-muscles.webp','./artwork/thumbs/singleLegBridge-muscles.webp','./artwork/thumbs/calfRaise-muscles.webp','./artwork/thumbs/jumpingJack-muscles.webp','./artwork/thumbs/reverseLunge-muscles.webp','./artwork/thumbs/mountainClimber-muscles.webp','./artwork/thumbs/bicycle-muscles.webp','./artwork/thumbs/pikePushup-muscles.webp','./artwork/thumbs/superman-muscles.webp','./artwork/thumbs/sidePlankL-muscles.webp','./artwork/thumbs/sidePlankR-muscles.webp','./artwork/thumbs/shoulderTap-muscles.webp','./artwork/thumbs/wallSit-muscles.webp','./artwork/thumbs/heelTouch-muscles.webp','./artwork/thumbs/bearHold-muscles.webp','./artwork/thumbs/assistedSingleLegSquat-muscles.webp','./artwork/thumbs/inclinePushup-muscles.webp','./artwork/thumbs/kneeForearmPlank-muscles.webp','./artwork/thumbs/stepJack-muscles.webp','./artwork/thumbs/gluteBridgeMarch-muscles.webp','./artwork/thumbs/supportedSplitSquat-muscles.webp','./artwork/singlelegbridge-master-v1329.webp','./artwork/assistedsquat-master-v1329.webp','./artwork/inclinePushup-master-v1347.webp','./artwork/kneeForearmPlank-master-v1347.webp','./artwork/stepJack-master-v1347.webp','./artwork/gluteBridgeMarch-master-v1347.webp','./artwork/supportedSplitSquat-master-v1347.webp','./artwork/hiphinge-master-v1327.webp','./artwork/kneepushup-master-v1328.webp','./artwork/bandrow-master-v1328.webp','./artwork/bear-master-v1322.webp','./artwork/heeltouch-master-v1322.webp','./artwork/snowangel-master-v1322.webp','./artwork/calfraise-master-v1321.webp','./artwork/wallsit-master-v1319.webp','./artwork/jumpingjacks-master-v1320.webp','./artwork/pikepushup-master-v1318.webp','./artwork/wallpushup-master-v1317.webp','./artwork/squat-master.webp','./artwork/pushup-master.webp','./artwork/plank-master.webp','./artwork/recovery.webp','./artwork/lunge-master.webp','./artwork/mountain-master.webp','./artwork/bridge-master.webp','./artwork/recovery-hydration-corrected.webp','./artwork/march-master.webp','./artwork/bicycle-master.webp','./artwork/sideplank-master.webp','./artwork/shouldertap-clean-v1315.webp','./artwork/birddog-master.webp','./artwork/deadbug-clean-v1315.webp','./artwork/superman-master.webp','./src/config.js','./src/audio.js',
+ './src/coach.js','./src/coach-i18n.js?build=1.3.60','./src/gallery.js','./src/workout-catalog.js','./workouts/','./workouts/index.html',
+ './src/i18n.js','./src/seo-languages.js','./src/locales-ui.js','./src/locales-exercises.js','./src/selection.js','./src/data.js',
+ './src/art.js','./src/engine.js','./src/preparation.js','./src/analytics.js','./src/share.js','./src/consent.js?build=1.3.60','./imprint.html','./privacy.html','./src/legal-language.js',
  './audio/work.wav','./audio/rest.wav','./audio/done.wav',
- './icons/pick5go-mark.svg','./icons/icon-192.png','./icons/icon-512.png','./icons/apple-touch-icon.png'
+ './icons/pick5go-mark.svg','./icons/icon-192.png','./icons/icon-512.png',
+ './icons/apple-touch-icon.png?icons=cream1','./icons/home-192.png','./icons/home-512.png','./icons/home-maskable-512.png'
 ];
 self.addEventListener('install',event=>{
  event.waitUntil(caches.open(CACHE).then(async cache=>{await cache.addAll(CORE);}).then(()=>self.skipWaiting()));
 });
 self.addEventListener('activate',event=>{
  event.waitUntil(Promise.all([
-  caches.keys().then(keys=>Promise.all(keys.filter(key=>((key==='flow5-v1.2.0'||key.startsWith('pick5go-v1.3-production-')||key.startsWith('flow5-v1.3-production-')))&&key!==CACHE).map(key=>caches.delete(key)))),
+  caches.keys().then(keys=>Promise.all(keys.filter(key=>(key==='flow5-v1.2.0'||key.startsWith('pick5go-v1.3-production-')||key.startsWith('flow5-v1.3-production-'))&&key!==CACHE).map(key=>caches.delete(key)))),
   self.clients.claim()
  ]));
 });

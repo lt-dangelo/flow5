@@ -12,7 +12,7 @@
   es:{imprint:'Aviso legal',privacy:'Política de privacidad',back:'Volver a Pick5Go',language:'Idioma'}
  };
  const saved=()=>{
-  for(const key of ['pick5go-prefs-v13','flow5-prefs-v13-preview']){
+  for(const key of ['flow5-prefs-v13-preview','pick5go-prefs-v13']){
    try{const raw=localStorage.getItem(key);if(raw){const l=JSON.parse(raw)?.lang;if(LANG.includes(l))return l;}}catch{}
   }
   return 'en';

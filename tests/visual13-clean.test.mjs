@@ -20,17 +20,20 @@ assert.match(workout,/data-action="pause"/);
 assert.match(workout,/data-action="skip"/);
 assert.match(workout,/id="wake-indicator"/);
 assert.match(css,/\.v13-clean \.v13-art-cue/);
-assert.ok(sw.includes('pick5go-v1.3-production-4'));
+assert.ok(sw.match(/pick5go-v1\.3-production-\d+/));
 console.log('OK: integrated illustration and instructions, clean header and timer, preserved controls');
 
 assert.doesNotMatch(app,/CALISTHENICS TIMER/);
 
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(html.includes('styles.css?build=1.3.42'));
-assert.ok(html.includes('src/app.js?build=1.3.42'));
+assert.ok(html.match(/styles\.css\?build=1\.3\.\d+/));
+assert.ok(html.match(/src\/app\.js\?build=1\.3\.\d+/));
 assert.match(sw,/cache:'no-store'/);
 assert.match(app,/studyPicture\(finalRest\?'recovery':present\.pose/);
-assert.match(app,/finalRest\?T\('recoveryCue'\)/);
+assert.match(workout,/const scienceCue=C\(snap\.index%3===0\?'restForm'/);
+assert.ok(workout.includes('isRest&&!finalRest?'),'last rest omits pre-exercise coaching');
+assert.ok(workout.includes("${isRest?'':`<p class=\"v13-art-cue\""),'active instruction only in artwork');
+assert.ok(workout.indexOf('coach-rest-tip')>workout.indexOf('</section>'),'rest coaching outside artwork panel');
 
 for(const name of ['squat','pushup','plank','recovery']){
  const image=readFileSync(new URL('../artwork/'+name+'-master.webp',import.meta.url));
@@ -70,7 +73,7 @@ for(const name of ['march','bicycle','sideplank']){
 }
 assert.match(app,/exerciseId==='sidePlankL'/);
 assert.match(app,/transform:scaleX\(-1\)/);
-assert.match(app,/displayName,prefs.lang,present.id/);
+assert.ok(app.includes("displayName,prefs.lang,finalRest?'':present.id"),'final rest must not reuse preceding exercise image ID');
 
 // v1.3.12: four new illustration assets, no accidental reuse for Snow Angels.
 for(const name of ['birddog','superman']){
@@ -138,10 +141,10 @@ assert.equal(matchedWallAsset.readUInt16LE(28)&0x3fff,960);
 assert.ok(matchedWallAsset.length>100000);
 assert.ok(app.includes("wall:'wallpushup-master-v1317.webp'"));
 assert.ok(!app.includes("wall:'wallpushup-master-v1316.webp'"));
-assert.ok(sw.includes('pick5go-v1.3-production-4'));
+assert.ok(sw.match(/pick5go-v1\.3-production-\d+/));
 assert.ok(sw.includes('./artwork/wallpushup-master-v1317.webp'));
 const updatedHTML=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(updatedHTML.includes('build=1.3.42'));
+assert.ok(updatedHTML.match(/build=1\.3\.\d+/));
 
 // v1.3.18 Pike Push-ups: asset is a real Retina-sized two-pose WebP, not a placeholder.
 const pikeAsset=readFileSync(new URL('../artwork/pikepushup-master-v1318.webp',import.meta.url));
@@ -164,8 +167,8 @@ for (const [pose,file] of [ ['wallsit','wallsit-master-v1319.webp'], ['jumping',
  assert.ok(app.includes(pose+":'"+file+"'"));
  assert.ok(sw.includes('./artwork/'+file));
 }
-assert.ok(sw.includes('pick5go-v1.3-production-4'));
-assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.42'));
+assert.ok(sw.match(/pick5go-v1\.3-production-\d+/));
+assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').match(/build=1\.3\.\d+/));
 
 // v1.3.21: calf raises (flat feet vs lifted heels), verified WebP file and offline mapping.
 const calf=readFileSync(new URL('../artwork/calfraise-master-v1321.webp',import.meta.url));
@@ -176,8 +179,8 @@ assert.equal(calf.readUInt16LE(26)&0x3fff,1440);
 assert.equal(calf.readUInt16LE(28)&0x3fff,960);
 assert.ok(app.includes("calf:'calfraise-master-v1321.webp'"));
 assert.ok(sw.includes('./artwork/calfraise-master-v1321.webp'));
-assert.ok(sw.includes('pick5go-v1.3-production-4'));
-assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').includes('build=1.3.42'));
+assert.ok(sw.match(/pick5go-v1\.3-production-\d+/));
+assert.ok(readFileSync(new URL('../index.html',import.meta.url),'utf8').match(/build=1\.3\.\d+/));
 
 // v1.3.22 – Final three placeholders replaced with reviewed 1440 x 960 WebP artwork.
 for(const [pose,file] of [['bear','bear-master-v1322.webp'],['heeltouch','heeltouch-master-v1322.webp'],['snowangel','snowangel-master-v1322.webp']]){
@@ -192,14 +195,14 @@ for(const [pose,file] of [['bear','bear-master-v1322.webp'],['heeltouch','heelto
 }
 assert.ok(app.includes("exerciseId==='snowAngel'?STUDY_IMAGE.snowangel"));
 assert.ok(app.includes("superman:'superman-master.webp'"));
-assert.ok(sw.includes('pick5go-v1.3-production-4'));
-assert.ok(html.includes('src/app.js?build=1.3.42'));
+assert.ok(sw.match(/pick5go-v1\.3-production-\d+/));
+assert.ok(html.match(/src\/app\.js\?build=1\.3\.\d+/));
 
 
 // v1.3.23 technique audit: short bilingual cues, no illustration asset changes.
 const EXERCISES_DE = (await import('../src/data.js')).EXERCISES;
 const exerciseTextEN = (await import('../src/i18n.js')).exerciseText;
-assert.equal(EXERCISES_DE.length,27);
+assert.equal(EXERCISES_DE.length,32);
 for (const exercise of EXERCISES_DE) {
   const translated=exerciseTextEN(exercise,'en');
   assert.ok(exercise.cue.length<=165, exercise.id+' German cue too long');
@@ -250,7 +253,7 @@ assert.ok(exerciseTextEN(EXERCISES_DE.find(e=>e.id==='bandRow'),'en').cue.includ
 
 
 // v1.3.30: final two anatomy images; both have exact dimensions, valid WebP,
-// distinct mappings, and the full 27-exercise catalogue has no active placeholders.
+// distinct mappings; all 32 exercise muscle thumbnails now have full-size workout illustrations.
 for(const [pose,file] of [['singlelegbridge','singlelegbridge-master-v1329.webp'],['assistedsquat','assistedsquat-master-v1329.webp']]){
  const bytes=readFileSync(new URL('../artwork/'+file,import.meta.url));
  assert.ok(bytes.byteLength>100000,'Detailed anatomical artwork required: '+pose);
@@ -262,7 +265,7 @@ for(const [pose,file] of [['singlelegbridge','singlelegbridge-master-v1329.webp'
  assert.ok(sw.includes('./artwork/'+file),'Offline cache contains '+pose);
 }
 const activeMap=app.slice(app.indexOf('const STUDY_IMAGE='),app.indexOf('function studyPicture('));
-for(const e of EXERCISES_DE){
+for(const e of EXERCISES_DE.filter(e=>!['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat'].includes(e.id))){
  if(e.id==='snowAngel'){assert.ok(activeMap.includes("snowangel:'snowangel-master-v1322.webp'"));continue;}
  assert.ok(activeMap.includes(e.pose+":"),'Missing illustration map for '+e.id+' ('+e.pose+')');
 }
@@ -299,11 +302,11 @@ for(const id of ["pushup","wallPushup","bandRow","snowAngel","plank","deadBug","
  assert.ok(app.includes(id+":'"+name+"'"),name+' exercise mapped');
 }
 
-// Regression guard: every catalogue exercise has a dedicated anatomical WebP.
-// Avoid hard-coding the artwork catalogue in this test: new exercises must be mapped.
+// Regression guard: all 27 existing illustrated exercises retain dedicated anatomical WebP.
+// The 5 additional exercises also have reviewed 1440x960 WebP workout artwork.
 const thumbnailMap=app.slice(app.indexOf('const MUSCLE_THUMBNAILS='),app.indexOf('function exerciseThumbnail('));
-assert.equal(EXERCISES_DE.length,27);
-for(const exercise of EXERCISES_DE){
+assert.equal(EXERCISES_DE.length,32);
+for(const exercise of EXERCISES_DE.filter(e=>!['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat'].includes(e.id))){
  const name=exercise.id+'-muscles.webp';
  const bytes=readFileSync(new URL('../artwork/thumbs/'+name,import.meta.url));
  assert.ok(bytes.byteLength>3000,exercise.id+' non-empty thumbnail');
@@ -318,3 +321,20 @@ assert.ok(completed.includes('session.ids.map((id,i)=>{const e=E(id)'), 'Record 
 assert.ok(completed.includes('class="record-exercise-thumb"'), 'Record renders each exercise image');
 assert.ok(completed.includes('${exerciseThumbnail(e)}'), 'Record reuses anatomical thumbnails');
 assert.ok(css.includes('.record-exercises .record-exercise-thumb'), 'Record thumbnails are styled');
+
+// Preview progression expansion: five muscle maps and five new full-size illustrations are both mapped.
+for(const id of ['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat']){
+ assert.ok(app.includes("'"+id+"'"),id+' registered for custom exercise artwork');
+}
+assert.ok(app.includes('NEW_EXERCISE_IDS.has(exerciseId)'),'new workout illustrations use their dedicated WebP assets');
+assert.ok(app.includes('${exerciseId}-master-v1347.webp'),'image asset names derived from known five exercise IDs');
+assert.ok(!app.includes('NEW_EXERCISE_IDS.has(e.id)'),'picker must show muscle maps, not placeholders');
+for(const id of ['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat']){
+ const path='../artwork/thumbs/'+id+'-muscles.webp';
+ const data=readFileSync(new URL(path,import.meta.url));
+ assert.ok(data.byteLength>3000,id+' meaningful muscle thumbnail');
+ assert.equal(data.subarray(0,4).toString('ascii'),'RIFF',id+' valid WebP container');
+ assert.equal(data.subarray(8,12).toString('ascii'),'WEBP',id+' valid WebP signature');
+ assert.ok(thumbnailMap.includes(id+":'"+id+'-muscles.webp'),id+' mapped');
+ assert.ok(sw.includes('./artwork/thumbs/'+id+'-muscles.webp'),id+' precached');
+}

@@ -29,11 +29,16 @@ bandRow:['Resistance-band row','Upper body','Row with a band around both feet; a
 kneePushup:['Knee push-ups','Upper body','From your knees, lower your chest with control and press back up.','Keep a straight line from head to knees.'],
 singleLegBridge:['Single-leg glute bridge','Legs','On your back, lift one leg and raise then lower your hips using the planted foot.','Keep your hips level; switch legs halfway through.'],
 assistedSingleLegSquat:['Assisted single-leg squat','Legs','Hold a stable support, bend one leg slowly, then stand back up.','Lower only as far as controlled; switch legs halfway through.'],
+inclinePushup:["Incline push-ups","Upper body","Place hands on a stable, raised surface. Keeping your body straight, lower your chest toward it and press away.","Use a non-slip, sturdy surface. Lower support height makes this harder."],
+kneeForearmPlank:["Knee forearm plank","Core","Place forearms and knees on the floor. Brace your core and hold a straight line from your head to your knees.","Keep elbows under shoulders and avoid sagging at the hips."],
+stepJack:["Low-impact step jacks","Cardio","Step one foot sideways while lifting your arms, return to centre, then alternate legs.","No jumping. Keep your steps light and pace comfortable."],
+gluteBridgeMarch:["Glute bridge march","Legs","Hold a glute bridge while lifting one foot slightly off the floor, alternating legs.","Keep hips level and lower both feet if your pelvis twists."],
+supportedSplitSquat:["Supported split squats","Legs","Hold a stable support in a split stance, bend both knees with control, then stand tall.","Keep a comfortable stance and switch the front leg halfway through."],
 };
 const PRESET_EN={
 full:['Full body','Balanced & effective',''],
 core:['Core & stability','Core strength and posture',''],
-upper:['Upper body','Pressing & stability',''],
+upper:['Upper body & core','Pressing, shoulders & core',''],
 legs:['Legs & glutes','Strength from the ground up','']
 };
 const STRINGS={
@@ -133,8 +138,8 @@ export function presetText(preset,lang){
  return {...preset,name:extra[0],subtitle:extra[1],tag:''};
 }
 const PRESET_EXTRA={
- it:{full:['Corpo intero','Allenamento equilibrato'],core:['Core e stabilità','Forza e postura'],upper:['Parte superiore','Spinta e stabilità'],legs:['Gambe e glutei','Forza dalla base']},
- fr:{full:['Corps entier','Séance équilibrée'],core:['Gainage et stabilité','Force et posture'],upper:['Haut du corps','Poussée et stabilité'],legs:['Jambes et fessiers','Renforcement ciblé']},
- es:{full:['Cuerpo completo','Entrenamiento equilibrado'],core:['Zona media y estabilidad','Fuerza y postura'],upper:['Tren superior','Empuje y estabilidad'],legs:['Piernas y glúteos','Fuerza desde la base']}
+ it:{full:['Corpo intero','Allenamento equilibrato'],core:['Core e stabilità','Forza e postura'],upper:['Parte superiore e core','Spinta, spalle e core'],legs:['Gambe e glutei','Forza dalla base']},
+ fr:{full:['Corps entier','Séance équilibrée'],core:['Gainage et stabilité','Force et posture'],upper:['Haut du corps et gainage','Poussée, épaules et tronc'],legs:['Jambes et fessiers','Renforcement ciblé']},
+ es:{full:['Cuerpo completo','Entrenamiento equilibrado'],core:['Zona media y estabilidad','Fuerza y postura'],upper:['Tren superior y core','Empuje, hombros y abdomen'],legs:['Piernas y glúteos','Fuerza desde la base']}
 };
 export function levelText(level,lang){return level?t(lang,['','easy','medium','advanced'][level]):'';}

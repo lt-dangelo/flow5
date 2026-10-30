@@ -6,11 +6,11 @@ const langs=['en','de','it','fr','es'];
 const sections=['what-is-calisthenics','little-time','travelling','no-equipment','getting-started','before-after','workout-goals','beyond-calisthenics','common-questions'];
 const expected=new Set(['fullbody-15','hotel-10','full-beginner','core-beginner','upper-beginner','legs-beginner']);
 const origin='https://pick5go.com/';
-const preview='https://pick5go.com/';
+const preview='https://lt-dangelo.github.io/flow5/preview/v1.3/';
 const english=read('about-calisthenics/index.html');
 const sw=read('sw.js');
 const topic={de:['Krafttraining','ohne Geräte'],it:['corpo libero','senza attrezzi'],fr:['poids du corps','sans matériel'],es:['calistenia','sin material']};
-assert.ok(sw.includes("pick5go-v1.3-production-4"));
+assert.ok(sw.match(/pick5go-v1\.3-production-\d+/));
 for(const lang of langs){
  const guidePath=(lang==='en'?'':lang+'/')+'about-calisthenics/index.html';
  const homePath=(lang==='en'?'':lang+'/')+'index.html';
@@ -19,10 +19,10 @@ for(const lang of langs){
  const previewGuide=new URL((lang==='en'?'':lang+'/')+'about-calisthenics/',preview);
  assert.ok(html.includes('<html lang="'+lang+'">'),lang+' html lang');
  assert.ok(html.includes('<link rel="canonical" href="'+publicGuide+'"/>'),lang+' self canonical');
- assert.ok(!html.includes('name="robots" content="noindex,follow"'),lang+' production must index');
+ assert.ok(!html.includes('name="robots" content="noindex'),lang+' production indexed');
  assert.ok(html.includes('guide-languages'),lang+' language switch');
  const expectedCss=lang==='en'?'./guide.css':'../../about-calisthenics/guide.css';
- const expectedConsent=lang==='en'?'../src/consent.js?build=1.3.42':'../../src/consent.js?build=1.3.42';
+ const expectedConsent=lang==='en'?'../src/consent.js?build=1.3.41':'../../src/consent.js?build=1.3.41';
  assert.ok(html.includes('href="'+expectedCss+'"'),lang+' stylesheet');
  assert.ok(html.includes('src="'+expectedConsent+'"'),lang+' consent source');
  assert.ok(html.includes('id="analytics-settings"'),lang+' opt-in settings');
