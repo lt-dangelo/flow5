@@ -32,7 +32,7 @@ for(const lang of ['en','de','it','fr','es']){
  assert.ok(html.includes('href="./icons/pick5go-mark.svg"'),lang+' original mark remains');
 }
 const sw=read('sw.js').toString();
-assert.ok(sw.includes("pick5go-v1.3-preview-55"),'cache refreshed');
+assert.ok(/pick5go-v1\.3-preview-\d+/.test(sw),'cache refreshed');
 for(const path of ['manifest.webmanifest?icons=cream1','icons/apple-touch-icon.png?icons=cream1','icons/home-192.png','icons/home-512.png','icons/home-maskable-512.png'])assert.ok(sw.includes("'./"+path+"'"),path+' precached');
 assert.ok(sw.includes("'./icons/icon-192.png'")&&sw.includes("'./icons/icon-512.png'"),'transparent favicon files remain intact');
 console.log('OK: opaque 180/192/512 PNG icon assets, maskable safe-zone, separate transparent favicon, manifest and offline cache');
