@@ -1,5 +1,6 @@
 import {EXERCISES, EXERCISE_BY_ID, PRESETS, PRESET_BY_ID, DIFFICULTIES, presetIds} from './data.js';
 import {buildPlan, planStats, IntervalEngine} from './engine.js';
+import {PreparationCountdown,PREPARATION_MS} from './preparation.js';
 import {trackWorkoutEvent,trackExerciseCompleted} from './analytics.js';
 import {illustration} from './art.js';
 import {illustration13,isStudy} from './art13.js';
@@ -64,6 +65,7 @@ let view='setup';
 let swapIndex=null;
 let swapQuery='';
 let engine=null;
+let preparation=null;
 let tickHandle=null;
 let wakeLock=null;
 const cueAudio=new CueAudio();
@@ -167,7 +169,7 @@ function updatePicker(field){
   if(btn)btn.disabled=prefs[field]===values[direction<0?0:values.length-1];
  }
 }
-function render(){if(view==='setup')renderSetup();else if(view==='workout')renderWorkout();else renderDone();}
+function render(){if(view==='setup')renderSetup();else if(view==='prepare')renderPreparation();else if(view==='workout')renderWorkout();else renderDone();}
 function renderSetup(){
  const preset=P(PRESET_BY_ID[prefs.presetId]),ids=currentIds(),count=ids.length,stats=planStats(currentPlan());
  const languageChoices=LANGUAGES.map(l=>`<option value="${l.code}" ${l.code===prefs.lang?'selected':''}>${l.label}</option>`).join('');
@@ -221,6 +223,29 @@ function studyPicture(pose,name,lang,exerciseId=''){
  const dimensions='width="1440" height="960"';
  const mirrored=pose==='sideplank'&&exerciseId==='sidePlankL';
  return `<img class="v13-study-image" src="./artwork/${file}" data-pose="${escapeHtml(pose)}" ${mirrored?'style="transform:scaleX(-1)"':''} ${dimensions} alt="${escapeHtml(name)}" decoding="async" fetchpriority="high"/>`;
+}
+function renderPreparation(){
+ if(!engine||!preparation)return;
+ const first=E(engine.phases[0].exerciseId);
+ const remaining=preparation.remainingMs();
+ // Do not add PREPARATION_MS to the actual workout's time or progress.
+ app.innerHTML=`<div class="training-screen v13 v13-clean rest-mode prep-mode">
+ <header class="training-header v13-header"><img class="brand-logo" src="./icons/pick5go-mark.svg" alt="Pick5Go" width="72" height="50"/><button type="button" class="quiet-btn" data-action="exit" aria-label="${T('exit')}">${icon('close')} <span>${T('exit')}</span></button></header>
+ <main class="v13-workout">
+  <div class="v13-timing">
+   <div class="v13-current"><span class="v13-state v13-rest">${escapeHtml(C('prepState'))}</span><strong id="phase-time" aria-label="${escapeHtml(C('prepIn'))}">${secsLabel(remaining)}</strong></div>
+   <div class="v13-session"><span>${escapeHtml(C('prepIn'))}</span><div class="v13-total"><span>${escapeHtml(C('prepWorkoutTime'))}</span><strong id="remaining-time">${secsLabel(engine.totalMs)}</strong></div></div>
+  </div>
+  <div class="whole-track v13-progress" role="progressbar" aria-label="${T('remaining')}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="whole-progress" style="width:0%"></div></div>
+  <section class="v13-art" aria-label="${escapeHtml(C('prepFirst'))}: ${escapeHtml(first.name)}">
+   <div class="v13-art-heading"><span class="v13-art-index">01 / ${String(workoutCount).padStart(2,'0')}</span><h1>${escapeHtml(first.name)}</h1><span class="v13-motion-label">${escapeHtml(C('prepFirst'))}</span></div>
+   <div class="v13-drawing">${studyPicture(first.pose,first.name,prefs.lang,first.id)}</div>
+  </section>
+  <p class="coach-rest-tip prep-message" role="note">${escapeHtml(C('prepMessage'))}</p>
+ </main>
+ <footer class="training-controls v13-controls prep-controls"><button class="secondary-btn prep-now" type="button" data-action="prepare-now">${icon('play')} ${escapeHtml(C('prepNow'))}</button><div id="wake-indicator" class="wake-indicator visually-hidden" aria-live="polite">${T('checkingWake')}</div></footer>
+ <div class="visually-hidden" aria-live="polite">${escapeHtml(C('prepState'))}: ${escapeHtml(first.name)}</div></div>`;
+ updateWakeIndicator();
 }
 function renderWorkout(){
  if(!engine)return;
@@ -276,7 +301,7 @@ function renderDone(){
   return `<div class="coach-rating-row"><label for="rate-${id}">${escapeHtml(e.name)}</label><div class="coach-rating-slider"><input id="rate-${id}" type="range" min="-1" max="1" step="1" value="${number}" data-coach-rating="${id}" aria-label="${escapeHtml(e.name)}" aria-valuetext="${escapeHtml(C(value))}"/><div class="coach-rating-labels"><span>${escapeHtml(C('easy'))}</span><strong class="coach-rating-current">${escapeHtml(C(value))}</strong><span>${escapeHtml(C('hard'))}</span></div></div></div>`;
  }).join('');
  const changeDetails=advice.changes.map(change=>`<li>${escapeHtml(E(change.from).name)} → ${escapeHtml(E(change.to).name)}</li>`).join('');
- const feedbackPanel=`<section class="coach-feedback"><h2>${escapeHtml(C('rateTitle'))}</h2><p>${escapeHtml(C('ratingIntro'))}</p><div class="coach-rating-list">${ratingRows}</div>${advice.rated?`<div class="coach-next"><h3>${escapeHtml(C('nextTitle'))}</h3><p>${escapeHtml(C('nextHelp'))}</p><p class="coach-caution">${escapeHtml(C('suggestionCaution'))}</p>${changeDetails?`<ul>${changeDetails}</ul>`:`<p>${escapeHtml(C('noChange'))}</p>`}${advice.unchanged.length?`<p>${escapeHtml(C('unchanged'))}</p>`:''}<button type="button" class="secondary-btn" data-action="start-next">${escapeHtml(C('startNext'))} ${icon('play')}</button></div>`:`<p class="coach-muted">${escapeHtml(C('more'))}</p>`}</section>`;
+ const feedbackPanel=`<section class="coach-feedback"><h2>${escapeHtml(C('rateTitle'))}</h2><p>${escapeHtml(C('ratingIntro'))}</p><div class="coach-rating-list">${ratingRows}</div>${advice.rated?`<div class="coach-next"><h3>${escapeHtml(C('nextTitle'))}</h3><p>${escapeHtml(C('nextHelp'))}</p><p class="coach-caution">${escapeHtml(C('suggestionCaution'))}</p>${changeDetails?`<ul>${changeDetails}</ul>`:`<p>${escapeHtml(C('noChange'))}</p>`}${advice.unchanged.length?`<p>${escapeHtml(C('unchanged'))}</p>`:''}<button type="button" class="secondary-btn" data-action="open-next">${escapeHtml(C('openWorkout'))} ${icon('arrow')}</button></div>`:`<p class="coach-muted">${escapeHtml(C('more'))}</p>`}</section>`;
 
  view='done';
  app.innerHTML=`<div class="done-page done-record-page">
@@ -296,6 +321,12 @@ function renderDone(){
  </main></div>`;
 }
 function updateClock(){
+ if(view==='prepare'&&preparation){
+  if(preparation.tick()){startActualWorkout();return;}
+  const prepTime=document.getElementById('phase-time');
+  if(prepTime)prepTime.textContent=secsLabel(preparation.remainingMs());
+  return;
+ }
  if(!engine||view!=='workout')return;
  engine.tick();if(view!=='workout')return;
  const snap=engine.snapshot();
@@ -328,7 +359,10 @@ function updateWakeIndicator(){
 }
 function beginWorkout(restarted=false){
  try{
-  // Der erste Ton wird synchron beim Start-Tipp abgespielt.
+  // Preparing to exercise is separate from the workout phases and duration.
+  stopTicking();
+  preparation?.cancel();
+  preparation=null;
   const ids=[...currentIds()];
   workoutRatings=Object.create(null);
   workoutCount=ids.length;
@@ -342,12 +376,30 @@ function beginWorkout(restarted=false){
    onComplete:()=>{trackWorkoutEvent('workout_completed',workoutSession);if(prefs.sound)cueAudio.play('done');stopTicking();releaseWake();view='done';renderDone();},
    onChange:()=>{if(view==='workout')renderWorkout();}
   });
-  view='workout';engine.start();trackWorkoutEvent('workout_started',workoutSession);if(restarted)trackWorkoutEvent('workout_restarted',workoutSession);phaseSound(engine.phases[0]);
+  // Cue the rest/preparation sound during the button gesture to preserve mobile audio permission.
+  if(prefs.sound)audioWarning=!cueAudio.play('rest');
+  preparation=new PreparationCountdown();
+  preparation.start();
+  view='prepare';
+  renderPreparation();
   startTicking();acquireWake();
   window.scrollTo({top:0,behavior:'instant'});
  }catch(err){window.alert(T('startError')+err.message);}
 }
-function exitWorkout(){trackWorkoutEvent('workout_abandoned',workoutSession);stopTicking();cueAudio.stop();releaseWake();engine=null;workoutSession=null;pendingExit=false;view='setup';render();}
+function startActualWorkout(){
+ if(view!=='prepare'||!engine)return;
+ preparation?.cancel();preparation=null;
+ view='workout';
+ engine.start();
+ trackWorkoutEvent('workout_started',workoutSession);
+ phaseSound(engine.phases[0]);
+}
+function exitWorkout(){
+ if(view!=='prepare')trackWorkoutEvent('workout_abandoned',workoutSession);
+ preparation?.cancel();preparation=null;
+ stopTicking();cueAudio.stop();releaseWake();
+ engine=null;workoutSession=null;pendingExit=false;view='setup';render();
+}
 function showHelp(){window.alert(T('helpMessage'));}
 // Share the selected plan on setup, and the actual frozen session after training.
 async function shareCurrentWorkout(override=null){
@@ -395,16 +447,26 @@ app.addEventListener('click',event=>{
  }
  else if(action==='close-swap'){swapIndex=null;swapQuery='';render();}
  else if(action==='dismiss-swap' && event.target===button){swapIndex=null;swapQuery='';render();}
- else if(action==='start-next'&&view==='done'&&workoutSession){
+ else if(action==='open-next'&&view==='done'&&workoutSession){
   const next=recommendWorkout(workoutSession,workoutRatings,{equipment:prefs.equipment,quiet:prefs.quiet}).session;
-  // Persist the selected recommendation as the new editable workout; no workout history.
+  // Keep the rated recommendation ready on the builder and across future visits.
   Object.assign(prefs,{presetId:next.presetId,difficulty:next.difficulty,
     workSec:next.workSec,restSec:next.restSec,rounds:next.rounds});
   prefs.custom[currentCustomKey()]=[...next.ids];
+  // A shared ?w= link would otherwise overwrite the saved recommendation on reload.
+  const cleanUrl=new URL(location.href);
+  if(cleanUrl.searchParams.has('w')){
+   cleanUrl.searchParams.delete('w');
+   window.history.replaceState(null,'',cleanUrl.pathname+cleanUrl.search+cleanUrl.hash);
+  }
   save();
-  beginWorkout();
+  stopTicking();releaseWake();engine=null;preparation?.cancel();preparation=null;
+  workoutSession=null;workoutRatings=Object.create(null);
+  view='setup';render();
+  window.scrollTo({top:0,behavior:'instant'});
  }
  else if(action==='start'){beginWorkout();}
+ else if(action==='prepare-now'&&view==='prepare'){startActualWorkout();}
  else if(action==='share'){void shareCurrentWorkout();}
  else if(action==='adjust'){const field=button.dataset.field;if(!['workSec','restSec','rounds'].includes(field))return;prefs[field]=stepSetting(field,prefs[field],Number(button.dataset.direction));save();updatePicker(field);updateSettingsSummary();}
  else if(action==='pause'&&engine){
@@ -414,10 +476,10 @@ app.addEventListener('click',event=>{
  }
  else if(action==='skip'&&engine){if(workoutSession)workoutSession.skippedPhases++;engine.skip();if(view==='workout')renderWorkout();}
  else if(action==='exit'){
-  if(window.confirm(T('exitConfirm')))exitWorkout();
+  if(view==='prepare'||window.confirm(T('exitConfirm')))exitWorkout();
  }
  else if(action==='restart'){beginWorkout(true);}
- else if(action==='setup'){stopTicking();releaseWake();engine=null;workoutSession=null;view='setup';render();window.scrollTo({top:0,behavior:'instant'});}
+ else if(action==='setup'){preparation?.cancel();preparation=null;stopTicking();releaseWake();engine=null;workoutSession=null;view='setup';render();window.scrollTo({top:0,behavior:'instant'});}
  else if(action==='help'){showHelp();}
 });
 app.addEventListener('change',event=>{
