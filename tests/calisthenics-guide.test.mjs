@@ -10,7 +10,7 @@ assert.ok(home.includes('<a href="./about-calisthenics/" hreflang="en">About cal
 assert.ok(home.includes('id="pick5go-legal"'),'footer link must stay next to existing legal navigation');
 assert.ok(!home.includes('id="guide-title"'),'workout homepage remains uncluttered');
 assert.ok(guide.includes('<html lang="en">'),'English only for now');
-assert.ok(guide.includes('name="robots" content="noindex,follow"'),'preview not indexable');
+assert.ok(!guide.includes('name="robots" content="noindex'), 'production guide indexable');
 assert.ok(guide.includes('<link rel="canonical" href="https://pick5go.com/about-calisthenics/"/>'),'future production canonical');
 assert.ok(guide.includes('<nav class="guide-contents" id="contents"'),'contents menu');
 assert.equal((guide.match(/class="guide-chapter" id="/g)||[]).length,9);
@@ -31,7 +31,7 @@ for(const term of ['World Health Organization','American College of Sports Medic
 assert.ok(!/<script\s+src=/.test(guide),'readable without app JavaScript');
 assert.ok(css.includes('@media(max-width:650px)'),'responsive layout');
 assert.ok(css.includes('prefers-reduced-motion'),'accessible motion preferences');
-assert.ok(sw.match(/pick5go-v1\.3-preview-\d+/),'new offline cache');
+assert.ok(sw.match(/pick5go-v1\.3-production-\d+/),'production cache');
 for(const path of ['./about-calisthenics/','./about-calisthenics/index.html','./about-calisthenics/guide.css']){
  assert.ok(sw.includes(path),'offline precache '+path);
 }

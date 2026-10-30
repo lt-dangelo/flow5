@@ -19,7 +19,7 @@ checkPng('home-192.png',192);
 checkPng('home-512.png',512);
 checkPng('home-maskable-512.png',512);
 const manifest=JSON.parse(read('manifest.webmanifest').toString());
-assert.ok(manifest.name.includes('Preview'),'keep preview identity distinct from production');
+assert.equal(manifest.name,'Pick5Go – Fitness, simplified.','production identity retained');
 assert.deepEqual(manifest.icons,[
  {src:'./icons/home-192.png',sizes:'192x192',type:'image/png',purpose:'any'},
  {src:'./icons/home-512.png',sizes:'512x512',type:'image/png',purpose:'any'},

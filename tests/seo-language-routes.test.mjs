@@ -13,7 +13,7 @@ for(const lang of SEO_LANGUAGES){
  const canonical=origin+(lang==='en'?'':lang+'/');
  assert.ok(html.includes('<html lang="'+lang+'">'),path+' lang');
  assert.ok(html.includes('<link rel="canonical" href="'+canonical+'"/>'),path+' canonical');
- assert.ok(html.includes('name="robots" content="noindex,follow"'),path+' preview must not index');
+ assert.ok(!html.includes('name="robots" content="noindex'),path+' production must index');
  if(lang!=='en')assert.ok(html.includes('<base href="../"/>'),path+' shared asset base');
  for(const target of alternates){
   const url=origin+(target==='en'||target==='x-default'?'':target+'/');
@@ -21,7 +21,7 @@ for(const lang of SEO_LANGUAGES){
  }
  assert.ok(html.match(/\.\/src\/app\.js\?build=1\.3\.\d+/),path+' shared workout engine');
  assert.ok(html.match(/\.\/src\/consent\.js\?build=1\.3\.\d+/),path+' analytics consent');
- assert.ok(html.match(/\.\/src\/analytics-debug\.js\?build=1\.3\.\d+/),path+' preview diagnostics');
+ assert.ok(!html.includes('analytics-debug.js'),path+' production excludes diagnostic script');
  assert.equal(languageForPath(new URL(languageUrl(root,lang)).pathname,new URL(root).pathname),lang,lang+' preview route');
  assert.equal(languageForPath(new URL(languageUrl(origin,lang)).pathname,'/'),lang,lang+' prod route');
 }

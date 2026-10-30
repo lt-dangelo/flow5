@@ -43,7 +43,7 @@ assert.ok(!app.includes('class="intro-stats"'),'remove timer/screen-wake labels'
 assert.ok(!app.includes('class="footnote"'),'remove orphan asterisk footnote');
 assert.ok(app.includes('data-language'),'language choice must be interactive');
 assert.ok(app.includes('document.documentElement.lang=prefs.lang'));
-assert.ok(sw.match(/pick5go-v1\.3-preview-\d+/));
+assert.ok(sw.match(/pick5go-v1\.3-production-\d+/));
 for(const lang of ['de','it','fr','es'])assert.ok(sw.includes(`./${lang}/`),'offline page '+lang);
 assert.ok(sw.includes('./src/seo-languages.js'),'offline locale router');
 for(const module of ['locales-ui.js','locales-exercises.js'])assert.ok(sw.includes('./src/'+module),'offline languages '+module);
