@@ -276,7 +276,7 @@ function renderDone(){
   return `<div class="coach-rating-row"><label for="rate-${id}">${escapeHtml(e.name)}</label><div class="coach-rating-slider"><input id="rate-${id}" type="range" min="-1" max="1" step="1" value="${number}" data-coach-rating="${id}" aria-label="${escapeHtml(e.name)}" aria-valuetext="${escapeHtml(C(value))}"/><div class="coach-rating-labels"><span>${escapeHtml(C('easy'))}</span><strong class="coach-rating-current">${escapeHtml(C(value))}</strong><span>${escapeHtml(C('hard'))}</span></div></div></div>`;
  }).join('');
  const changeDetails=advice.changes.map(change=>`<li>${escapeHtml(E(change.from).name)} → ${escapeHtml(E(change.to).name)}</li>`).join('');
- const feedbackPanel=`<section class="coach-feedback"><h2>${escapeHtml(C('rateTitle'))}</h2><p>${escapeHtml(C('ratingIntro'))}</p><div class="coach-rating-list">${ratingRows}</div>${advice.rated?`<div class="coach-next"><h3>${escapeHtml(C('nextTitle'))}</h3><p>${escapeHtml(C('nextHelp'))}</p><p class="coach-caution">${escapeHtml(C('suggestionCaution'))}</p>${changeDetails?`<ul>${changeDetails}</ul>`:`<p>${escapeHtml(C('noChange'))}</p>`}${advice.unchanged.length?`<p>${escapeHtml(C('unchanged'))}</p>`:''}<button type="button" class="secondary-btn" data-action="share-next">${escapeHtml(C('shareNext'))} →</button><p class="share-status" data-share-status role="status" aria-live="polite"></p></div>`:`<p class="coach-muted">${escapeHtml(C('more'))}</p>`}</section>`;
+ const feedbackPanel=`<section class="coach-feedback"><h2>${escapeHtml(C('rateTitle'))}</h2><p>${escapeHtml(C('ratingIntro'))}</p><div class="coach-rating-list">${ratingRows}</div>${advice.rated?`<div class="coach-next"><h3>${escapeHtml(C('nextTitle'))}</h3><p>${escapeHtml(C('nextHelp'))}</p><p class="coach-caution">${escapeHtml(C('suggestionCaution'))}</p>${changeDetails?`<ul>${changeDetails}</ul>`:`<p>${escapeHtml(C('noChange'))}</p>`}${advice.unchanged.length?`<p>${escapeHtml(C('unchanged'))}</p>`:''}<button type="button" class="secondary-btn" data-action="start-next">${escapeHtml(C('startNext'))} ${icon('play')}</button></div>`:`<p class="coach-muted">${escapeHtml(C('more'))}</p>`}</section>`;
 
  view='done';
  app.innerHTML=`<div class="done-page done-record-page">
@@ -395,7 +395,15 @@ app.addEventListener('click',event=>{
  }
  else if(action==='close-swap'){swapIndex=null;swapQuery='';render();}
  else if(action==='dismiss-swap' && event.target===button){swapIndex=null;swapQuery='';render();}
- else if(action==='share-next'&&view==='done'&&workoutSession){void shareCurrentWorkout(recommendWorkout(workoutSession,workoutRatings,{equipment:prefs.equipment,quiet:prefs.quiet}).session);}
+ else if(action==='start-next'&&view==='done'&&workoutSession){
+  const next=recommendWorkout(workoutSession,workoutRatings,{equipment:prefs.equipment,quiet:prefs.quiet}).session;
+  // Persist the selected recommendation as the new editable workout; no workout history.
+  Object.assign(prefs,{presetId:next.presetId,difficulty:next.difficulty,
+    workSec:next.workSec,restSec:next.restSec,rounds:next.rounds});
+  prefs.custom[currentCustomKey()]=[...next.ids];
+  save();
+  beginWorkout();
+ }
  else if(action==='start'){beginWorkout();}
  else if(action==='share'){void shareCurrentWorkout();}
  else if(action==='adjust'){const field=button.dataset.field;if(!['workSec','restSec','rounds'].includes(field))return;prefs[field]=stepSetting(field,prefs[field],Number(button.dataset.direction));save();updatePicker(field);updateSettingsSummary();}
