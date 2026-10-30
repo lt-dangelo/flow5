@@ -47,7 +47,7 @@ assert.deepEqual(removeExercise(ids,0),ids);
 assert.deepEqual(removeExercise(ids,-1),ids);
 assert.deepEqual(chooseExercise(ids,-1,'squat',known),['stepJack','squat']);
 assert.deepEqual(chooseExercise(ids,0,'squat',known),['squat']);
-assert.equal(chooseExercise(ids,-1,'march',known),null);
+assert.equal(chooseExercise(ids,-1,'stepJack',known),null);
 assert.equal(chooseExercise([...preset.ids],-1,'bearHold',known),null);
 assert.equal(chooseExercise(ids,-1,'invalid',known),null);
 
