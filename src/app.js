@@ -12,7 +12,7 @@ import {validSelection,removeExercise,chooseExercise,pickerChoices} from './sele
 import {languageForPath,languageUrl} from './seo-languages.js';
 import {decodeSharedWorkout,sharedWorkoutUrl} from './share.js';
 import {allowedExercise,adaptWorkout,balanceWarnings,PROGRESSIONS,recommendWorkout} from './coach.js';
-import {coachText} from './coach-i18n.js';
+import {coachText} from './coach-i18n.js?build=1.3.53';
 
 const STORAGE_KEY='flow5-prefs-v13-preview';
 const DEFAULTS={presetId:'full',difficulty:'beginner', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en',equipment:'none',quiet:false};

@@ -209,3 +209,13 @@ test('ready-made workouts link sits below the workout plan card and is localized
  assert.equal(coachText('en','explore'),'Browse more ready-made workouts');
  for(const lang of ['de','it','fr','es'])assert.ok(coachText(lang,'explore').length>12,lang+' label localized');
 });
+
+test('ready-made wording and versioned coach localization cannot drift across cached page versions',async()=>{
+ const app=read('src/app.js'),sw=read('sw.js'),html=read('index.html');
+ const {coachText}=await import('../src/coach-i18n.js');
+ assert.equal(coachText('en','explore'),'Browse more ready-made workouts');
+ assert.ok(app.includes("from './coach-i18n.js?build=1.3.53'"),'app imports cache-busted translations');
+ assert.ok(sw.includes("'./src/coach-i18n.js?build=1.3.53'"),'SW precaches same translation module version');
+ assert.ok(html.includes('src/app.js?build=1.3.53'),'new page loads refreshed app');
+ assert.ok(app.includes("${escapeHtml(C('explore'))} →"),'visible link comes from translated key');
+});
