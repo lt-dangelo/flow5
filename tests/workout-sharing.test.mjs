@@ -49,7 +49,7 @@ assert.ok((app.match(/data-action="share"/g)||[]).length>=2,'share before and af
 assert.ok(app.includes('navigator.share'),'native share option');
 assert.ok(app.includes('navigator.clipboard?.writeText'),'copy fallback');
 assert.ok(sw.includes('./src/share.js'),'offline import');
-assert.ok(sw.match(/pick5go-v1\.3-preview-\d+/),'cache version bumped');
+assert.ok(sw.match(/pick5go-v1\.3-production-\d+/),'cache version bumped');
 assert.ok(consent.includes("if(onGuide())return guideLang()"),'guide language follows URL rather than stored preferences');
 assert.ok(guide.includes('src="../src/consent.js?build=1.3.41"'),'guide uses same consent script');
 assert.ok(guide.includes('id="analytics-settings"'),'guide can change analytics consent');
@@ -62,5 +62,5 @@ assert.deepEqual(plans.get('hotel-10'),{...original,ids:['squat','wallPushup','h
 for(const preset of PRESETS){
  assert.deepEqual(plans.get(preset.id+'-beginner'),{...original,presetId:preset.id,ids:preset.ids},'guide '+preset.id+' uses app preset');
 }
-assert.equal(guide.includes('name="robots" content="noindex,follow"'),true,'preview remains noindex');
+assert.equal(guide.includes('name="robots" content="noindex,follow"'),false,'production guide indexable');
 console.log('OK: share round-trips, rejects invalid links, works in all 5 languages, guide ready workouts and optional Umami');
