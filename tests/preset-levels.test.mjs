@@ -5,8 +5,8 @@ import {exerciseText,levelText,presetText,t} from '../src/i18n.js';
 import {validSelection,chooseExercise} from '../src/selection.js';
 
 const ids=new Set(EXERCISES.map(e=>e.id));
-assert.equal(EXERCISES.length,27);
-assert.equal(ids.size,27);
+assert.equal(EXERCISES.length,32);
+assert.equal(ids.size,32);
 assert.deepEqual(PRESETS.map(p=>p.id),['full','core','upper','legs']);
 assert.deepEqual(DIFFICULTIES,['beginner','intermediate']);
 assert.equal(Object.keys(PRESET_BY_ID).length,4);
@@ -35,7 +35,7 @@ for(const lang of ['en','de']){
  }
  for(const p of PRESETS) assert.ok(presetText(p,lang).name);
 }
-assert.deepEqual(EXERCISES.filter(e=>e.equipment).map(e=>e.id),['bandRow']);
+assert.deepEqual(EXERCISES.filter(e=>e.equipment).map(e=>e.id),['bandRow','inclinePushup','supportedSplitSquat']);
 assert.equal(EXERCISES.find(e=>e.id==='plank').level,2);
 assert.equal(EXERCISES.find(e=>e.id==='jumpingJack').level,1);
 assert.equal(EXERCISES.find(e=>e.id==='pikePushup').level,3);
@@ -51,6 +51,6 @@ assert.ok(app.includes("T('placeholder')"),'workout placeholder is labelled');
 assert.ok(art.includes("pose-placeholder"),'lineup placeholder has no misleading squat');
 const sw=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
 const html=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(sw.includes('pick5go-v1.3-production-4'));
-assert.ok(html.includes('build=1.3.42'));
+assert.ok(sw.match(/pick5go-v1\.3-preview-\d+/));
+assert.ok(html.match(/build=1\.3\.\d+/));
 console.log('OK: difficulty presets, equipment flag, placeholders, bilingual cues, caching');

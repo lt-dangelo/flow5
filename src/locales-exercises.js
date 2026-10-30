@@ -135,7 +135,12 @@ export const EXERCISE_EXTRA={
       "Squat assistito a una gamba",
       "Tieniti a un supporto stabile, piega lentamente la gamba d'appoggio e risali.",
       "Scendi fin dove controlli; cambia gamba a metà intervallo."
-    ]
+    ],
+    "inclinePushup": ["Piegamenti inclinati","Appoggia le mani su una superficie rialzata e stabile. Con il corpo allineato, piega i gomiti e spingi.","Usa un piano solido e antiscivolo; più basso significa più impegnativo."],
+    "kneeForearmPlank": ["Plank sugli avambracci con ginocchia","Appoggia avambracci e ginocchia, attiva il core e mantieni una linea dalla testa alle ginocchia.","Gomiti sotto le spalle; evita di lasciare scendere il bacino."],
+    "stepJack": ["Step jack senza salto","Porta un piede di lato alzando le braccia, torna al centro e alterna i lati.","Niente salti; appoggia i piedi dolcemente e mantieni il controllo."],
+    "gluteBridgeMarch": ["Ponte glutei con marcia","Mantieni il ponte glutei e solleva leggermente un piede alla volta senza muovere il bacino.","Bacino in linea; torna al ponte normale se perdi stabilità."],
+    "supportedSplitSquat": ["Split squat con appoggio","Con un piede avanti e uno dietro, reggiti a un supporto stabile; piega le ginocchia e risali.","Busto eretto e cambio della gamba anteriore a metà tempo."]
   },
   "fr": {
     "squat": [
@@ -272,7 +277,12 @@ export const EXERCISE_EXTRA={
       "Squat assisté sur une jambe",
       "Tenez un support stable, fléchissez lentement la jambe d'appui puis remontez.",
       "Descendez selon votre contrôle; changez de jambe à mi-temps."
-    ]
+    ],
+    "inclinePushup": ["Pompes inclinées","Mains sur un support surélevé et stable, corps aligné, descendez la poitrine puis repoussez.","Utilisez un support solide et antidérapant; plus il est bas, plus c'est difficile."],
+    "kneeForearmPlank": ["Planche sur les avant-bras et genoux","Avant-bras et genoux au sol, gainez le tronc et alignez la tête avec les genoux.","Coudes sous les épaules; évitez de laisser tomber les hanches."],
+    "stepJack": ["Step jacks sans saut","Écartez un pied sur le côté en levant les bras, revenez au centre, puis changez de côté.","Sans sauter; posez les pieds doucement et gardez le contrôle."],
+    "gluteBridgeMarch": ["Pont fessier avec marche","Tenez le pont fessier en soulevant légèrement un pied à la fois, sans bouger le bassin.","Gardez le bassin horizontal; reposez les deux pieds si vous perdez le contrôle."],
+    "supportedSplitSquat": ["Fente statique assistée","En position décalée, tenez un support stable, fléchissez les deux genoux puis remontez.","Buste droit; changez la jambe avant à mi-temps."]
   },
   "es": {
     "squat": [
@@ -409,7 +419,12 @@ export const EXERCISE_EXTRA={
       "Sentadilla asistida a una pierna",
       "Sujeta un apoyo estable, flexiona lentamente la pierna de apoyo y vuelve arriba.",
       "Baja solo hasta donde controles; cambia de pierna a mitad."
-    ]
+    ],
+    "inclinePushup": ["Flexiones inclinadas","Manos en una superficie alta y estable; con el cuerpo alineado, baja el pecho y empuja.","Superficie firme y antideslizante; cuanto más baja, más difícil."],
+    "kneeForearmPlank": ["Plancha de antebrazos con rodillas","Apoya antebrazos y rodillas, activa el abdomen y alinea la cabeza con las rodillas.","Codos bajo los hombros; no dejes caer la cadera."],
+    "stepJack": ["Step jacks sin salto","Saca un pie al lado mientras elevas los brazos, vuelve al centro y alterna.","Sin saltos; pisa suavemente y mantén un ritmo controlado."],
+    "gluteBridgeMarch": ["Puente de glúteos con marcha","Mantén el puente y levanta ligeramente un pie cada vez sin mover la pelvis.","Caderas niveladas; vuelve al puente normal si pierdes estabilidad."],
+    "supportedSplitSquat": ["Sentadilla dividida con apoyo","Con un pie delante del otro, sujétate a un apoyo firme, dobla ambas rodillas y sube.","Tronco erguido; cambia la pierna delantera a mitad del tiempo."]
   }
 };
 export const GROUP_EXTRA={

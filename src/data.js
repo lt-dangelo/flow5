@@ -53,25 +53,35 @@ export const EXERCISES = [
    cue:'Rückenlage, ein Bein anheben, Hüfte mit dem Standbein heben und senken.',tip:'Becken gerade halten; nach der Hälfte die Seite wechseln.'},
   {id:'assistedSingleLegSquat', name:'Gestützte einbeinige Kniebeuge', group:'Beine', level:2, pose:'assistedsquat',
    cue:'An einer stabilen Stütze festhalten, auf einem Bein langsam beugen und aufrichten.',tip:'Nur so tief wie kontrollierbar; nach der Hälfte Seite wechseln.'},
+  {id:'inclinePushup', name:'Schräge Liegestütze', group:'Oberkörper', level:1, pose:'inclinepushup', equipment:'support',
+   cue:'Stütze die Hände auf einer festen erhöhten Fläche ab. Körper gerade halten, Brust zur Stütze senken und wegdrücken.',tip:'Die Fläche muss rutschfest und stabil sein. Je tiefer sie ist, desto anspruchsvoller.'},
+  {id:'kneeForearmPlank', name:'Unterarmstütz auf Knien', group:'Core', level:1, pose:'kneeforearmplank',
+   cue:'Unterarme und Knie am Boden. Bauch anspannen, Hüfte ausrichten und eine gerade Linie von Kopf bis Knie halten.',tip:'Ellbogen unter den Schultern. Rücken nicht durchhängen lassen.'},
+  {id:'stepJack', name:'Step Jacks ohne Sprung', group:'Cardio', level:1, pose:'stepjack',
+   cue:'Einen Fuß seitlich ausstellen und die Arme heben, zurück zur Mitte; dann die andere Seite.',tip:'Ohne Sprünge auftreten, Tempo kontrollieren und weich abrollen.'},
+  {id:'gluteBridgeMarch', name:'Glute Bridge March', group:'Beine', level:2, pose:'bridgemarch',
+   cue:'In der Glute Bridge das Becken stabil halten und abwechselnd einen Fuß wenige Zentimeter vom Boden lösen.',tip:'Hüfte nicht kippen lassen. Bei Instabilität beide Füße am Boden lassen.'},
+  {id:'supportedSplitSquat', name:'Gestützte Split Squats', group:'Beine', level:1, pose:'supportedsplit', equipment:'support',
+   cue:'Mit einem Fuß vorn und einem hinten an einer stabilen Stütze festhalten. Beide Knie beugen und aufrichten.',tip:'Oberkörper aufrecht, Gewicht gleichmäßig verteilen; nach der Hälfte die Seite wechseln.'},
 ];
 
 export const EXERCISE_BY_ID = Object.fromEntries(EXERCISES.map(e => [e.id,e]));
 
-// Curated five-exercise programmes by focus and entry level.
-// Intermediate variants may include fundamental beginner movements.
+// Five-exercise movement-balanced circuits by focus and ability.
+ // Upper is intentionally an upper-body-and-core circuit, not a substitute for resisted pulling.
 export const PRESETS = [
  {id:'full',name:'Ganzkörper',subtitle:'Ausgewogen & effektiv',icon:'✦',
-  ids:['squat','kneePushup','hipHinge','birdDog','march'],
-  intermediateIds:['reverseLunge','pushup','singleLegBridge','bandRow','mountainClimber']},
+  ids:['squat','kneePushup','hipHinge','birdDog','stepJack'],
+  intermediateIds:['reverseLunge','pushup','bandRow','gluteBridgeMarch','mountainClimber']},
  {id:'core',name:'Core & Stabilität',subtitle:'Rumpf und Haltung',icon:'◎',
-  ids:['deadBug','birdDog','gluteBridge','heelTouch','hipHinge'],
-  intermediateIds:['plank','bicycle','sidePlankL','sidePlankR','bearHold']},
- {id:'upper',name:'Oberkörper',subtitle:'Drücken & stabilisieren',icon:'↗',
-  ids:['wallPushup','kneePushup','snowAngel','bandRow','birdDog'],
-  intermediateIds:['pushup','kneePushup','bandRow','snowAngel','shoulderTap']},
+  ids:['deadBug','birdDog','kneeForearmPlank','gluteBridge','stepJack'],
+  intermediateIds:['plank','bicycle','sidePlankL','birdDog','sidePlankR']},
+ {id:'upper',name:'Oberkörper & Core',subtitle:'Drücken, Schultern & Rumpf',icon:'↗',
+  ids:['inclinePushup','deadBug','snowAngel','kneeForearmPlank','birdDog'],
+  intermediateIds:['pushup','deadBug','snowAngel','sidePlankL','sidePlankR']},
  {id:'legs',name:'Beine & Po',subtitle:'Kraft aus der Basis',icon:'⌁',
-  ids:['squat','hipHinge','gluteBridge','calfRaise','march'],
-  intermediateIds:['reverseLunge','assistedSingleLegSquat','hipHinge','singleLegBridge','calfRaise']}
+  ids:['squat','hipHinge','gluteBridge','calfRaise','stepJack'],
+  intermediateIds:['reverseLunge','hipHinge','gluteBridgeMarch','wallSit','calfRaise']}
 ];
 export const PRESET_BY_ID = Object.fromEntries(PRESETS.map(p=>[p.id,p]));
 export const DIFFICULTIES = ['beginner','intermediate'];

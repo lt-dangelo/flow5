@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+ <meta charset="utf-8"/>
+ <base href="../"/>
+ <meta name="viewport" content="width=device-width,initial-scale=1"/>
+ <meta name="robots" content="noindex,follow"/>
+ <meta name="theme-color" content="#0b1016"/>
+ <meta name="description" content="Explore short, beginner-friendly bodyweight workouts for strength and stability. Start instantly with Pick5Go — no signup."/>
+ <link rel="stylesheet" href="./styles.css?build=1.3.50"/>
+ <link rel="icon" href="./icons/pick5go-mark.svg" type="image/svg+xml"/>
+ <title>Ready-to-use bodyweight workouts | Pick5Go Preview</title>
+ <style>
+ .gallery-shell{max-width:1100px;margin:auto;padding:24px clamp(16px,4vw,40px) 54px;color:var(--text)}
+ .gallery-nav{display:flex;justify-content:space-between;align-items:center;gap:14px;border-bottom:1px solid var(--outline);padding-bottom:22px}
+ .gallery-nav img{width:76px;height:auto}
+ .gallery-nav a{color:var(--lime);font-weight:700;font-size:13px}
+ .gallery-intro{padding:35px 0 20px;max-width:760px}
+ .gallery-intro h1{font-size:clamp(29px,5vw,54px);letter-spacing:-.04em;margin:0 0 12px}
+ .gallery-intro p{color:var(--muted);line-height:1.7;font-size:15px}
+ .gallery-controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin:18px 0 25px}
+ .gallery-controls label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:12px;font-weight:700}
+ .gallery-controls select{min-width:148px;color:var(--text);background:var(--panel2);border:1px solid var(--outline);border-radius:10px;padding:11px;font-size:13px}
+ .gallery-list{display:flex;flex-direction:column;gap:34px}.gallery-group h2{font-size:clamp(19px,2.5vw,25px);letter-spacing:-.02em;margin:0 0 14px}.gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+ .gallery-card{border:1px solid var(--outline);border-radius:17px;background:var(--panel);padding:20px;display:flex;flex-direction:column;gap:12px}
+ .gallery-card h3{font-size:19px;letter-spacing:-.02em;line-height:1.35}
+ .gallery-card p{font-size:13px;color:var(--muted);line-height:1.65;flex:1}
+ .gallery-card .meta{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--lime);font-weight:700}
+ .gallery-card a{display:block;text-align:center;background:var(--lime);color:#182c19;border-radius:10px;padding:12px 15px;font-size:13px;font-weight:850}
+ .gallery-card a:hover{filter:brightness(1.06)}
+ .gallery-disclaimer{font-size:12px;color:var(--muted);max-width:790px;line-height:1.7;margin:28px 0}
+ .gallery-footer{border-top:1px solid var(--outline);padding-top:18px;font-size:12px;color:var(--muted)}
+ .gallery-footer a{color:var(--lime)}
+ </style>
+</head>
+<body>
+ <main class="gallery-shell">
+ <nav class="gallery-nav"><img src="./icons/pick5go-mark.svg" alt="Pick5Go"/><a id="gallery-back" href="./">← Back to builder</a></nav>
+ <section class="gallery-intro"><h1 id="gallery-title">Find your workout</h1><p id="gallery-description">Pick a goal and level, then customize any exercise or interval. No registration required.</p></section>
+ <section class="gallery-controls" aria-label="Filter example workouts"><label><span id="goal-label">Focus</span><select id="gallery-goal"><option value="all">All</option><option value="full">Full body</option><option value="core">Core & stability</option><option value="upper">Upper body &amp; core</option><option value="legs">Legs & glutes</option></select></label><label><span id="level-label">Level</span><select id="gallery-level"><option value="all">All</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option></select></label><label><span id="lang-label">Language</span><select id="gallery-lang"><option value="en">English</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="fr">Français</option><option value="es">Español</option></select></label></section>
+ <div class="gallery-list" id="gallery-list">
+ <section class="gallery-group" aria-labelledby="gallery-group-quick">
+  <h2 id="gallery-group-quick">Quick starts</h2>
+  <div class="gallery-grid">
+   <article class="gallery-card"><span class="meta">Full body · Beginner · 3 exercises · 6 min</span><h3>Quick full body</h3><p>Three movements across legs, pressing and stability.</p><a href="./?w=1~full~beginner~squat%2CkneePushup%2CbirdDog~40~20~2">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Full body · Beginner · 4 exercises · 8 min</span><h3>Eight-minute reset</h3><p>Four simple patterns with a little more lower-body work.</p><a href="./?w=1~full~beginner~squat%2CkneePushup%2ChipHinge%2CbirdDog~40~20~2">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Core &amp; stability · Beginner · 3 exercises · 9 min</span><h3>Core activation</h3><p>Slow coordination followed by a short knee-supported plank.</p><a href="./?w=1~core~beginner~deadBug%2CbirdDog%2CkneeForearmPlank~40~20~3">Open workout →</a></article>
+  </div>
+ </section>
+ <section class="gallery-group" aria-labelledby="gallery-group-everyday">
+  <h2 id="gallery-group-everyday">Everyday fitness</h2>
+  <div class="gallery-grid">
+   <article class="gallery-card"><span class="meta">Full body · Beginner · 5 exercises · 15 min</span><h3>Balanced full body</h3><p>A beginner-friendly mix of strength, control and low-impact movement.</p><a href="./?w=1~full~beginner~squat%2CkneePushup%2ChipHinge%2CbirdDog%2CstepJack~40~20~3">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Full body · Intermediate · 5 exercises · 15 min</span><h3>Full-body challenge</h3><p>Single-leg strength, pressing, stability and conditioning.</p><a href="./?w=1~full~intermediate~reverseLunge%2Cpushup%2CgluteBridgeMarch%2CbirdDog%2CmountainClimber~40~20~3">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Full body · Beginner · 5 exercises · 15 min</span><h3>Quiet, low-impact circuit</h3><p>No jumping; incline push-ups need a stable elevated surface.</p><a href="./?w=1~full~beginner~squat%2CinclinePushup%2ChipHinge%2CbirdDog%2CstepJack~40~20~3">Open workout →</a></article>
+  </div>
+ </section>
+ <section class="gallery-group" aria-labelledby="gallery-group-targeted">
+  <h2 id="gallery-group-targeted">Targeted strength &amp; stability</h2>
+  <div class="gallery-grid">
+   <article class="gallery-card"><span class="meta">Upper body &amp; core · Beginner · 5 exercises · 15 min</span><h3>Upper body &amp; core</h3><p>One pressing movement plus shoulder and trunk control; no resisted pulling.</p><a href="./?w=1~upper~beginner~inclinePushup%2CdeadBug%2CsnowAngel%2CkneeForearmPlank%2CbirdDog~40~20~3">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Upper body &amp; core · Intermediate · 5 exercises · 15 min</span><h3>Upper body &amp; core challenge</h3><p>Pressing, shoulder movement and balanced side-plank holds; no resisted pulling.</p><a href="./?w=1~upper~intermediate~pushup%2CdeadBug%2CsnowAngel%2CsidePlankL%2CsidePlankR~40~20~3">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Legs &amp; glutes · Beginner · 4 exercises · 12 min</span><h3>Leg strength foundations</h3><p>Four accessible lower-body patterns without jumps.</p><a href="./?w=1~legs~beginner~squat%2ChipHinge%2CgluteBridge%2CcalfRaise~40~20~3">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Legs &amp; glutes · Intermediate · 5 exercises · 15 min</span><h3>Legs &amp; glutes challenge</h3><p>Squat, hinge and hip-stability work without duplicated lunge progressions.</p><a href="./?w=1~legs~intermediate~reverseLunge%2ChipHinge%2CgluteBridgeMarch%2CwallSit%2CcalfRaise~40~20~3">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Core &amp; stability · Intermediate · 4 exercises · 12 min</span><h3>Core stability</h3><p>A mix of bracing, rotation and coordination, not only static holds.</p><a href="./?w=1~core~intermediate~plank%2Cbicycle%2CbirdDog%2CbearHold~40~20~3">Open workout →</a></article>
+  </div>
+ </section>
+ </div>
+ <p class="gallery-disclaimer" id="gallery-note">These are general examples, not personalized medical or training plans. Select an exercise level you can perform with controlled technique. Without suitable equipment, resisted pulling work is limited.</p>
+ <footer class="gallery-footer"><a id="gallery-footer-link" href="./">Pick5Go</a> · <span id="gallery-footer-note">Free, offline-capable, no account.</span></footer>
+ </main>
+ <script type="module" src="./src/gallery.js?build=1.3.50"></script>
+</body>
+</html>

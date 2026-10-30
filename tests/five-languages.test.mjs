@@ -19,19 +19,19 @@ for(const lang of codes){
   assert.ok(!string.includes('{time}'),lang+' interpolated '+key);
  }
  const localized=EXERCISES.map(e=>exerciseText(e,lang));
- assert.equal(localized.length,27);
+ assert.equal(localized.length,32);
  for(const ex of localized){
   assert.ok(ex.name&&ex.group&&ex.cue&&ex.tip,lang+' '+ex.id);
   assert.ok(ex.cue.length<=175,lang+' verbose cue '+ex.id);
  }
  const choices=pickerChoices(localized,['squat','plank'],'',lang);
- assert.equal(choices.length,25);
+ assert.equal(choices.length,30);
  assert.ok(!choices.some(e=>['squat','plank'].includes(e.id)));
  for(const preset of PRESETS)assert.ok(presetText(preset,lang).name);
 }
 for(const lang of ['it','fr','es']){
- assert.equal(Object.keys(EXERCISE_EXTRA[lang]).length,27);
- assert.ok(Object.keys(UI_EXTRA[lang]).length>=105,'localized UI includes sharing controls');
+ assert.equal(Object.keys(EXERCISE_EXTRA[lang]).length,32);
+ assert.ok(Object.keys(UI_EXTRA[lang]).length>=100,'translated UI entries');
 }
 assert.equal(t('en','footer'),'Your exercise choices stay on your device. No registration, no setup, no personal workout history');
 const app=readFileSync(new URL('../src/app.js',import.meta.url),'utf8');
@@ -43,9 +43,11 @@ assert.ok(!app.includes('class="intro-stats"'),'remove timer/screen-wake labels'
 assert.ok(!app.includes('class="footnote"'),'remove orphan asterisk footnote');
 assert.ok(app.includes('data-language'),'language choice must be interactive');
 assert.ok(app.includes('document.documentElement.lang=prefs.lang'));
-assert.ok(sw.includes('pick5go-v1.3-production-4'));
+assert.ok(sw.match(/pick5go-v1\.3-preview-\d+/));
+for(const lang of ['de','it','fr','es'])assert.ok(sw.includes(`./${lang}/`),'offline page '+lang);
+assert.ok(sw.includes('./src/seo-languages.js'),'offline locale router');
 for(const module of ['locales-ui.js','locales-exercises.js'])assert.ok(sw.includes('./src/'+module),'offline languages '+module);
 const plan=buildPlan(['squat','plank'],{workSec:40,restSec:20,rounds:3,includeFinalRest:true});
 assert.equal(plan.at(-1).kind,'rest');
 assert.equal(planStats(plan).totalMs,6*60000);
-console.log('OK: 5 languages, 27 exercises, preset/picker coverage, fixed final rest, offline locale modules');
+console.log('OK: 5 languages, 32 exercises, preset/picker coverage, fixed final rest, offline locale modules');

@@ -14,18 +14,16 @@
     fr:{intro:'Avec votre accord, Pick5Go utilise Umami pour mesurer les visites et l’utilisation des entraînements. Aucun script d’analyse sans consentement.',accept:'Autoriser',decline:'Refuser',settings:'Préférences de confidentialité',privacy:'Politique de confidentialité',imprint:'Mentions légales'},
     es:{intro:'Con tu consentimiento, Pick5Go usa Umami para medir visitas y uso de entrenamientos. No se carga ningún script de análisis sin consentimiento.',accept:'Permitir estadísticas',decline:'Rechazar',settings:'Preferencias de privacidad',privacy:'Política de privacidad',imprint:'Aviso legal'}
   };
-  // The in-app language selector takes precedence over browser locale.
   // Guide pages have their own explicit language routes, independent of saved app preferences.
   const onGuide=()=>/\/about-calisthenics\/(?:index\.html)?$/.test(location.pathname);
   const guideLang=()=>location.pathname.match(/\/(de|it|fr|es)\/about-calisthenics\/(?:index\.html)?$/)?.[1]||'en';
   const legalRoot=()=>onGuide()?(guideLang()==='en'?'../':'../../'):'./';
   const currentLang=()=>{
     if(onGuide())return guideLang();
-
-    // The explicit language URL overrides a different language saved earlier.
+    // Language URLs take precedence over saved settings when opening a translated page.
     const route=location.pathname.match(/\/(de|it|fr|es)\/(?:index\.html)?$/);
     if(route)return route[1];
-    for(const key of ['pick5go-prefs-v13','flow5-prefs-v13-preview']){
+    for(const key of ['flow5-prefs-v13-preview','pick5go-prefs-v13']){
       try{
         const value=localStorage.getItem(key);
         if(value){const lang=JSON.parse(value)?.lang;if(Object.hasOwn(TXT,lang))return lang;}
