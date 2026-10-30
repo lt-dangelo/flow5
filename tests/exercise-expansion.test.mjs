@@ -61,7 +61,7 @@ test('all 11 ready-made workouts use categorized, unique and safe shareable sess
  assert.deepEqual([3,3,5],Object.keys(WORKOUT_GROUPS).map(x=>WORKOUTS.filter(r=>r.category===x).length));
  assert.ok(source.includes("from './workout-catalog.js'"),'filtered gallery uses canonical catalog');
  assert.ok(gallery.includes('type="module" src="./src/gallery.js'),'filters load as an external module');
- const cards=[...gallery.matchAll(/<article class="gallery-card">[\\s\\S]*?<\\/article>/g)];
+ const cards=[...gallery.matchAll(/<article class="gallery-card">[\s\S]*?<\/article>/g)];
  assert.equal(cards.length,11,'static cards survive JavaScript failure');
  const groups=[...gallery.matchAll(/<section class="gallery-group"/g)];assert.equal(groups.length,3);
  const chains=[
@@ -81,7 +81,7 @@ test('all 11 ready-made workouts use categorized, unique and safe shareable sess
   assert.ok(w.title.every(Boolean)&&w.description.every(Boolean));
   assert.ok(w.ids.every(id=>known.get(id).level<=(w.level==='beginner'?1:2)),w.title[0]+' respects level');
   for(const chain of chains)assert.ok(w.ids.filter(id=>chain.includes(id)).length<=1,w.title[0]+' no redundant difficulty variants');
-  const href=raw.match(/href="([^"]*\\?w=[^"]*)"/)?.[1];
+  const href=raw.match(/href="([^"]*\?w=[^"]*)"/)?.[1];
   assert.ok(href,'missing static workout link');
   const decoded=decodeSharedWorkout(new URL(href,'https://example.test/preview/v1.3/').search);
   assert.deepEqual(decoded?.ids,w.ids,w.title[0]+' static links match canonical data');
