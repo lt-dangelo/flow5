@@ -38,7 +38,7 @@ supportedSplitSquat:["Supported split squats","Legs","Hold a stable support in a
 const PRESET_EN={
 full:['Full body','Balanced & effective',''],
 core:['Core & stability','Core strength and posture',''],
-upper:['Upper body','Pressing & stability',''],
+upper:['Upper body & core','Pressing, shoulders & core',''],
 legs:['Legs & glutes','Strength from the ground up','']
 };
 const STRINGS={
@@ -138,8 +138,8 @@ export function presetText(preset,lang){
  return {...preset,name:extra[0],subtitle:extra[1],tag:''};
 }
 const PRESET_EXTRA={
- it:{full:['Corpo intero','Allenamento equilibrato'],core:['Core e stabilità','Forza e postura'],upper:['Parte superiore','Spinta e stabilità'],legs:['Gambe e glutei','Forza dalla base']},
- fr:{full:['Corps entier','Séance équilibrée'],core:['Gainage et stabilité','Force et posture'],upper:['Haut du corps','Poussée et stabilité'],legs:['Jambes et fessiers','Renforcement ciblé']},
- es:{full:['Cuerpo completo','Entrenamiento equilibrado'],core:['Zona media y estabilidad','Fuerza y postura'],upper:['Tren superior','Empuje y estabilidad'],legs:['Piernas y glúteos','Fuerza desde la base']}
+ it:{full:['Corpo intero','Allenamento equilibrato'],core:['Core e stabilità','Forza e postura'],upper:['Parte superiore e core','Spinta, spalle e core'],legs:['Gambe e glutei','Forza dalla base']},
+ fr:{full:['Corps entier','Séance équilibrée'],core:['Gainage et stabilité','Force et posture'],upper:['Haut du corps et gainage','Poussée, épaules et tronc'],legs:['Jambes et fessiers','Renforcement ciblé']},
+ es:{full:['Cuerpo completo','Entrenamiento equilibrado'],core:['Zona media y estabilidad','Fuerza y postura'],upper:['Tren superior y core','Empuje, hombros y abdomen'],legs:['Piernas y glúteos','Fuerza desde la base']}
 };
 export function levelText(level,lang){return level?t(lang,['','easy','medium','advanced'][level]):'';}
