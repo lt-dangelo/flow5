@@ -214,8 +214,8 @@ test('ready-made wording and versioned coach localization cannot drift across ca
  const app=read('src/app.js'),sw=read('sw.js'),html=read('index.html');
  const {coachText}=await import('../src/coach-i18n.js');
  assert.equal(coachText('en','explore'),'Browse more ready-made workouts');
- assert.ok(app.includes("from './coach-i18n.js?build=1.3.53'"),'app imports cache-busted translations');
- assert.ok(sw.includes("'./src/coach-i18n.js?build=1.3.53'"),'SW precaches same translation module version');
- assert.ok(html.includes('src/app.js?build=1.3.53'),'new page loads refreshed app');
+ assert.ok(app.includes("from './coach-i18n.js?build=1.3.60'"),'app imports cache-busted translations');
+ assert.ok(sw.includes("'./src/coach-i18n.js?build=1.3.60'"),'SW precaches same translation module version');
+ assert.ok(html.includes('src/app.js?build=1.3.60'),'new page loads refreshed app');
  assert.ok(app.includes("${escapeHtml(C('explore'))} →"),'visible link comes from translated key');
 });
