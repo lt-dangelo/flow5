@@ -1,6 +1,13 @@
 // Short training guidance strings; separate from the existing core UI translations.
 const messages={
  en:{
+  openWorkout:"Open workout",
+  prepState:"GET READY",
+  prepIn:"WORKOUT STARTS IN",
+  prepFirst:"FIRST EXERCISE",
+  prepMessage:"Get into position. Your workout begins when the countdown reaches zero.",
+  prepNow:"Start now",
+  prepWorkoutTime:"Workout duration",
   startNext:"Start next workout",
   backToStart:"Back to start",
   stableSupport:"Stable elevated surface/support",
@@ -21,6 +28,13 @@ const messages={
   fineCue:'Controlled repetitions and a comfortable range matter more than speed.'
  },
  de:{
+  openWorkout:"Training öffnen",
+  prepState:"BEREIT MACHEN",
+  prepIn:"TRAINING STARTET IN",
+  prepFirst:"ERSTE ÜBUNG",
+  prepMessage:"Nimm die Ausgangsposition ein. Das Training beginnt nach dem Countdown.",
+  prepNow:"Jetzt starten",
+  prepWorkoutTime:"Trainingsdauer",
   startNext:"Nächstes Training starten",
   backToStart:"Zur Startseite",
   stableSupport:"Stabile erhöhte Fläche/Stütze",
@@ -41,6 +55,13 @@ const messages={
   fineCue:'Kontrollierte Wiederholungen sind wichtiger als Geschwindigkeit.'
  },
  it:{
+  openWorkout:"Apri allenamento",
+  prepState:"PREPARATI",
+  prepIn:"L'ALLENAMENTO INIZIA TRA",
+  prepFirst:"PRIMO ESERCIZIO",
+  prepMessage:"Preparati nella posizione iniziale. L'allenamento inizia al termine del conto alla rovescia.",
+  prepNow:"Inizia ora",
+  prepWorkoutTime:"Durata allenamento",
   startNext:"Inizia il prossimo allenamento",
   backToStart:"Torna all'inizio",
   stableSupport:"Superficie rialzata/supporto stabile",
@@ -61,6 +82,13 @@ const messages={
   fineCue:'Le ripetizioni controllate contano più della velocità.'
  },
  fr:{
+  openWorkout:"Ouvrir la séance",
+  prepState:"PRÉPAREZ-VOUS",
+  prepIn:"DÉBUT DE LA SÉANCE DANS",
+  prepFirst:"PREMIER EXERCICE",
+  prepMessage:"Mettez-vous en position. L'entraînement commence à la fin du compte à rebours.",
+  prepNow:"Commencer maintenant",
+  prepWorkoutTime:"Durée de la séance",
   startNext:"Commencer la prochaine séance",
   backToStart:"Retour au départ",
   stableSupport:"Surface surélevée/appui stable",
@@ -81,6 +109,13 @@ const messages={
   fineCue:'Des répétitions contrôlées valent mieux que la vitesse.'
  },
  es:{
+  openWorkout:"Abrir entrenamiento",
+  prepState:"PREPÁRATE",
+  prepIn:"EL ENTRENAMIENTO EMPIEZA EN",
+  prepFirst:"PRIMER EJERCICIO",
+  prepMessage:"Colócate en posición. El entrenamiento comienza al terminar la cuenta atrás.",
+  prepNow:"Empezar ahora",
+  prepWorkoutTime:"Duración del entrenamiento",
   startNext:"Empezar el próximo entrenamiento",
   backToStart:"Volver al inicio",
   stableSupport:"Superficie elevada/apoyo firme",
