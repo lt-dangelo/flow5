@@ -190,3 +190,22 @@ test('Open workout takes the user to a persisted preselected builder, not the ti
  assert.ok(handler.includes("view='setup';render();"),'returns to home builder');
  assert.ok(!handler.includes('beginWorkout('),'does not start workout');
 });
+
+
+test('ready-made workouts link sits below the workout plan card and is localized',async()=>{
+ const app=read('src/app.js'),css=read('styles.css');
+ const setup=app.slice(app.indexOf('function renderSetup(){'),app.indexOf('function updateSettingsSummary(){'));
+ const intro=setup.slice(setup.indexOf('<section class="intro">'),setup.indexOf('<section class="panel preset-panel">'));
+ assert.ok(!intro.includes('coach-gallery-link'),'intro must not contain the link');
+ const after=setup.indexOf('<nav class="coach-gallery-after"');
+ const summary=setup.indexOf('<aside class="summary-panel">');
+ const mainEnd=setup.indexOf('</main>',summary);
+ const footer=setup.indexOf('<footer class="footer">',mainEnd);
+ assert.ok(summary>=0&&mainEnd>summary&&after>mainEnd&&footer>after,'link follows workout plan, before footer');
+ assert.ok(setup.includes('href="./workouts/?lang=${prefs.lang}"'),'workout link preserves language');
+ assert.equal((setup.match(/class="coach-gallery-link"/g)||[]).length,1);
+ assert.ok(css.includes('.coach-gallery-after'),'placement has styling');
+ const {coachText}=await import('../src/coach-i18n.js');
+ assert.equal(coachText('en','explore'),'Browse more ready-made workouts');
+ for(const lang of ['de','it','fr','es'])assert.ok(coachText(lang,'explore').length>12,lang+' label localized');
+});
