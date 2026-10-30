@@ -142,3 +142,16 @@ test('final rest always shows the original hydration illustration after any new 
  }
  assert.ok(app.includes("finalRest?'':present.id"),'final-rest call must ignore last exercise id');
 });
+
+test('next-workout CTA starts the rated recommendation rather than sharing it',()=>{
+ const app=read('src/app.js');
+ assert.ok(app.includes('data-action="start-next"'),'CTA available on completion screen');
+ assert.ok(app.includes("C('startNext')"),'localized CTA');
+ assert.ok(!app.includes("data-action=\"share-next\""),'no premature sharing CTA');
+ const handler=app.slice(app.indexOf("else if(action==='start-next'"),app.indexOf("else if(action==='start'){"));
+ assert.ok(handler.includes('recommendWorkout(workoutSession,workoutRatings'),'ratings drive new plan');
+ assert.ok(handler.includes('prefs.custom[currentCustomKey()]=[...next.ids]'),'next IDs become selected plan');
+ assert.ok(handler.includes('workSec:next.workSec'),'timings retained');
+ assert.ok(handler.includes('save();'),'new plan available for later editing');
+ assert.ok(handler.includes('beginWorkout();'),'starts timer immediately');
+});
