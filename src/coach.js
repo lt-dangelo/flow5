@@ -24,7 +24,7 @@ export const PROGRESSIONS=Object.freeze({
  kneeForearmPlank:{harder:'plank'},plank:{easier:'kneeForearmPlank',harder:'shoulderTap'},shoulderTap:{easier:'plank'}
 });
 const FALLBACKS={
- full:['stepJack','inclinePushup','kneeForearmPlank','gluteBridgeMarch','supportedSplitSquat','snowAngel','birdDog','plank','gluteBridge','wallSit','calfRaise','deadBug','bearHold'],
+ full:['birdDog','stepJack','snowAngel','deadBug','kneeForearmPlank','gluteBridge','inclinePushup','calfRaise','wallSit','supportedSplitSquat','bearHold','plank','gluteBridgeMarch'],
  upper:['inclinePushup','kneeForearmPlank','plank','bearHold','superman','shoulderTap','snowAngel','wallPushup','pikePushup'],
  core:['kneeForearmPlank','gluteBridgeMarch','deadBug','birdDog','plank','bearHold','heelTouch','superman'],
  legs:['supportedSplitSquat','gluteBridgeMarch','squat','gluteBridge','calfRaise','wallSit','hipHinge','reverseLunge']
