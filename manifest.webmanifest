@@ -1,8 +1,8 @@
 {
-  "id": "./?v13preview=1",
-  "name": "Pick5Go – v1.3 Preview",
-  "short_name": "Pick5Go Preview",
-  "description": "Pick five exercises, set your pace, and start. Fitness, simplified.",
+  "id": "./",
+  "name": "Pick5Go – Fitness, simplified.",
+  "short_name": "Pick5Go",
+  "description": "Free bodyweight workouts and guided timer. Choose up to five exercises and customize your intervals.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

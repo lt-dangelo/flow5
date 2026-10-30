@@ -12,15 +12,28 @@ import {validSelection,removeExercise,chooseExercise,pickerChoices} from './sele
 import {languageForPath,languageUrl} from './seo-languages.js';
 import {decodeSharedWorkout,sharedWorkoutUrl} from './share.js';
 import {allowedExercise,adaptWorkout,balanceWarnings,PROGRESSIONS,recommendWorkout} from './coach.js';
-import {coachText} from './coach-i18n.js?build=1.3.53';
+import {coachText} from './coach-i18n.js?build=1.3.60';
 
-const STORAGE_KEY='flow5-prefs-v13-preview';
+const STORAGE_KEY='pick5go-prefs-v13';
+const PRIOR_KEYS=['flow5-prefs-v13-preview','flow5-prefs-v1'];
 const DEFAULTS={presetId:'full',difficulty:'beginner', custom:{},workSec:40,restSec:20,rounds:3,includeFinalRest:true,sound:true,lang:'en',equipment:'none',quiet:false};
 const app=document.getElementById('app');
 
 function loadPreferences(){
  try {
-  const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');
+  const saved=localStorage.getItem(STORAGE_KEY);
+  const preview=saved===null?localStorage.getItem(PRIOR_KEYS[0]):null;
+  const legacy=saved===null&&preview===null?localStorage.getItem(PRIOR_KEYS[1]):null;
+  const raw=JSON.parse(saved??preview??legacy??'{}');
+  // Migrate legacy custom workouts to per-level choices.
+  if(legacy!==null&&raw.custom&&typeof raw.custom==='object'){
+   const upgraded={};
+   for(const [key,ids] of Object.entries(raw.custom)){
+    if(PRESET_BY_ID[key])upgraded[key+':beginner']=ids;
+    else upgraded[key]=ids;
+   }
+   raw.custom=upgraded;
+  }
   const next={...DEFAULTS,...raw};
   if(!PRESET_BY_ID[next.presetId]) next.presetId='full';
   if(!DIFFICULTIES.includes(next.difficulty))next.difficulty='beginner';
