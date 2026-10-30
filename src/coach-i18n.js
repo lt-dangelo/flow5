@@ -1,6 +1,7 @@
 // Short training guidance strings; separate from the existing core UI translations.
 const messages={
  en:{
+  startNext:"Start next workout",
   backToStart:"Back to start",
   stableSupport:"Stable elevated surface/support",
   ratingIntro:"Move the slider only if an exercise felt too easy or too hard. About right is the default; no history is saved.",suggestionCaution:"Suggestions follow your ratings, not measured performance. Check each change for technique and comfort.",
@@ -20,6 +21,7 @@ const messages={
   fineCue:'Controlled repetitions and a comfortable range matter more than speed.'
  },
  de:{
+  startNext:"Nächstes Training starten",
   backToStart:"Zur Startseite",
   stableSupport:"Stabile erhöhte Fläche/Stütze",
   ratingIntro:"Verschiebe den Regler nur, wenn eine Übung zu leicht oder zu schwer war. Genau richtig ist voreingestellt; kein Trainingsverlauf wird gespeichert.",suggestionCaution:"Vorschläge basieren auf deinen Bewertungen, nicht auf gemessener Leistung. Prüfe Technik und Belastung.",
@@ -39,6 +41,7 @@ const messages={
   fineCue:'Kontrollierte Wiederholungen sind wichtiger als Geschwindigkeit.'
  },
  it:{
+  startNext:"Inizia il prossimo allenamento",
   backToStart:"Torna all'inizio",
   stableSupport:"Superficie rialzata/supporto stabile",
   ratingIntro:"Sposta il cursore solo se un esercizio era troppo facile o difficile. Adeguato è preimpostato; non si salva uno storico.",suggestionCaution:"Suggerimenti basati sulle tue valutazioni, non sulle prestazioni misurate. Controlla tecnica e comfort.",
@@ -58,6 +61,7 @@ const messages={
   fineCue:'Le ripetizioni controllate contano più della velocità.'
  },
  fr:{
+  startNext:"Commencer la prochaine séance",
   backToStart:"Retour au départ",
   stableSupport:"Surface surélevée/appui stable",
   ratingIntro:"Déplacez le curseur uniquement si un exercice était trop facile ou difficile. Bien adapté est sélectionné par défaut; aucun historique conservé.",suggestionCaution:"Suggestions basées sur votre ressenti et non des mesures. Vérifiez la technique et le confort.",
@@ -77,6 +81,7 @@ const messages={
   fineCue:'Des répétitions contrôlées valent mieux que la vitesse.'
  },
  es:{
+  startNext:"Empezar el próximo entrenamiento",
   backToStart:"Volver al inicio",
   stableSupport:"Superficie elevada/apoyo firme",
   ratingIntro:"Mueve el control solo si un ejercicio fue demasiado fácil o difícil. Adecuado es la opción predeterminada; no se guarda historial.",suggestionCaution:"Sugerencias basadas en tus valoraciones, no en rendimiento medido. Revisa técnica y comodidad.",
