@@ -465,3 +465,9 @@
  .v13-clean.prep-mode .v13-art-heading .v13-motion-label{font-size:9px;padding:3px 6px}
  .v13-clean.prep-mode .prep-message{font-size:13px}
 }
+
+/* Ready-made workouts discovery follows the completed setup plan, not the hero. */
+.site-shell .layout{padding-bottom:16px}
+.coach-gallery-after{text-align:center;margin:3px 0 20px}
+.coach-gallery-after .coach-gallery-link{display:inline-flex;align-items:center;justify-content:center;margin:0;padding:9px 12px;line-height:1.4;text-align:center}
+@media(max-width:760px){.site-shell .layout{padding-bottom:13px}.coach-gallery-after{margin:1px 0 18px}}
