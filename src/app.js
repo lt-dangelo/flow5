@@ -378,7 +378,7 @@ function beginWorkout(restarted=false){
   });
   // Cue the rest/preparation sound during the button gesture to preserve mobile audio permission.
   if(prefs.sound)audioWarning=!cueAudio.play('rest');
-  preparation=new PreparationCountdown();
+  preparation=new PreparationCountdown({durationMs:PREPARATION_MS});
   preparation.start();
   view='prepare';
   renderPreparation();
@@ -526,6 +526,9 @@ document.addEventListener('keydown',event=>{
  if(event.key==='Escape'&&swapIndex!==null){swapIndex=null;swapQuery='';render();}
 });
 document.addEventListener('visibilitychange',()=>{
+ if(document.visibilityState==='visible'&&view==='prepare'){
+  updateClock();if(view==='prepare'||view==='workout')acquireWake();return;
+ }
  if(document.visibilityState==='visible'&&engine&&view==='workout'){
   engine.tick();if(engine.status==='running')acquireWake();updateClock();
  }
