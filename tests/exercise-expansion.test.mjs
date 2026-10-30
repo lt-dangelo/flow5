@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {EXERCISES,PRESETS} from '../src/data.js';
+import {WORKOUTS,WORKOUT_GROUPS,CATALOG_LANGUAGES} from '../src/workout-catalog.js';
 import {exerciseText} from '../src/i18n.js';
 import {PROGRESSIONS,recommendWorkout} from '../src/coach.js';
 import {decodeSharedWorkout,encodeSharedWorkout} from '../src/share.js';
@@ -34,7 +35,9 @@ test('new presets and guide workout links stay aligned across languages',()=>{
  const choices=new Map(PRESETS.map(x=>[x.id,x]));
  assert.ok(choices.get('upper').ids.includes('inclinePushup'));
  assert.ok(choices.get('core').ids.includes('kneeForearmPlank'));
- assert.ok(choices.get('legs').ids.includes('supportedSplitSquat'));
+ assert.ok(choices.get('legs').ids.includes('stepJack'));
+ assert.ok(choices.get('upper').ids.includes('deadBug'));
+ assert.equal(choices.get('upper').ids.filter(id=>['wallPushup','inclinePushup','kneePushup','pushup'].includes(id)).length,1);
  assert.ok(choices.get('legs').intermediateIds.includes('gluteBridgeMarch'));
  for(const lang of ['en','de','it','fr','es']){
   const path=(lang==='en'?'':lang+'/')+'about-calisthenics/index.html',html=read(path);
@@ -51,18 +54,45 @@ test('new presets and guide workout links stay aligned across languages',()=>{
   }
  }
 });
-test('curated gallery surfaces all five new exercises and has static, usable links',()=>{
+test('all 11 ready-made workouts use categorized, unique and safe shareable sessions',()=>{
  const gallery=read('workouts/index.html'),source=read('src/gallery.js');
- for(const id of newIds){assert.ok(gallery.includes(id),'gallery '+id);assert.ok(source.includes(id),'gallery JS '+id);}
- const markup=gallery.slice(0,gallery.indexOf('<script>'));
- const cards=[...markup.matchAll(/<article class="gallery-card">[\s\S]*?<\/article>/g)];
- assert.ok(cards.length>=14,'static cards must render without JavaScript');
- for(const card of cards){
-  const href=card[0].match(/href="([^\"]*\?w=[^\"]*)"/)?.[1];
-  assert.ok(href,'missing workout link in static card');
-  assert.ok(decodeSharedWorkout(new URL(href,'https://example.test/preview/v1.3/workouts/').search),'invalid gallery share link');
+ assert.equal(WORKOUTS.length,11);
+ assert.deepEqual(Object.keys(WORKOUT_GROUPS),['quick','everyday','targeted']);
+ assert.deepEqual([3,3,5],Object.keys(WORKOUT_GROUPS).map(x=>WORKOUTS.filter(r=>r.category===x).length));
+ assert.ok(source.includes("from './workout-catalog.js'"),'filtered gallery uses canonical catalog');
+ assert.ok(gallery.includes('type="module" src="./src/gallery.js'),'filters load as an external module');
+ const cards=[...gallery.matchAll(/<article class="gallery-card">[\\s\\S]*?<\\/article>/g)];
+ assert.equal(cards.length,11,'static cards survive JavaScript failure');
+ const groups=[...gallery.matchAll(/<section class="gallery-group"/g)];assert.equal(groups.length,3);
+ const chains=[
+  ['wallPushup','inclinePushup','kneePushup','pushup'],
+  ['kneeForearmPlank','plank','shoulderTap'],
+  ['march','stepJack','jumpingJack'],
+  ['gluteBridge','gluteBridgeMarch','singleLegBridge'],
+  ['squat','supportedSplitSquat','reverseLunge','assistedSingleLegSquat']
+ ];
+ const known=new Map(EXERCISES.map(e=>[e.id,e]));
+ for(let i=0;i<WORKOUTS.length;i++){
+  const w=WORKOUTS[i],raw=cards[i][0];
+  assert.ok([3,4,5].includes(w.ids.length),'short workouts supported');
+  assert.ok(w.ids.every(id=>known.has(id)));
+  assert.equal(new Set(w.ids).size,w.ids.length,'no duplicate movements');
+  assert.ok(w.title.length===5&&w.description.length===5);
+  assert.ok(w.title.every(Boolean)&&w.description.every(Boolean));
+  assert.ok(w.ids.every(id=>known.get(id).level<=(w.level==='beginner'?1:2)),w.title[0]+' respects level');
+  for(const chain of chains)assert.ok(w.ids.filter(id=>chain.includes(id)).length<=1,w.title[0]+' no redundant difficulty variants');
+  const href=raw.match(/href="([^"]*\\?w=[^"]*)"/)?.[1];
+  assert.ok(href,'missing static workout link');
+  const decoded=decodeSharedWorkout(new URL(href,'https://example.test/preview/v1.3/').search);
+  assert.deepEqual(decoded?.ids,w.ids,w.title[0]+' static links match canonical data');
+  assert.equal(decoded?.rounds,w.rounds);
  }
+ assert.deepEqual(CATALOG_LANGUAGES,['en','de','it','fr','es']);
+ assert.ok(WORKOUTS.some(w=>w.ids.length===3));
+ assert.ok(WORKOUTS.some(w=>w.ids.length===4));
+ assert.ok(WORKOUTS.some(w=>w.ids.length===5));
 });
+
 test('progression next-workout links accept the five new exercise IDs',()=>{
  const session={ids:newIds,presetId:'full',difficulty:'beginner',rounds:3,workSec:40,restSec:20};
  const ratings=Object.fromEntries(newIds.map(id=>[id,'easy']));
