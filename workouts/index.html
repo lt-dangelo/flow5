@@ -7,7 +7,7 @@
  <meta name="robots" content="noindex,follow"/>
  <meta name="theme-color" content="#0b1016"/>
  <meta name="description" content="Explore short, beginner-friendly bodyweight workouts for strength and stability. Start instantly with Pick5Go — no signup."/>
- <link rel="stylesheet" href="./styles.css?build=1.3.42"/>
+ <link rel="stylesheet" href="./styles.css?build=1.3.50"/>
  <link rel="icon" href="./icons/pick5go-mark.svg" type="image/svg+xml"/>
  <title>Ready-to-use bodyweight workouts | Pick5Go Preview</title>
  <style>
@@ -21,9 +21,9 @@
  .gallery-controls{display:flex;flex-wrap:wrap;align-items:end;gap:12px;margin:18px 0 25px}
  .gallery-controls label{display:flex;flex-direction:column;gap:7px;color:var(--muted);font-size:12px;font-weight:700}
  .gallery-controls select{min-width:148px;color:var(--text);background:var(--panel2);border:1px solid var(--outline);border-radius:10px;padding:11px;font-size:13px}
- .gallery-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+ .gallery-list{display:flex;flex-direction:column;gap:34px}.gallery-group h2{font-size:clamp(19px,2.5vw,25px);letter-spacing:-.02em;margin:0 0 14px}.gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
  .gallery-card{border:1px solid var(--outline);border-radius:17px;background:var(--panel);padding:20px;display:flex;flex-direction:column;gap:12px}
- .gallery-card h2{font-size:19px;letter-spacing:-.02em;line-height:1.35}
+ .gallery-card h3{font-size:19px;letter-spacing:-.02em;line-height:1.35}
  .gallery-card p{font-size:13px;color:var(--muted);line-height:1.65;flex:1}
  .gallery-card .meta{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--lime);font-weight:700}
  .gallery-card a{display:block;text-align:center;background:var(--lime);color:#182c19;border-radius:10px;padding:12px 15px;font-size:13px;font-weight:850}
@@ -37,89 +37,38 @@
  <main class="gallery-shell">
  <nav class="gallery-nav"><img src="./icons/pick5go-mark.svg" alt="Pick5Go"/><a id="gallery-back" href="./">← Back to builder</a></nav>
  <section class="gallery-intro"><h1 id="gallery-title">Find your workout</h1><p id="gallery-description">Pick a goal and level, then customize any exercise or interval. No registration required.</p></section>
- <section class="gallery-controls" aria-label="Filter example workouts"><label><span id="goal-label">Focus</span><select id="gallery-goal"><option value="all">All</option><option value="full">Full body</option><option value="core">Core & stability</option><option value="upper">Upper body</option><option value="legs">Legs & glutes</option></select></label><label><span id="level-label">Level</span><select id="gallery-level"><option value="all">All</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option></select></label><label><span id="lang-label">Language</span><select id="gallery-lang"><option value="en">English</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="fr">Français</option><option value="es">Español</option></select></label></section>
- <section class="gallery-list" id="gallery-list">
-<article class="gallery-card"><span class="meta">upper · beginner · 15 min</span><h2>Start pressing</h2><p>Pressing progressions using a stable raised surface.</p><a href="./?w=1~upper~beginner~wallPushup%2CinclinePushup%2CkneePushup%2CsnowAngel%2CbirdDog~40~20~3">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">core · beginner · 15 min</span><h2>Core with an easier plank</h2><p>An accessible knee-supported plank and core control.</p><a href="./?w=1~core~beginner~deadBug%2CkneeForearmPlank%2CbirdDog%2CgluteBridge%2CheelTouch~40~20~3">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">full · beginner · 15 min</span><h2>Quiet full-body movement</h2><p>Five movements without jumping; incline push-ups need a stable raised surface.</p><a href="./?w=1~full~beginner~squat%2CinclinePushup%2ChipHinge%2CbirdDog%2CstepJack~40~20~3">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">legs · intermediate · 15 min</span><h2>Build single-leg control</h2><p>Balance and control with supported split squats and bridge marching.</p><a href="./?w=1~legs~intermediate~supportedSplitSquat%2CgluteBridgeMarch%2CreverseLunge%2CcalfRaise%2ChipHinge~40~20~3">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">legs · beginner · 15 min</span><h2>Supported leg strength</h2><p>Leg strength with a stable support for the split squat.</p><a href="./?w=1~legs~beginner~squat%2CsupportedSplitSquat%2CgluteBridge%2ChipHinge%2CcalfRaise~40~20~3">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">Full body · Beginner · 15 min</span><h2>Everyday full body</h2><p>An accessible combination of legs, push and stability.</p><a href="./?w=1~full~beginner~squat%2CkneePushup%2ChipHinge%2CbirdDog%2Cmarch~40~20~3">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">Full body · Intermediate · 15 min</span><h2>Step up the challenge</h2><p>A tougher combination of strength and conditioning.</p><a href="./?w=1~full~intermediate~reverseLunge%2Cpushup%2CsingleLegBridge%2Cplank%2CmountainClimber~40~20~3">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">Core & stability · Beginner · 15 min</span><h2>Core foundations</h2><p>Controlled core movements with accessible starting positions.</p><a href="./?w=1~core~beginner~deadBug%2CbirdDog%2CgluteBridge%2CheelTouch%2ChipHinge~40~20~3">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">Core & stability · Intermediate · 15 min</span><h2>Build core stability</h2><p>Different holding and anti-rotation challenges.</p><a href="./?w=1~core~intermediate~plank%2Cbicycle%2CsidePlankL%2CsidePlankR%2CbearHold~40~20~3">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">Upper body · Beginner · 15 min</span><h2>Upper body — no band</h2><p>Gentle pressing and shoulder-control movements. No resisted pulling included.</p><a href="./?w=1~upper~beginner~wallPushup%2CkneePushup%2CsnowAngel%2Cplank%2CbirdDog~40~20~3">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">Upper body · Intermediate · 15 min</span><h2>Upper body — with band</h2><p>Press and pull. Requires a secured resistance band for effective rows.</p><a href="./?w=1~upper~intermediate~pushup%2CkneePushup%2CbandRow%2CsnowAngel%2CshoulderTap~40~20~3">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">Legs & glutes · Beginner · 15 min</span><h2>Low-impact legs</h2><p>Lower-body movements without jumping.</p><a href="./?w=1~legs~beginner~squat%2ChipHinge%2CgluteBridge%2CcalfRaise%2CwallSit~40~20~3">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">Full body · Beginner · 5 min</span><h2>Five-minute reset</h2><p>A shorter circuit for days when time is limited.</p><a href="./?w=1~full~beginner~squat%2CkneePushup%2ChipHinge%2CbirdDog%2Cmarch~40~20~1">Open workout →</a></article>
-<article class="gallery-card"><span class="meta">Full body · Beginner · 10 min</span><h2>Ten-minute full body</h2><p>A practical middle ground between five and fifteen minutes.</p><a href="./?w=1~full~beginner~squat%2CkneePushup%2ChipHinge%2CbirdDog%2Cmarch~40~20~2">Open workout →</a></article></section>
+ <section class="gallery-controls" aria-label="Filter example workouts"><label><span id="goal-label">Focus</span><select id="gallery-goal"><option value="all">All</option><option value="full">Full body</option><option value="core">Core & stability</option><option value="upper">Upper body &amp; core</option><option value="legs">Legs & glutes</option></select></label><label><span id="level-label">Level</span><select id="gallery-level"><option value="all">All</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option></select></label><label><span id="lang-label">Language</span><select id="gallery-lang"><option value="en">English</option><option value="de">Deutsch</option><option value="it">Italiano</option><option value="fr">Français</option><option value="es">Español</option></select></label></section>
+ <div class="gallery-list" id="gallery-list">
+ <section class="gallery-group" aria-labelledby="gallery-group-quick">
+  <h2 id="gallery-group-quick">Quick starts</h2>
+  <div class="gallery-grid">
+   <article class="gallery-card"><span class="meta">Full body · Beginner · 3 exercises · 6 min</span><h3>Quick full body</h3><p>Three movements across legs, pressing and stability.</p><a href="./?w=1~full~beginner~squat%2CkneePushup%2CbirdDog~40~20~2">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Full body · Beginner · 4 exercises · 8 min</span><h3>Eight-minute reset</h3><p>Four simple patterns with a little more lower-body work.</p><a href="./?w=1~full~beginner~squat%2CkneePushup%2ChipHinge%2CbirdDog~40~20~2">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Core &amp; stability · Beginner · 3 exercises · 9 min</span><h3>Core activation</h3><p>Slow coordination followed by a short knee-supported plank.</p><a href="./?w=1~core~beginner~deadBug%2CbirdDog%2CkneeForearmPlank~40~20~3">Open workout →</a></article>
+  </div>
+ </section>
+ <section class="gallery-group" aria-labelledby="gallery-group-everyday">
+  <h2 id="gallery-group-everyday">Everyday fitness</h2>
+  <div class="gallery-grid">
+   <article class="gallery-card"><span class="meta">Full body · Beginner · 5 exercises · 15 min</span><h3>Balanced full body</h3><p>A beginner-friendly mix of strength, control and low-impact movement.</p><a href="./?w=1~full~beginner~squat%2CkneePushup%2ChipHinge%2CbirdDog%2CstepJack~40~20~3">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Full body · Intermediate · 5 exercises · 15 min</span><h3>Full-body challenge</h3><p>Single-leg strength, pressing, stability and conditioning.</p><a href="./?w=1~full~intermediate~reverseLunge%2Cpushup%2CgluteBridgeMarch%2CbirdDog%2CmountainClimber~40~20~3">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Full body · Beginner · 5 exercises · 15 min</span><h3>Quiet, low-impact circuit</h3><p>No jumping; incline push-ups need a stable elevated surface.</p><a href="./?w=1~full~beginner~squat%2CinclinePushup%2ChipHinge%2CbirdDog%2CstepJack~40~20~3">Open workout →</a></article>
+  </div>
+ </section>
+ <section class="gallery-group" aria-labelledby="gallery-group-targeted">
+  <h2 id="gallery-group-targeted">Targeted strength &amp; stability</h2>
+  <div class="gallery-grid">
+   <article class="gallery-card"><span class="meta">Upper body &amp; core · Beginner · 5 exercises · 15 min</span><h3>Upper body &amp; core</h3><p>One pressing movement plus shoulder and trunk control; no resisted pulling.</p><a href="./?w=1~upper~beginner~inclinePushup%2CdeadBug%2CsnowAngel%2CkneeForearmPlank%2CbirdDog~40~20~3">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Upper body &amp; core · Intermediate · 5 exercises · 15 min</span><h3>Upper body &amp; core challenge</h3><p>Pressing, shoulder movement and balanced side-plank holds; no resisted pulling.</p><a href="./?w=1~upper~intermediate~pushup%2CdeadBug%2CsnowAngel%2CsidePlankL%2CsidePlankR~40~20~3">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Legs &amp; glutes · Beginner · 4 exercises · 12 min</span><h3>Leg strength foundations</h3><p>Four accessible lower-body patterns without jumps.</p><a href="./?w=1~legs~beginner~squat%2ChipHinge%2CgluteBridge%2CcalfRaise~40~20~3">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Legs &amp; glutes · Intermediate · 5 exercises · 15 min</span><h3>Legs &amp; glutes challenge</h3><p>Squat, hinge and hip-stability work without duplicated lunge progressions.</p><a href="./?w=1~legs~intermediate~reverseLunge%2ChipHinge%2CgluteBridgeMarch%2CwallSit%2CcalfRaise~40~20~3">Open workout →</a></article>
+   <article class="gallery-card"><span class="meta">Core &amp; stability · Intermediate · 4 exercises · 12 min</span><h3>Core stability</h3><p>A mix of bracing, rotation and coordination, not only static holds.</p><a href="./?w=1~core~intermediate~plank%2Cbicycle%2CbirdDog%2CbearHold~40~20~3">Open workout →</a></article>
+  </div>
+ </section>
+ </div>
  <p class="gallery-disclaimer" id="gallery-note">These are general examples, not personalized medical or training plans. Select an exercise level you can perform with controlled technique. Without suitable equipment, resisted pulling work is limited.</p>
  <footer class="gallery-footer"><a id="gallery-footer-link" href="./">Pick5Go</a> · <span id="gallery-footer-note">Free, offline-capable, no account.</span></footer>
  </main>
- <script>
-// Independent catalog: no imports, backend or request needed for filtering.
-function languageUrl(rootHref, language){ const base=new URL('./',rootHref); const path=['de','it','fr','es'].includes(language)?language+'/':'./';return new URL(path,base).href; }
-function sharedWorkoutUrl(rootHref,language,session){ const url=new URL(languageUrl(rootHref,language));url.searchParams.set('w',['1',session.presetId,session.difficulty,session.ids.join(','),session.workSec,session.restSec,session.rounds].join('~'));return url.href;}
-// Curated starting points, not adaptive programs. All links use the existing share codec.
-const root=new URL('./',document.baseURI);
-const choices={
- en:{title:'Find your workout',intro:'Ready-to-use bodyweight workouts for different goals and experience levels. Open one, change anything you like and go.',back:'Back to builder',focus:'Focus',level:'Level',language:'Language',all:'All',full:'Full body',core:'Core & stability',upper:'Upper body',legs:'Legs & glutes',beginner:'Beginner',intermediate:'Intermediate',start:'Open workout',minute:'min',note:'These are general examples, not personalized medical or training plans. Select an exercise level you can perform with controlled technique. Without suitable equipment, resisted pulling work is limited.',footer:'Free · no signup · preferences stay on your device.',empty:'No workouts match both filters.'},
- de:{title:'Finde dein Training',intro:'Fertige Bodyweight-Trainings für verschiedene Ziele und Erfahrungsstufen. Öffne einen Vorschlag, passe ihn an und starte.',back:'Zum Trainingsplaner',focus:'Schwerpunkt',level:'Niveau',language:'Sprache',all:'Alle',full:'Ganzkörper',core:'Core & Stabilität',upper:'Oberkörper',legs:'Beine & Po',beginner:'Einsteiger',intermediate:'Mittelstufe',start:'Training öffnen',minute:'Min.',note:'Allgemeine Trainingsbeispiele, keine personalisierten medizinischen oder sportlichen Pläne. Wähle eine Belastung, bei der du kontrolliert trainierst. Ohne geeignete Ausrüstung sind Zugübungen mit Widerstand eingeschränkt.',footer:'Kostenlos · ohne Anmeldung · Einstellungen bleiben auf deinem Gerät.',empty:'Keine Trainings für beide Filter gefunden.'},
- it:{title:'Trova il tuo allenamento',intro:'Allenamenti a corpo libero pronti per obiettivi e livelli diversi. Aprine uno, personalizzalo e inizia.',back:'Torna al generatore',focus:'Obiettivo',level:'Livello',language:'Lingua',all:'Tutti',full:'Corpo intero',core:'Core e stabilità',upper:'Parte superiore',legs:'Gambe e glutei',beginner:'Principiante',intermediate:'Intermedio',start:'Apri allenamento',minute:'min',note:'Questi sono esempi generali, non programmi medici o personalizzati. Scegli esercizi che puoi eseguire con controllo. Senza attrezzatura adatta la resistenza di trazione è limitata.',footer:'Gratis · senza account · preferenze salvate sul dispositivo.',empty:'Nessun allenamento per questi filtri.'},
- fr:{title:'Trouvez votre séance',intro:'Des séances au poids du corps prêtes à démarrer, selon vos objectifs et votre niveau. Ouvrez, adaptez et entraînez-vous.',back:'Retour au créateur',focus:'Objectif',level:'Niveau',language:'Langue',all:'Tous',full:'Corps entier',core:'Gainage et stabilité',upper:'Haut du corps',legs:'Jambes et fessiers',beginner:'Débutant',intermediate:'Intermédiaire',start:'Ouvrir la séance',minute:'min',note:'Ces exemples ne sont ni des prescriptions médicales ni des programmes personnalisés. Choisissez des mouvements maîtrisés. Sans équipement adapté, les tirages avec résistance restent limités.',footer:'Gratuit · sans compte · préférences locales.',empty:'Aucune séance pour ces filtres.'},
- es:{title:'Encuentra tu entrenamiento',intro:'Rutinas de peso corporal listas para diferentes objetivos y niveles. Abre una, personalízala y empieza.',back:'Volver al generador',focus:'Objetivo',level:'Nivel',language:'Idioma',all:'Todos',full:'Cuerpo completo',core:'Core y estabilidad',upper:'Tren superior',legs:'Piernas y glúteos',beginner:'Principiante',intermediate:'Intermedio',start:'Abrir entrenamiento',minute:'min',note:'Estos ejemplos no son programas médicos ni planes personalizados. Elige variantes que puedas realizar con control. Sin equipo adecuado, los ejercicios de tracción con resistencia son limitados.',footer:'Gratis · sin registro · preferencias en el dispositivo.',empty:'No hay rutinas para ambos filtros.'}
-};
-const recipes=[
-{"focus":"upper","level":"beginner","ids":["wallPushup","inclinePushup","kneePushup","snowAngel","birdDog"],"rounds":3,"minutes":15,"title":["Start pressing","Drücken leicht gemacht","Inizia con le spinte","Débuter les pompes","Primeros empujes"],"description":["Pressing progressions using a stable raised surface.","Druckvarianten mit stabiler erhöhter Auflage.","Spinte con un piano rialzato stabile.","Pompes adaptées avec surface surélevée stable.","Empujes con un apoyo elevado firme."]},
-{"focus":"core","level":"beginner","ids":["deadBug","kneeForearmPlank","birdDog","gluteBridge","heelTouch"],"rounds":3,"minutes":15,"title":["Core with an easier plank","Core mit leichtem Unterarmstütz","Core con plank facilitato","Gainage avec planche adaptée","Core con plancha fácil"],"description":["An accessible knee-supported plank and core control.","Leichter Unterarmstütz auf den Knien und Rumpfkontrolle.","Plank sulle ginocchia e controllo del core.","Planche sur genoux et contrôle du tronc.","Plancha con rodillas y control del abdomen."]},
-{"focus":"full","level":"beginner","ids":["squat","inclinePushup","hipHinge","birdDog","stepJack"],"rounds":3,"minutes":15,"title":["Quiet full-body movement","Leiser Ganzkörper-Zirkel","Circuito completo silenzioso","Circuit complet sans saut","Circuito completo sin saltos"],"description":["Five movements without jumping; incline push-ups need a stable raised surface.","Fünf Übungen ohne Sprünge; stabile Auflage für schräge Liegestütze.","Cinque movimenti senza salti; serve un piano stabile.","Cinq mouvements sans saut; support stable pour pompes.","Cinco movimientos sin saltos; apoyo firme para flexiones."]},
-{"focus":"legs","level":"intermediate","ids":["supportedSplitSquat","gluteBridgeMarch","reverseLunge","calfRaise","hipHinge"],"rounds":3,"minutes":15,"title":["Build single-leg control","Einbeinige Kontrolle","Controllo su una gamba","Stabilité sur une jambe","Control a una pierna"],"description":["Balance and control with supported split squats and bridge marching.","Balance und Stabilität mit gestützten Split Squats und Bridge March.","Equilibrio con split squat assistiti e ponte alternato.","Stabilité avec fentes assistées et pont alterné.","Equilibrio con sentadilla dividida asistida y puente alterno."]},
-{"focus":"legs","level":"beginner","ids":["squat","supportedSplitSquat","gluteBridge","hipHinge","calfRaise"],"rounds":3,"minutes":15,"title":["Supported leg strength","Beinkraft mit Stütze","Forza gambe con appoggio","Jambes avec appui","Piernas con apoyo"],"description":["Leg strength with a stable support for the split squat.","Beinkraft mit stabiler Stütze für die Split Squats.","Gambe forti con supporto stabile per lo split squat.","Renforcer les jambes avec un appui stable.","Fortalece las piernas con un apoyo estable."]},
- {focus:'full',level:'beginner',ids:['squat','kneePushup','hipHinge','birdDog','march'],rounds:3,minutes:15,title:['Everyday full body','Ganzkörper für jeden Tag','Corpo intero quotidiano','Corps entier au quotidien','Cuerpo completo diario'],description:['An accessible combination of legs, push and stability.','Ein gut zugänglicher Mix aus Beinen, Drücken und Stabilität.','Una combinazione accessibile di gambe, spinta e stabilità.','Un mélange accessible de jambes, poussée et stabilité.','Una mezcla accesible de piernas, empuje y estabilidad.']},
- {focus:'full',level:'intermediate',ids:['reverseLunge','pushup','singleLegBridge','plank','mountainClimber'],rounds:3,minutes:15,title:['Step up the challenge','Etwas anspruchsvoller','Un passo avanti','Montez d’un niveau','Sube el nivel'],description:['A tougher combination of strength and conditioning.','Anspruchsvollere Kombination aus Kraft und Ausdauer.','Più forza e condizionamento.','Plus de force et de conditionnement.','Más fuerza y acondicionamiento.']},
- {focus:'core',level:'beginner',ids:['deadBug','birdDog','gluteBridge','heelTouch','hipHinge'],rounds:3,minutes:15,title:['Core foundations','Grundlagen für die Mitte','Fondamenti del core','Bases du gainage','Fundamentos del core'],description:['Controlled core movements with accessible starting positions.','Kontrollierte Rumpfübungen mit einfachen Ausgangspositionen.','Movimenti del core controllati e accessibili.','Mouvements de gainage contrôlés et accessibles.','Movimientos controlados y accesibles para el core.']},
- {focus:'core',level:'intermediate',ids:['plank','bicycle','sidePlankL','sidePlankR','bearHold'],rounds:3,minutes:15,title:['Build core stability','Rumpfstabilität ausbauen','Stabilità del core','Renforcer la stabilité','Más estabilidad central'],description:['Different holding and anti-rotation challenges.','Unterschiedliche Halte- und Stabilisationsaufgaben.','Tenute e sfide di stabilità differenti.','Des maintiens et défis de stabilité variés.','Diferentes retos de estabilidad y control.']},
- {focus:'upper',level:'beginner',ids:['wallPushup','kneePushup','snowAngel','plank','birdDog'],rounds:3,minutes:15,title:['Upper body — no band','Oberkörper ohne Band','Parte superiore senza elastico','Haut du corps sans bande','Tren superior sin banda'],description:['Gentle pressing and shoulder-control movements. No resisted pulling included.','Drücken und Schulterkontrolle ohne Zugwiderstand.','Spinte e controllo delle spalle, senza trazione resistita.','Poussée et contrôle des épaules, sans tirage résisté.','Empuje y control del hombro, sin tracción resistida.']},
- {focus:'upper',level:'intermediate',ids:['pushup','kneePushup','bandRow','snowAngel','shoulderTap'],rounds:3,minutes:15,title:['Upper body — with band','Oberkörper mit Band','Parte superiore con elastico','Haut du corps avec bande','Tren superior con banda'],description:['Press and pull. Requires a secured resistance band for effective rows.','Drücken und Ziehen mit sicher befestigtem Widerstandsband.','Spinta e trazione con elastico fissato in sicurezza.','Poussée et tirage avec bande correctement fixée.','Empuje y tracción con banda bien sujeta.']},
- {focus:'legs',level:'beginner',ids:['squat','hipHinge','gluteBridge','calfRaise','wallSit'],rounds:3,minutes:15,title:['Low-impact legs','Beine ohne Sprünge','Gambe senza salti','Jambes sans sauts','Piernas sin saltos'],description:['Lower-body movements without jumping.','Unterkörpertraining ohne Springen.','Gambe e glutei senza salti.','Jambes et fessiers sans sauts.','Piernas y glúteos sin saltos.']},
- {focus:'full',level:'beginner',ids:['squat','kneePushup','hipHinge','birdDog','march'],rounds:1,minutes:5,title:['Five-minute reset','Fünf Minuten Bewegung','Cinque minuti di movimento','Bouger cinq minutes','Cinco minutos de movimiento'],description:['A shorter circuit for days when time is limited.','Kurzer Zirkel für wenig Zeit.','Circuito breve quando hai poco tempo.','Petit circuit quand le temps manque.','Circuito corto cuando hay poco tiempo.']},
- {focus:'full',level:'beginner',ids:['squat','kneePushup','hipHinge','birdDog','march'],rounds:2,minutes:10,title:['Ten-minute full body','Zehn Minuten Ganzkörper','Dieci minuti corpo intero','Dix minutes corps entier','Diez minutos cuerpo completo'],description:['A practical middle ground between five and fifteen minutes.','Zwischen fünf und fünfzehn Minuten.','Via di mezzo tra cinque e quindici minuti.','Entre cinq et quinze minutes.','Entre cinco y quince minutos.']}
-];
-const params=new URLSearchParams(location.search);
-let lang=Object.hasOwn(choices,params.get('lang'))?params.get('lang'):'en';
-let focus='all',level='all';
-const rootLink=(l)=>languageUrl(root.href,l);
-const el=id=>document.getElementById(id);
-function fillSelect(select,keys,value){
- const t=choices[lang];select.innerHTML=keys.map(k=>'<option value="'+k+'">'+(t[k]||k)+'</option>').join('');select.value=value;
-}
-function render(){
- const t=choices[lang],idx=Object.keys(choices).indexOf(lang);
- document.documentElement.lang=lang;
- document.title=t.title+' | Pick5Go';
- el('gallery-title').textContent=t.title;el('gallery-description').textContent=t.intro;
- el('gallery-back').textContent='← '+t.back;el('gallery-back').href=rootLink(lang);
- el('gallery-footer-link').href=rootLink(lang);
- el('goal-label').textContent=t.focus;el('level-label').textContent=t.level;el('lang-label').textContent=t.language;
- el('gallery-note').textContent=t.note;el('gallery-footer-note').textContent=t.footer;
- fillSelect(el('gallery-goal'),['all','full','core','upper','legs'],focus);
- fillSelect(el('gallery-level'),['all','beginner','intermediate'],level);
- el('gallery-lang').innerHTML=Object.keys(choices).map((code,i)=>'<option value="'+code+'">'+['English','Deutsch','Italiano','Français','Español'][i]+'</option>').join('');
- el('gallery-lang').value=lang;
- const filtered=recipes.filter(r=>(focus==='all'||r.focus===focus)&&(level==='all'||r.level===level));
- el('gallery-list').innerHTML=filtered.map(r=>{
-  const plan={presetId:r.focus,difficulty:r.level,ids:r.ids,workSec:40,restSec:20,rounds:r.rounds};
-  const href=sharedWorkoutUrl(root.href,lang,plan);
-  return '<article class="gallery-card"><span class="meta">'+t[r.focus]+' · '+t[r.level]+' · '+r.minutes+' '+t.minute+'</span><h2>'+r.title[idx]+'</h2><p>'+r.description[idx]+'</p><a href="'+href+'">'+t.start+' →</a></article>';
- }).join('')||'<p>'+t.empty+'</p>';
-}
-el('gallery-goal').addEventListener('change',e=>{focus=e.target.value;render();});
-el('gallery-level').addEventListener('change',e=>{level=e.target.value;render();});
-el('gallery-lang').addEventListener('change',e=>{
- lang=e.target.value;const url=new URL(location.href);url.searchParams.set('lang',lang);history.replaceState(null,'',url.href);render();
-});
-render();
-
-</script>
+ <script type="module" src="./src/gallery.js?build=1.3.50"></script>
 </body>
 </html>
