@@ -49,6 +49,6 @@ assert.ok(!app.includes("T('recordFinalRest')"),'no final rest note on completio
 assert.ok(!app.includes("performance.stats"),'no claim of measured intensity/volume');
 const sw=readFileSync(new URL('../sw.js',import.meta.url),'utf8');
 const index=readFileSync(new URL('../index.html',import.meta.url),'utf8');
-assert.ok(sw.match(/pick5go-v1\.3-preview-\d+/));
+assert.ok(sw.match(/pick5go-v1\.3-production-\d+/));
 assert.ok(index.match(/build=1\.3\.\d+/));
 console.log('OK: unique and ordered picker, bilingual readiness text, long titles, screenshot record');
