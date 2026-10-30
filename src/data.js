@@ -67,21 +67,21 @@ export const EXERCISES = [
 
 export const EXERCISE_BY_ID = Object.fromEntries(EXERCISES.map(e => [e.id,e]));
 
-// Curated five-exercise programmes by focus and entry level.
-// Intermediate variants may include fundamental beginner movements.
+// Five-exercise movement-balanced circuits by focus and ability.
+ // Upper is intentionally an upper-body-and-core circuit, not a substitute for resisted pulling.
 export const PRESETS = [
  {id:'full',name:'Ganzkörper',subtitle:'Ausgewogen & effektiv',icon:'✦',
-  ids:['squat','kneePushup','hipHinge','birdDog','march'],
-  intermediateIds:['reverseLunge','pushup','singleLegBridge','bandRow','mountainClimber']},
+  ids:['squat','kneePushup','hipHinge','birdDog','stepJack'],
+  intermediateIds:['reverseLunge','pushup','bandRow','gluteBridgeMarch','mountainClimber']},
  {id:'core',name:'Core & Stabilität',subtitle:'Rumpf und Haltung',icon:'◎',
-  ids:['deadBug','birdDog','gluteBridge','heelTouch','kneeForearmPlank'],
-  intermediateIds:['plank','bicycle','sidePlankL','sidePlankR','bearHold']},
- {id:'upper',name:'Oberkörper',subtitle:'Drücken & stabilisieren',icon:'↗',
-  ids:['wallPushup','inclinePushup','kneePushup','snowAngel','birdDog'],
-  intermediateIds:['pushup','kneePushup','bandRow','snowAngel','shoulderTap']},
+  ids:['deadBug','birdDog','kneeForearmPlank','gluteBridge','stepJack'],
+  intermediateIds:['plank','bicycle','sidePlankL','birdDog','sidePlankR']},
+ {id:'upper',name:'Oberkörper & Core',subtitle:'Drücken, Schultern & Rumpf',icon:'↗',
+  ids:['inclinePushup','deadBug','snowAngel','kneeForearmPlank','birdDog'],
+  intermediateIds:['pushup','deadBug','snowAngel','sidePlankL','sidePlankR']},
  {id:'legs',name:'Beine & Po',subtitle:'Kraft aus der Basis',icon:'⌁',
-  ids:['squat','hipHinge','gluteBridge','calfRaise','supportedSplitSquat'],
-  intermediateIds:['reverseLunge','assistedSingleLegSquat','hipHinge','gluteBridgeMarch','calfRaise']}
+  ids:['squat','hipHinge','gluteBridge','calfRaise','stepJack'],
+  intermediateIds:['reverseLunge','hipHinge','gluteBridgeMarch','wallSit','calfRaise']}
 ];
 export const PRESET_BY_ID = Object.fromEntries(PRESETS.map(p=>[p.id,p]));
 export const DIFFICULTIES = ['beginner','intermediate'];
