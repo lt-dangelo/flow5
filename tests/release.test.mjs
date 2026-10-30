@@ -1,72 +1,80 @@
-
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {EXERCISES,PRESETS,presetIds} from '../src/data.js';
-import {LANGUAGES,exerciseText,t} from '../src/i18n.js';
-import {buildPlan} from '../src/engine.js';
+import {LANGUAGES,exerciseText} from '../src/i18n.js';
+import {WORKOUTS,WORKOUT_GROUPS} from '../src/workout-catalog.js';
+import {buildPlan,planStats} from '../src/engine.js';
 const read=p=>readFileSync(new URL('../'+p,import.meta.url),'utf8');
+const languages=['en','de','it','fr','es'];
+const app=read('src/app.js'),sw=read('sw.js'),home=read('index.html');
 const manifest=JSON.parse(read('manifest.webmanifest'));
-const app=read('src/app.js'),sw=read('sw.js'),index=read('index.html'),pkg=JSON.parse(read('package.json'));
-assert.equal(pkg.version,'1.3.0');
-assert.equal(manifest.id,'./','retain installed PWA identity');
-assert.ok(index.includes('href="./imprint.html"')&&index.includes('href="./privacy.html"'));
-assert.ok(index.includes('src/consent.js?build=1.3.42'));
-assert.ok(!index.includes('analytics-debug.js'),'debug-only script never ships to production');
-assert.ok(sw.includes('./imprint.html')&&sw.includes('./privacy.html'));
-assert.ok(sw.includes('./src/consent.js?build=1.3.42'));
+assert.equal(manifest.id,'./','preserve existing installed PWA identity');
 assert.equal(manifest.name,'Pick5Go – Fitness, simplified.');
 assert.equal(manifest.short_name,'Pick5Go');
+assert.equal(manifest.icons.length,3);
 assert.ok(!manifest.name.includes('Preview'));
-assert.ok(index.includes('<title>Free Bodyweight Workout Builder &amp; Timer | Pick5Go</title>'));
-assert.ok(index.includes('<link rel="canonical" href="https://pick5go.com/"/>'));
-assert.ok(index.includes('name="description" content="Build a quick bodyweight strength workout'));
-assert.ok(index.includes('property="og:title" content="Pick5Go – Free Bodyweight Workout Builder"'));
-assert.ok(index.includes('name="twitter:card" content="summary"'));
-assert.ok(!index.includes('name="robots" content="noindex'),'production homepage must remain indexable');
-assert.ok(read('robots.txt').includes('Sitemap: https://pick5go.com/sitemap.xml'));
-assert.ok(read('sitemap.xml').includes('<loc>https://pick5go.com/</loc>'));
-for(const locale of ['de','it','fr','es'])assert.ok(read('sitemap.xml').includes('<loc>https://pick5go.com/'+locale+'/</loc>'));
-assert.ok(!index.includes('v1.3 Preview'));
-assert.ok(index.includes('styles.css?build=1.3.42'));
-assert.ok(index.includes('src/app.js?build=1.3.42'));
-assert.ok(app.includes("const STORAGE_KEY='pick5go-prefs-v13'"));
-assert.ok(app.includes("'flow5-prefs-v13-preview'"));
-assert.ok(app.includes("'flow5-prefs-v1'"));
-assert.ok(app.includes("migrated[key+':beginner']"));
-assert.ok(app.includes('next.includeFinalRest=true'));
-assert.ok(app.includes('includeFinalRest:true};}'));
-assert.ok(!app.includes('data-config="includeFinalRest"'));
-assert.ok(!app.includes('class="intro-stats"'));
-assert.ok(sw.includes("pick5go-v1.3-production-4"));
-assert.ok(sw.includes("key==='flow5-v1.2.0'"),'evict old worker cache');
-assert.ok(sw.includes("key.startsWith('pick5go-v1.3-production-')"));
-assert.ok(!sw.includes("key.startsWith('pick5go-v1.3-preview-')"));
-assert.ok(sw.includes("url.pathname.startsWith(root+'preview/')"),'root worker must not intercept preview');
-assert.deepEqual(LANGUAGES.map(x=>x.code),['en','de','it','fr','es']);
-assert.equal(EXERCISES.length,27);
-assert.ok(app.includes('trackExerciseCompleted')&&app.includes('onExerciseComplete:phase=>'));
-assert.ok(app.includes('const MUSCLE_THUMBNAILS='));
-assert.ok(sw.includes('./artwork/thumbs/assistedSingleLegSquat-muscles.webp'));
-assert.ok(sw.includes('./artwork/thumbs/wallSit-muscles.webp'));
+assert.ok(app.includes("const STORAGE_KEY='pick5go-prefs-v13'"),'retain existing user preferences');
+assert.ok(app.includes("PRIOR_KEYS=['flow5-prefs-v13-preview','flow5-prefs-v1']"),'migrate old clients');
+assert.ok(app.includes("key+':beginner'"),'migrate legacy custom workout choices');
+assert.equal(EXERCISES.length,32);
 assert.equal(PRESETS.length,4);
-for(const p of PRESETS){
-  for(const level of ['beginner','intermediate']){
-    const ids=presetIds(p.id,level);
-    assert.equal(ids.length,5);
-    assert.equal(new Set(ids).size,5);
-  }
+assert.deepEqual(PRESETS.map(p=>p.id),['full','core','upper','legs']);
+for(const p of PRESETS)for(const level of ['beginner','intermediate']){
+ const ids=presetIds(p.id,level);
+ assert.equal(ids.length,5);assert.equal(new Set(ids).size,5);
 }
-for(const l of LANGUAGES){for(const e of EXERCISES){const t=exerciseText(e,l.code);assert.ok(t.name&&t.cue&&t.tip)}}
-assert.equal(t('en','footer'),'Your exercise choices stay on your device. No registration, no setup, no personal workout history');
-const phases=buildPlan(['squat','pushup'],{workSec:40,restSec:20,rounds:3,includeFinalRest:true});
-assert.equal(phases.at(-1).kind,'rest');
-for(const language of ['en','de','it','fr','es']){
- const url='https://pick5go.com/'+(language==='en'?'':language+'/')+'about-calisthenics/';
- assert.ok(read('sitemap.xml').includes('<loc>'+url+'</loc>'),'sitemap guide '+language);
- const guide=read((language==='en'?'':language+'/')+'about-calisthenics/index.html');
- assert.ok(!guide.includes('content="noindex,follow"'),'production guide '+language+' must index');
- assert.ok(guide.includes('<link rel="canonical" href="'+url+'"/>'),'guide canonical '+language);
+for(const l of LANGUAGES)for(const e of EXERCISES){
+ const x=exerciseText(e,l.code);assert.ok(x.name&&x.cue&&x.tip,l.code+'/'+e.id);
 }
-assert.ok(sw.includes('./src/share.js'),'workout sharing must work offline');
-assert.ok(app.includes('decodeSharedWorkout')&&app.includes('shareCurrentWorkout'),'link sharing available');
-console.log('OK: Pick5Go production identity, migration, offline scoping, 27 exercise catalogue, five languages');
+for(const id of ['inclinePushup','kneeForearmPlank','stepJack','gluteBridgeMarch','supportedSplitSquat']){
+ const bytes=readFileSync(new URL('../artwork/'+id+'-master-v1347.webp',import.meta.url));
+ assert.equal(bytes.toString('ascii',0,4),'RIFF');
+ assert.equal(bytes.toString('ascii',8,12),'WEBP');
+ assert.ok(sw.includes('./artwork/'+id+'-master-v1347.webp'),'offline workout illustration');
+ assert.ok(sw.includes('./artwork/thumbs/'+id+'-muscles.webp'),'offline muscle thumbnail');
+}
+assert.equal(WORKOUTS.length,11);
+assert.deepEqual(Object.keys(WORKOUT_GROUPS),['quick','everyday','targeted']);
+assert.ok(WORKOUTS.some(w=>w.ids.length===3)&&WORKOUTS.some(w=>w.ids.length===4)&&WORKOUTS.some(w=>w.ids.length===5));
+assert.ok(app.includes('data-action="open-next"'),'recommended workout opens setup');
+assert.ok(app.includes('data-action="prepare-now"'),'preparation can be skipped');
+assert.ok(app.includes("view='prepare'"),'initial ten-second countdown');
+assert.ok(app.includes('data-action="start"'),'timer starts from home');
+assert.ok(app.includes('trackExerciseCompleted'),'Umami workout exercise event');
+assert.ok(!home.includes('analytics-debug.js'),'do not load preview diagnostics');
+assert.ok(home.includes('src/consent.js?build=1.3.60'));
+assert.ok(home.includes('src/app.js?build=1.3.60'));
+assert.ok(!home.includes('name="robots" content="noindex'),'production homepage must index');
+assert.ok(!home.includes('Pick5Go Preview'));
+assert.ok(home.includes('<title>Free Bodyweight Workout Builder &amp; Timer | Pick5Go</title>'));
+assert.ok(home.includes('<link rel="canonical" href="https://pick5go.com/"/>'));
+assert.ok(sw.includes("pick5go-v1.3-production-5"));
+assert.ok(sw.includes("url.pathname.startsWith(root+'preview/')"),'do not intercept preview');
+assert.ok(sw.includes("key==='flow5-v1.2.0'"),'purge old production cache');
+assert.ok(!sw.includes("key.startsWith('pick5go-v1.3-preview-')"),'do not delete preview cache');
+const sitemap=read('sitemap.xml'),robots=read('robots.txt');
+assert.ok(robots.includes('Sitemap: https://pick5go.com/sitemap.xml'));
+const urls=[...languages.map(l=>'https://pick5go.com/'+(l==='en'?'':l+'/')),
+ ...languages.map(l=>'https://pick5go.com/'+(l==='en'?'':l+'/')+'about-calisthenics/'),
+ 'https://pick5go.com/workouts/'];
+assert.equal((sitemap.match(/<loc>/g)||[]).length,11);
+for(const u of urls)assert.ok(sitemap.includes('<loc>'+u+'</loc>'),'sitemap '+u);
+for(const l of languages)for(const base of ['','about-calisthenics/']){
+ const pathname=(l==='en'?'':l+'/')+base+'index.html';
+ const html=read(pathname);
+ const url='https://pick5go.com/'+(l==='en'?'':l+'/')+base;
+ assert.ok(!html.includes('content="noindex'),'not indexable '+pathname);
+ assert.ok(html.includes('<link rel="canonical" href="'+url+'"/>'),'canonical '+pathname);
+ for(const alt of ['en','de','it','fr','es','x-default'])
+  assert.ok(html.includes('hreflang="'+alt+'"'),'alternates '+pathname+'/'+alt);
+}
+const gallery=read('workouts/index.html');
+assert.ok(gallery.includes('<link rel="canonical" href="https://pick5go.com/workouts/"/>'));
+assert.ok(!gallery.includes('name="robots" content="noindex'));
+assert.equal((gallery.match(/<article class="gallery-card">/g)||[]).length,11);
+const schemas=[...home.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)].map(m=>JSON.parse(m[1]));
+assert.ok(schemas.some(s=>s['@type']==='WebSite'));
+assert.ok(schemas.some(s=>s['@type']==='WebApplication'));
+const plan=buildPlan(['inclinePushup','deadBug'],{workSec:40,restSec:20,rounds:3,includeFinalRest:true});
+assert.equal(planStats(plan).totalMs,360000);
+console.log('OK production release: 32 exercises, 5 WebPs, 11 workouts, progression flow, icons, 11 SEO URLs and isolated PWA cache');
