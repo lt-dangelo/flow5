@@ -78,3 +78,16 @@ assert.ok(schemas.some(s=>s['@type']==='WebApplication'));
 const plan=buildPlan(['inclinePushup','deadBug'],{workSec:40,restSec:20,rounds:3,includeFinalRest:true});
 assert.equal(planStats(plan).totalMs,360000);
 console.log('OK production release: 32 exercises, 5 WebPs, 11 workouts, progression flow, icons, 11 SEO URLs and isolated PWA cache');
+
+
+// The original German legal notice is authoritative; all translated notices are informative.
+for(const file of ['imprint.html','privacy.html']){
+ const html=read(file);
+ assert.equal((html.match(/class="legal-version-note"/g)||[]).length,5,'all five legal languages must explain authoritative version');
+ assert.ok(html.includes('Die deutsche Fassung dieser Seite ist maßgeblich'));
+ assert.ok(html.includes('The German-language version of this page is authoritative'));
+ assert.ok(html.includes('La versione tedesca di questa pagina'));
+ assert.ok(html.includes('La version allemande de cette page fait foi'));
+ assert.ok(html.includes('La versión alemana de esta página'));
+ assert.ok(html.includes('Zwingende gesetzliche Rechte und Pflichten bleiben unberührt'));
+}
