@@ -23,6 +23,14 @@ assert.ok(!index.includes('by Lorenzo D\'Angelo'));
 const legalI18n=read('src/legal-language.js');
 assert.ok(legalI18n.includes("['en','de','it','fr','es']"));
 assert.ok(legalI18n.includes('flow5-prefs-v13-preview'));
+for(const file of [imprint,privacy]){
+ assert.equal((file.match(/class="legal-version-note"/g)||[]).length,5,'all languages declare authoritative German version');
+ assert.ok(file.includes('Die deutsche Fassung dieser Seite ist maßgeblich'));
+ assert.ok(file.includes('The German-language version of this page is authoritative'));
+ assert.ok(file.includes('La versione tedesca di questa pagina'));
+ assert.ok(file.includes('La version allemande de cette page fait foi'));
+ assert.ok(file.includes('La versión alemana de esta página'));
+}
 for(const lang of ['en','de','it','fr','es']){
  for(const file of [imprint,privacy]){
   assert.ok(file.includes('<section class="lang" lang="'+lang+'">'), 'missing legal locale '+lang);
