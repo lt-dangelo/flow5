@@ -45,7 +45,7 @@ const STRINGS={
 en:{
 switchLanguage:'Switch to German',help:'Installation help',
 heroEyebrow:'FITNESS, SIMPLIFIED.',heroFirst:'pick five',heroSecond:'go',
-heroDesc:'Choose your exercises, set your pace, and let the timer guide you.',
+heroDesc:'Build a short bodyweight workout at home: pick up to five exercises, customize intervals, and follow the guided timer.',
 healthNotice:'Train only if you are fit for strength exercise. If you have health concerns or are unsure, seek medical advice first.',
 workoutRecord:'YOUR WORKOUT',recordHint:'Share this workout as a link—your exercise order and intervals are included.',shareWorkout:'Share workout',shareMessage:'Try this bodyweight workout with Pick5Go.',shareCopied:'Workout link copied.',shareFailed:'Could not create a workout link.',sharePrompt:'Copy your workout link:',recordExercises:'Exercise order',recordIntervals:'Intervals',recordTotal:'Planned duration',recordDate:'Date',recordFinalRest:'Final rest',recordYes:'Included',recordNo:'Not included',recordCustom:'Customized',
 flexible:'Flexible interval timer',awake:'Keep screen awake*',
@@ -74,7 +74,7 @@ helpMessage:'INSTALL PICK5GO ON IPHONE\n\n1. Open this HTTPS website in Safari.\
 de:{
 switchLanguage:'Zu Englisch wechseln',help:'Installationshilfe',
 heroEyebrow:'FITNESS, GANZ EINFACH.',heroFirst:'pick five',heroSecond:'go',
-heroDesc:'Wähle deine Übungen, bestimme dein Tempo und lass dich vom Timer begleiten.',
+heroDesc:'Erstelle ein kurzes Workout für zu Hause: Wähle bis zu fünf Übungen, passe die Intervalle an und folge dem Timer.',
 healthNotice:'Trainiere nur, wenn du gesundheitlich für Krafttraining geeignet bist. Bei Beschwerden oder Unsicherheit hole vorher ärztlichen Rat ein.',
 workoutRecord:'DEIN TRAINING',recordHint:'Teile dieses Training als Link – Übungen und Intervalle sind enthalten.',shareWorkout:'Training teilen',shareMessage:'Probier dieses Bodyweight-Training mit Pick5Go.',shareCopied:'Trainingslink kopiert.',shareFailed:'Trainingslink konnte nicht erstellt werden.',sharePrompt:'Trainingslink kopieren:',recordExercises:'Übungsreihenfolge',recordIntervals:'Intervalle',recordTotal:'Geplante Dauer',recordDate:'Datum',recordFinalRest:'Letzte Pause',recordYes:'Enthalten',recordNo:'Entfällt',recordCustom:'Angepasst',
 flexible:'Flexibler Intervalltimer',awake:'Display bleibt aktiv*',
