@@ -38,7 +38,8 @@ for(const path of ['./about-calisthenics/','./about-calisthenics/index.html','./
 // Confirm SEO improvements stay grounded in the actual workout catalogue.
 assert.ok(guide.includes('<title>Calisthenics at Home: Beginner &amp; 15-Minute Workouts | Pick5Go</title>'));
 assert.ok(guide.includes('name="description" content="Explore calisthenics at home'));
-assert.ok(guide.includes('<h1 id="guide-title">About <em>calisthenics.</em></h1>'),'visual heading unchanged');
+assert.ok(guide.includes('<h1 id="guide-title">Bodyweight workouts <em>at home.</em></h1>'),'English guide heading targets at-home bodyweight workouts');
+assert.ok(guide.includes('A practical guide to calisthenics:'),'calisthenics context remains visible');
 for(const term of ['15-minute bodyweight workout','hotel room','work out at home without equipment','beginners start and progress']){
  assert.ok(guide.toLowerCase().includes(term.toLowerCase()),'search topic missing: '+term);
 }
