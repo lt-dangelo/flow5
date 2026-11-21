@@ -4,8 +4,8 @@
   'use strict';
   const KEY='pick5go-analytics-consent-v1';
   const ALLOWED=['pick5go.com','www.pick5go.com'];
-  const allowedHere=()=>ALLOWED.includes(location.hostname) ||
-    (location.hostname==='lt-dangelo.github.io' && /^\/flow5\/preview\/v1\.3\//.test(location.pathname));
+  // Preview deployment intentionally never transmits analytics to the production Umami website.
+  const allowedHere=()=>false;
   const HOSTS=[...ALLOWED,'lt-dangelo.github.io'];
   const TXT={
     de:{intro:'Pick5Go verwendet auf Wunsch Umami, um Seitenaufrufe und die Nutzung der Workout-Funktionen auszuwerten. Ohne Ihre Zustimmung wird kein Analyse-Skript geladen.',accept:'Statistik erlauben',decline:'Ablehnen',settings:'Datenschutz-Einstellungen',privacy:'Datenschutzerklärung',imprint:'Impressum'},
@@ -102,5 +102,7 @@
     if(document.getElementById('analytics-consent'))show();
   });
   updateLegalNav();
-  if(read()==='yes')load();else if(read()!=='no')show();
+  // There is no analytics consent to manage on preview: hide the inactive control.
+  document.getElementById('analytics-settings')?.remove?.();
+  return;
 })();
