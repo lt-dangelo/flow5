@@ -17,10 +17,9 @@ function simulate(host,path,choice){
  return {document,script,window,context};
 }
 const primary=simulate('pick5go.com','/preview/v1.3/','yes');
-assert.equal(primary.document.head.script?.src,'https://cloud.umami.is/script.js');
-assert.equal(primary.document.head.script?.dataset.websiteId,'789229c5-0473-4aab-bdfb-cddc54b1c37d');
+assert.equal(primary.document.head.script,undefined,'preview on custom domain must not load production tracker');
 const legacy=simulate('lt-dangelo.github.io','/flow5/preview/v1.3/','yes');
-assert.equal(legacy.document.head.script?.src,'https://cloud.umami.is/script.js');
+assert.equal(legacy.document.head.script,undefined,'preview on GitHub Pages must not load production tracker');
 const declined=simulate('pick5go.com','/preview/v1.3/','no');
 assert.equal(declined.document.head.script,undefined);
 const external=simulate('example.com','/preview/v1.3/','yes');
@@ -46,4 +45,4 @@ try{
  if(previousWindow===undefined)delete globalThis.window;else globalThis.window=previousWindow;
  if(previousStorage===undefined)delete globalThis.localStorage;else globalThis.localStorage=previousStorage;
 }
-console.log('OK: consent loads on both preview domains, never without opt-in, and queues fast-start workout events');
+console.log('OK: preview cannot load production Umami tracker; workout tracking remains optional when independently supplied');
