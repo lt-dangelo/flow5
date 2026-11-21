@@ -18,9 +18,8 @@ function simulate(choice,lang='de',pageLang='en'){
  return {imprint,privacy,settings,scripts};
 }
 const accepted=simulate('yes');
-assert.equal(accepted.scripts.length,1);
-assert.equal(accepted.scripts[0].src,'https://cloud.umami.is/script.js');
-assert.equal(accepted.scripts[0].dataset.websiteId,'789229c5-0473-4aab-bdfb-cddc54b1c37d');
+assert.equal(accepted.scripts.length,0,'preview never loads Umami');
+assert.equal(accepted.settings.removed,true,'preview removes inactive analytics settings button');
 assert.equal(accepted.imprint.href,'../imprint.html?lang=en');
 assert.equal(accepted.privacy.href,'../privacy.html?lang=en');
 assert.equal(accepted.settings.textContent,'Privacy settings');
@@ -30,12 +29,12 @@ assert.equal(denied.privacy.href,'../privacy.html?lang=en');
 const labels={de:['Impressum','Datenschutzerklärung','Datenschutz-Einstellungen'],it:['Note legali','Informativa sulla privacy','Preferenze privacy'],fr:['Mentions légales','Politique de confidentialité','Préférences de confidentialité'],es:['Aviso legal','Política de privacidad','Preferencias de privacidad']};
 for(const [language,[imprintText,privacyText,settingsText]] of Object.entries(labels)){
  const yes=simulate('yes','en',language),no=simulate('no','en',language);
- assert.equal(yes.scripts.length,1,language+' opt-in');
- assert.equal(no.scripts.length,0,language+' opt-out');
+ assert.equal(yes.scripts.length,0,language+' preview tracking disabled');
+ assert.equal(no.scripts.length,0,language+' preview tracking disabled');
  assert.equal(yes.imprint.href,'../../imprint.html?lang='+language,language+' imprint URL');
  assert.equal(yes.privacy.href,'../../privacy.html?lang='+language,language+' privacy URL');
  assert.equal(yes.imprint.textContent,imprintText,language+' imprint text');
  assert.equal(yes.privacy.textContent,privacyText,language+' privacy text');
  assert.equal(yes.settings.textContent,settingsText,language+' settings label');
 }
-console.log('OK: all five guide locales obey Umami consent and link to localized privacy and legal pages');
+console.log('OK: preview guides never load Umami, and legal links remain localized in five languages');
