@@ -379,7 +379,7 @@ function beginWorkout(restarted=false){
   const ids=[...currentIds()];
   workoutRatings=Object.create(null);
   workoutCount=ids.length;
-  workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()],skippedPhases:0};
+  workoutSession={ids,presetId:prefs.presetId,difficulty:prefs.difficulty,rounds:prefs.rounds,workSec:prefs.workSec,restSec:prefs.restSec,includeFinalRest:true,customized:!!prefs.custom[currentCustomKey()],skippedPhases:0,isRestart:Boolean(restarted)};
   engine=new IntervalEngine(buildPlan(ids,currentConfig()),{
    onPhase:(phase,previous)=>{
     if(previous)phaseSound(phase);
@@ -405,6 +405,8 @@ function startActualWorkout(){
  view='workout';
  engine.start();
  trackWorkoutEvent('workout_started',workoutSession);
+ // A restart is also a start; record both without counting unfinished preparation.
+ if(workoutSession?.isRestart)trackWorkoutEvent('workout_restarted',workoutSession);
  phaseSound(engine.phases[0]);
 }
 function exitWorkout(){

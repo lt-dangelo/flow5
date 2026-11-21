@@ -12,7 +12,7 @@ function simulate(choice,lang='de',pageLang='en'){
   createElement(){return {dataset:{},setAttribute(){},append(){},addEventListener(){}}}
  };
  const storage={getItem(k){return k==='pick5go-analytics-consent-v1'?choice:k==='flow5-prefs-v13-preview'?JSON.stringify({lang}):null;},setItem(){}};
- const location={pathname:'/flow5/preview/v1.3/'+(pageLang==='en'?'':pageLang+'/')+'about-calisthenics/',hostname:'lt-dangelo.github.io'};
+ const location={pathname:'/'+(pageLang==='en'?'':pageLang+'/')+'about-calisthenics/',hostname:'pick5go.com'};
  const window={location,addEventListener(){},dispatchEvent(){}};
  vm.runInNewContext(source,{document,localStorage:storage,window,location,Event:class{}});
  return {imprint,privacy,settings,scripts};

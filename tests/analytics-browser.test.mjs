@@ -16,11 +16,15 @@ function simulate(host,path,choice){
  vm.runInNewContext(read('src/consent.js'),context);
  return {document,script,window,context};
 }
-const primary=simulate('pick5go.com','/preview/v1.3/','yes');
+const primary=simulate('pick5go.com','/','yes');
 assert.equal(primary.document.head.script?.src,'https://cloud.umami.is/script.js');
 assert.equal(primary.document.head.script?.dataset.websiteId,'789229c5-0473-4aab-bdfb-cddc54b1c37d');
+const german=simulate('pick5go.com','/de/','yes');
+assert.equal(german.document.head.script?.src,'https://cloud.umami.is/script.js');
+const preview=simulate('pick5go.com','/preview/v1.3/','yes');
+assert.equal(preview.document.head.script,undefined,'custom-domain preview must not load production analytics');
 const legacy=simulate('lt-dangelo.github.io','/flow5/preview/v1.3/','yes');
-assert.equal(legacy.document.head.script?.src,'https://cloud.umami.is/script.js');
+assert.equal(legacy.document.head.script,undefined,'GitHub preview must not load production analytics');
 const declined=simulate('pick5go.com','/preview/v1.3/','no');
 assert.equal(declined.document.head.script,undefined);
 const external=simulate('example.com','/preview/v1.3/','yes');
@@ -46,4 +50,4 @@ try{
  if(previousWindow===undefined)delete globalThis.window;else globalThis.window=previousWindow;
  if(previousStorage===undefined)delete globalThis.localStorage;else globalThis.localStorage=previousStorage;
 }
-console.log('OK: consent loads on both preview domains, never without opt-in, and queues fast-start workout events');
+console.log('OK: production tracking requires opt-in, excludes both preview origins, and queues fast-start events');
