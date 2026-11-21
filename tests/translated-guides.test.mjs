@@ -53,6 +53,7 @@ for(const lang of langs){
  }
  assert.equal((html.match(/<li id="source-/g)||[]).length,6,lang+' preserved references');
  if(lang==='en')assert.ok(home.includes('href="./about-calisthenics/"'),'English homepage link');
+ if(lang==='es')assert.ok(html.includes('<h1 id="guide-title">Ejercicios en casa y <em>calistenia.</em></h1>'),'Spanish guide targets broader home-exercise intent');
  else {
   assert.ok(home.includes('href="./'+lang+'/about-calisthenics/"'),lang+' homepage link');
   for(const word of topic[lang])assert.ok(html.toLowerCase().includes(word.toLowerCase()),lang+' local keyword '+word);
