@@ -10,6 +10,13 @@ const preview='https://lt-dangelo.github.io/flow5/preview/v1.3/';
 const english=read('about-calisthenics/index.html');
 const sw=read('sw.js');
 const topic={de:['Krafttraining','ohne Geräte'],it:['corpo libero','senza attrezzi'],fr:['poids du corps','sans matériel'],es:['calistenia','sin material']};
+const heroTargets={
+ en:{h1:'Bodyweight workouts <em>at home.</em>',lead:['calisthenics','15-minute beginner workout']},
+ de:{h1:'Krafttraining zu Hause <em>ohne Geräte.</em>',lead:['Calisthenics','15-Minuten-Workout']},
+ it:{h1:'Allenamento a corpo libero <em>a casa.</em>',lead:['calisthenics','15 minuti']},
+ fr:{h1:'Musculation au poids du corps <em>à la maison.</em>',lead:['callisthénie','15 minutes']},
+ es:{h1:'Ejercicios en casa y <em>calistenia.</em>',lead:['sin material','15 minutos']}
+};
 assert.ok(sw.match(/pick5go-v1\.3-production-\d+/));
 for(const lang of langs){
  const guidePath=(lang==='en'?'':lang+'/')+'about-calisthenics/index.html';
@@ -21,6 +28,10 @@ for(const lang of langs){
  assert.ok(html.includes('<link rel="canonical" href="'+publicGuide+'"/>'),lang+' self canonical');
  assert.ok(!html.includes('name="robots" content="noindex'),lang+' production indexed');
  assert.ok(html.includes('guide-languages'),lang+' language switch');
+ const target=heroTargets[lang];
+ assert.ok(html.includes('<h1 id="guide-title">'+target.h1+'</h1>'),lang+' localized guide headline');
+ const lead=html.match(/<p class="guide-lead">([^<]+)<\/p>/)?.[1]||'';
+ for(const phrase of target.lead)assert.ok(lead.includes(phrase),lang+' introduction missing '+phrase);
  const expectedCss=lang==='en'?'./guide.css':'../../about-calisthenics/guide.css';
  const expectedConsent=lang==='en'?'../src/consent.js?build=1.3.41':'../../src/consent.js?build=1.3.41';
  assert.ok(html.includes('href="'+expectedCss+'"'),lang+' stylesheet');
