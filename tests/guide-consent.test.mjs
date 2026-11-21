@@ -3,7 +3,7 @@ import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('../src/consent.js',import.meta.url),'utf8');
 function simulate(choice,lang='de',pageLang='en'){
- const imprint={href:'',textContent:''},privacy={href:'',textContent:''},settings={textContent:'',addEventListener(){}},scripts=[];
+ const imprint={href:'',textContent:''},privacy={href:'',textContent:''},settings={textContent:'',removed:false,remove(){this.removed=true},addEventListener(){}},scripts=[];
  const document={
   documentElement:{lang:'en'},head:{appendChild(s){scripts.push(s)}},
   body:{append(){}},
