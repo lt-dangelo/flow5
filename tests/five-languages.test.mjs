@@ -9,6 +9,8 @@ import {pickerChoices} from '../src/selection.js';
 import {buildPlan,planStats} from '../src/engine.js';
 
 const codes=['en','de','it','fr','es'];
+const seoHomePhrases={en:'bodyweight workout at home',de:'Workout für zu Hause',it:'allenamento a corpo libero a casa',fr:'séance au poids du corps à la maison',es:'rutina de ejercicios en casa'};
+for(const [lang,phrase] of Object.entries(seoHomePhrases))assert.ok(t(lang,'heroDesc').includes(phrase),lang+' homepage intro must explain relevant workout need');
 assert.deepEqual(LANGUAGES.map(l=>l.code),codes);
 assert.equal(normalizeLang('xx'),'en');
 for(const lang of codes){
