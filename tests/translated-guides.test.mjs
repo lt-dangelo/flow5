@@ -27,6 +27,7 @@ for(const lang of langs){
  assert.ok(html.includes('src="'+expectedConsent+'"'),lang+' consent source');
  assert.ok(html.includes('id="analytics-settings"'),lang+' opt-in settings');
  assert.ok(html.includes('data-umami-event="guide_workout_opened"'),lang+' consent-gated event');
+ assert.equal((html.match(/href="\.\.\/" data-umami-event="guide_builder_opened"/g)||[]).length,6,lang+' six builder navigation events');
  assert.equal((html.match(/class="guide-chapter" id="/g)||[]).length,9,lang+' chapter count');
  assert.equal((html.match(/class="guide-back-top" href="#contents"/g)||[]).length,9,lang+' return links');
  for(const section of sections){
